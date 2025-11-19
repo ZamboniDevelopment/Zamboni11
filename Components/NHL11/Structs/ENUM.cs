@@ -1,0 +1,8 @@
+namespace Zamboni11.Components.NHL11.Structs;
+
+public enum ENUM : int
+{
+    DYNAMICMESSAGE_ENUM_UNKNOWN = 0,
+    DYNAMICMESSAGE_ENUM_SUCCESS = 1,
+    DYNAMICMESSAGE_ENUM_FAILURE = 2
+}
