@@ -22,7 +22,7 @@ public class Api
         var builder = WebApplication.CreateBuilder();
         var app = builder.Build();
 
-        app.MapGet("/status", () => Results.Json(new
+        app.MapGet("/nhl11/status", () => Results.Json(new
         {
             serverVersion = Program.Name,
             onlineUsersCount = ServerManager.GetServerPlayers().Count,
@@ -31,7 +31,7 @@ public class Api
             activeGames = ServerManager.GetServerGames().Count
         }));
 
-        app.MapGet("/api/players", async () =>
+        app.MapGet("/nhl11/api/players", async () =>
         {
             var list = new List<string>();
 
@@ -45,7 +45,7 @@ public class Api
 
             return Results.Json(list);
         });
-        app.MapGet("/api/player/{gamertag}", async (string gamertag) =>
+        app.MapGet("/nhl11/api/player/{gamertag}", async (string gamertag) =>
         {
             var reports = new List<(int UserId, int Score)>();
 
@@ -79,7 +79,7 @@ public class Api
             return new PlayerProfile(user_id, gamertag, totalGames, totalGoals);
         });
 
-        app.MapGet("/api/raw/games", async () =>
+        app.MapGet("/nhl11/api/raw/games", async () =>
         {
             var list = new List<Dictionary<string, object>>();
 
@@ -106,7 +106,7 @@ public class Api
             return Results.Json(list);
         });
 
-        app.MapGet("/api/raw/reports", async () =>
+        app.MapGet("/nhl11/api/raw/reports", async () =>
         {
             var list = new List<Dictionary<string, object>>();
 
