@@ -44,19 +44,19 @@ public static class ServerManager
         return ServerGames.Remove(serverGame);
     }
 
-    public static ReadOnlyCollection<ServerPlayer> GetServerPlayers()
+    public static List<ServerPlayer> GetServerPlayers()
     {
-        return new ReadOnlyCollection<ServerPlayer>(ServerPlayers);
+        return ServerPlayers;
     }
 
-    public static ReadOnlyCollection<QueuedPlayer> GetQueuedPlayers()
+    public static List<QueuedPlayer> GetQueuedPlayers()
     {
-        return new ReadOnlyCollection<QueuedPlayer>(QueuedPlayers);
+        return QueuedPlayers;
     }
 
-    public static ReadOnlyCollection<ServerGame> GetServerGames()
+    public static List<ServerGame> GetServerGames()
     {
-        return new ReadOnlyCollection<ServerGame>(ServerGames);
+        return ServerGames;
     }
 
     public static ServerPlayer? GetServerPlayer(BlazeServerConnection blazeServerConnection)

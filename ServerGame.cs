@@ -149,22 +149,22 @@ public class ServerGame
 
     public void NotifyParticipants(NotifyGamePlayerStateChange playerStateChange)
     {
-        foreach (var serverPlayer in ServerPlayers) GameManagerBase.Server.NotifyGamePlayerStateChangeAsync(serverPlayer.BlazeServerConnection, playerStateChange);
+        foreach (var serverPlayer in ServerPlayers.ToList()) GameManagerBase.Server.NotifyGamePlayerStateChangeAsync(serverPlayer.BlazeServerConnection, playerStateChange);
     }
 
     public void NotifyParticipants(NotifyPlayerJoinCompleted playerJoinCompleted)
     {
-        foreach (var serverPlayer in ServerPlayers) GameManagerBase.Server.NotifyPlayerJoinCompletedAsync(serverPlayer.BlazeServerConnection, playerJoinCompleted);
+        foreach (var serverPlayer in ServerPlayers.ToList()) GameManagerBase.Server.NotifyPlayerJoinCompletedAsync(serverPlayer.BlazeServerConnection, playerJoinCompleted);
     }
 
     public void NotifyParticipants(NotifyPlayerRemoved playerRemoved)
     {
-        foreach (var serverPlayer in ServerPlayers) GameManagerBase.Server.NotifyPlayerRemovedAsync(serverPlayer.BlazeServerConnection, playerRemoved);
+        foreach (var serverPlayer in ServerPlayers.ToList()) GameManagerBase.Server.NotifyPlayerRemovedAsync(serverPlayer.BlazeServerConnection, playerRemoved);
     }
 
     private void NotifyParticipants(NotifyPlayerJoining playerJoining)
     {
-        foreach (var serverPlayer in ServerPlayers) GameManagerBase.Server.NotifyPlayerJoiningAsync(serverPlayer.BlazeServerConnection, playerJoining);
+        foreach (var serverPlayer in ServerPlayers.ToList()) GameManagerBase.Server.NotifyPlayerJoiningAsync(serverPlayer.BlazeServerConnection, playerJoining);
     }
 
 

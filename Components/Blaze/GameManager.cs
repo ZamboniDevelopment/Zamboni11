@@ -27,6 +27,9 @@ internal class GameManager : GameManagerBase.Server
 
     private static void OnTimedEvent(object sender, ElapsedEventArgs e)
     {
+        
+        ServerManager.GetServerGames().RemoveAll(game => game.ServerPlayers.Count == 0); // How to not fix bugs
+
         if (ServerManager.GetQueuedPlayers().Count <= 1) return;
 
         var grouped = ServerManager.GetQueuedPlayers().GroupBy(u => u.StartMatchmakingRequest.mCriteriaData.mGenericRulePrefsList.Find(prefs => prefs.mRuleName.Equals("OSDK_gameMode")).mDesiredValues[0]);
@@ -89,7 +92,7 @@ internal class GameManager : GameManagerBase.Server
 
         serverGame.ReplicatedGameData = replicatedGameData;
 
-        foreach (var serverPlayer in serverGame.ServerPlayers)
+        foreach (var serverPlayer in serverGame.ServerPlayers.ToList())
             NotifyGameSessionUpdatedAsync(serverPlayer.BlazeServerConnection, new GameSessionUpdatedNotification
             {
                 mGameId = request.mGameId,
@@ -109,7 +112,7 @@ internal class GameManager : GameManagerBase.Server
 
         serverGame.ReplicatedGameData = replicatedGameData;
 
-        foreach (var serverPlayer in serverGame.ServerPlayers)
+        foreach (var serverPlayer in serverGame.ServerPlayers.ToList())
             NotifyGameStateChangeAsync(serverPlayer.BlazeServerConnection, new NotifyGameStateChange
             {
                 mGameId = request.mGameId,
@@ -121,12 +124,12 @@ internal class GameManager : GameManagerBase.Server
 
     public override Task<NullStruct> SetPlayerAttributesAsync(SetPlayerAttributesRequest request, BlazeRpcContext context)
     {
-        var zamboniGame = ServerManager.GetServerGame(request.mGameId);
+        var serverGame = ServerManager.GetServerGame(request.mGameId);
 
-        foreach (var serverPlayer in zamboniGame.ServerPlayers)
+        foreach (var serverPlayer in serverGame.ServerPlayers.ToList())
             NotifyPlayerAttribChangeAsync(serverPlayer.BlazeServerConnection, new NotifyPlayerAttribChange
             {
-                mGameId = zamboniGame.ReplicatedGameData.mGameId,
+                mGameId = serverGame.ReplicatedGameData.mGameId,
                 mPlayerAttribs = request.mPlayerAttributes,
                 mPlayerId = request.mPlayerId
             });
@@ -207,7 +210,7 @@ internal class GameManager : GameManagerBase.Server
 
         serverGame.ReplicatedGameData = replicatedGameData;
 
-        foreach (var serverPlayer in serverGame.ServerPlayers)
+        foreach (var serverPlayer in serverGame.ServerPlayers.ToList())
             NotifyGameSessionUpdatedAsync(serverPlayer.BlazeServerConnection, new GameSessionUpdatedNotification
             {
                 mGameId = request.mGameId,
@@ -228,7 +231,7 @@ internal class GameManager : GameManagerBase.Server
 
         serverGame.ReplicatedGameData = replicatedGameData;
 
-        foreach (var serverPlayer in serverGame.ServerPlayers)
+        foreach (var serverPlayer in serverGame.ServerPlayers.ToList())
             NotifyGameSettingsChangeAsync(serverPlayer.BlazeServerConnection, new NotifyGameSettingsChange
             {
                 mGameSettings = request.mGameSettings,
