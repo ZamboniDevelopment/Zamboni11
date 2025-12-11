@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Blaze3SDK.Blaze.GameManager;
 using BlazeCommon;
 
 namespace Zamboni11;
@@ -19,7 +20,7 @@ public class ZamboniCoreServer : BlazeServer
         if (queuedPlayer != null) ServerManager.RemoveQueuedPlayer(queuedPlayer);
 
         var serverGame = ServerManager.GetServerGame(serverPlayer);
-        if (serverGame != null) serverGame.RemoveGameParticipant(serverPlayer);
+        if (serverGame != null) serverGame.RemoveGameParticipant(serverPlayer, PlayerRemovedReason.PLAYER_CONN_LOST);
 
         return base.OnProtoFireDisconnectAsync(connection);
     }

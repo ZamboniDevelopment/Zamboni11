@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -11,7 +12,6 @@ using NLog.Layouts;
 using Tdf;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using Zamboni;
 using Zamboni11.Components.Blaze;
 using Zamboni11.Components.NHL11;
 
@@ -19,7 +19,7 @@ namespace Zamboni11;
 
 internal class Program
 {
-    public const string Name = "Zamboni11 1.0.1";
+    public const string Name = "Zamboni11 2.0";
     public const int RedirectorPort = 42127;
 
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -37,12 +37,14 @@ internal class Program
         InitDatabase();
         GameServerIp = ZamboniConfig.GameServerIp.Equals("auto") ? PublicIp : ZamboniConfig.GameServerIp;
 
-        var commandTask = Task.Run(StartCommandListener);
-        var redirectorTask = StartRedirectorServer();
-        var coreTask = StartCoreServer();
-        var apiTask = new Api().StartAsync();
+        var tasks = new List<Task>();
+
+        tasks.Add(Task.Run(StartCommandListener));
+        tasks.Add(StartCoreServer());
+        tasks.Add(new Api().StartAsync());
+        if (ZamboniConfig.HostRedirectorInstance) tasks.Add(StartRedirectorServer());
         Logger.Warn(Name + " started");
-        await Task.WhenAll(redirectorTask, coreTask, commandTask, apiTask);
+        await Task.WhenAll(tasks);
     }
 
     private static void StartLogger()
@@ -85,7 +87,8 @@ internal class Program
             var comments = "# GameServerIp: 'auto' = automatically detect public IP or specify a manual IP address, where GameServer is run on\n" +
                            "# GameServerPort: Port for GameServer to listen on. (Redirector server lives on " + RedirectorPort + ", clients request there)\n" +
                            "# LogLevel: Valid values: Trace, Debug, Info, Warn, Error, Fatal, Off.\n" +
-                           "# DatabaseConnectionString: Connection string to PostgreSQL, for saving data. (Not required)\n\n";
+                           "# DatabaseConnectionString: Connection string to PostgreSQL, for saving data. (Not required)\n" +
+                           "# HostRedirectorInstance: Whether this program should host a Redirector instance\n\n";
             File.WriteAllText(configFile, comments + yaml);
             Logger.Warn("Config file created: " + configFile);
             return;

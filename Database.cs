@@ -33,6 +33,8 @@ public class Database
         CreateGameIdSequence();
         CreateGamesTable();
         CreateReportTable();
+        CreateOtpReportTable();
+        CreateSoReportTable();
     }
 
     private void CreateGameIdSequence()
@@ -82,77 +84,275 @@ public class Database
         conn.Open();
 
         const string createTableQuery = @"
-                CREATE TABLE IF NOT EXISTS reports (
+            CREATE TABLE IF NOT EXISTS reports (
+                -- Primary Keys / Identifiers
+                game_id BIGINT NOT NULL,
+                user_id BIGINT NOT NULL,
+                -- Network and Bandwidth Stats
+                bandavggm INTEGER,
+                bandavgnet INTEGER,
+                bandhigm INTEGER,
+                bandhinet INTEGER,
+                bandlowgm INTEGER,
+                bandlownet INTEGER,
+                bytesrcvdgm INTEGER,
+                bytesrcvdnet INTEGER,
+                bytessentgm INTEGER,
+                bytessentnet INTEGER,
+                droppkts INTEGER,
+                lateavggm INTEGER,
+                lateavgnet INTEGER,
+                latehigm INTEGER,
+                latehinet INTEGER,
+                latelowgm INTEGER,
+                latelownet INTEGER,
+                latesdevgm INTEGER,
+                latesdevnet INTEGER,
+                pktloss INTEGER,
+                -- Performance, Synchronization, and Session Stats
+                fpsavg INTEGER,
+                fpsdev INTEGER,
+                fpshi INTEGER,
+                fpslow INTEGER,
+                gdesyncend INTEGER,
+                gdesyncrsn INTEGER,
+                gendphase INTEGER,
+                gresult INTEGER,
+                grpttype INTEGER,
+                grptver VARCHAR,
+                guests0 INTEGER,
+                guests1 INTEGER,
+                usersend0 INTEGER,
+                usersend1 INTEGER,
+                usersstrt0 INTEGER,
+                usersstrt1 INTEGER,
+                voipend0 INTEGER,
+                voipend1 INTEGER,
+                voipstrt0 INTEGER,
+                voipstrt1 INTEGER,
+                -- Player Metadata and Game Outcome
+                gamertag VARCHAR,
+                name VARCHAR,
+                team INTEGER,
+                team_name VARCHAR,
+                home INTEGER,
+                quit INTEGER,
+                disc INTEGER,
+                cheat INTEGER,
+                score INTEGER,
+                userresult INTEGER,
+                weight INTEGER,
+                -- In-Game Statistics
+                bkchance INTEGER,
+                bkgoal INTEGER,
+                blkshot INTEGER,
+                faceoff INTEGER,
+                hits INTEGER,
+                passchance INTEGER,
+                passcomp INTEGER,
+                penmin INTEGER,
+                ppo INTEGER,
+                ppg INTEGER,
+                pshchance INTEGER,
+                pshgoal INTEGER,
+                onetgoal INTEGER,
+                onetchance INTEGER,
+                shg INTEGER,
+                shots INTEGER,
+                toa INTEGER,
+                -- Audit Field
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (game_id, user_id)
+            );";
+
+        using var cmd = new NpgsqlCommand(createTableQuery, conn);
+        cmd.ExecuteNonQuery();
+    }
+
+    private void CreateSoReportTable()
+    {
+        using var conn = new NpgsqlConnection(connectionString);
+        conn.Open();
+
+        const string createTableQuery = @"
+            CREATE TABLE IF NOT EXISTS so_reports (
+                -- Primary Keys / Identifiers (Assumed)
+                game_id BIGINT NOT NULL,
+                user_id BIGINT NOT NULL,
+                -- Network and Bandwidth Stats
+                bandavggm INTEGER,
+                bandavgnet INTEGER,
+                bandhigm INTEGER,
+                bandhinet INTEGER,
+                bandlowgm INTEGER,
+                bandlownet INTEGER,
+                bytesrcvdgm INTEGER,
+                bytesrcvdnet INTEGER,
+                bytessentgm INTEGER,
+                bytessentnet INTEGER,
+                droppkts INTEGER,
+                lateavggm INTEGER,
+                lateavgnet INTEGER,
+                latehigm INTEGER,
+                latehinet INTEGER,
+                latelowgm INTEGER,
+                latelownet INTEGER,
+                latesdevgm INTEGER,
+                latesdevnet INTEGER,
+                pktloss INTEGER,
+                -- Performance, Synchronization, and Session Stats
+                fpsavg INTEGER,
+                fpsdev INTEGER,
+                fpshi INTEGER,
+                fpslow INTEGER,
+                gdesyncend INTEGER,
+                gdesyncrsn INTEGER,
+                gendphase INTEGER,
+                gresult INTEGER,
+                grpttype INTEGER,
+                grptver VARCHAR,
+                guests0 INTEGER,
+                guests1 INTEGER,
+                usersend0 INTEGER,
+                usersend1 INTEGER,
+                usersstrt0 INTEGER,
+                usersstrt1 INTEGER,
+                voipend0 INTEGER,
+                voipend1 INTEGER,
+                voipstrt0 INTEGER,
+                voipstrt1 INTEGER,
+                -- Player Metadata and Game Outcome
+                gamertag VARCHAR,
+                name VARCHAR,
+                team INTEGER,
+                team_name VARCHAR,
+                home INTEGER,
+                quit INTEGER,
+                disc INTEGER,
+                cheat INTEGER,
+                score INTEGER,
+                userresult INTEGER,
+                weight INTEGER,
+                shots INTEGER,
+                -- Audit Field
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (game_id, user_id)
+            );";
+
+        using var cmd = new NpgsqlCommand(createTableQuery, conn);
+        cmd.ExecuteNonQuery();
+    }
+
+    private void CreateOtpReportTable()
+    {
+        using var conn = new NpgsqlConnection(connectionString);
+        conn.Open();
+
+        const string createTableQuery = @"
+                CREATE TABLE IF NOT EXISTS otp_reports (
+                    -- Primary Keys / Identifiers
                     game_id BIGINT NOT NULL,
                     user_id BIGINT NOT NULL,
-                    weight INTEGER,
-                    voipstrt1 INTEGER,
-                    voipstrt0 INTEGER,
-                    voipend1 INTEGER,
-                    voipend0 INTEGER,
-                    usersstrt1 INTEGER,
-                    usersstrt0 INTEGER,
-                    usersend1 INTEGER,
+                    -- Network/Bandwidth Stats
+                    bandavggm INTEGER,
+                    bandavgnet INTEGER,
+                    bandhigm INTEGER,
+                    bandhinet INTEGER,
+                    bandlowgm INTEGER,
+                    bandlownet INTEGER,
+                    bytesrcvdgm INTEGER,
+                    bytesrcvdnet INTEGER,
+                    bytessentgm INTEGER,
+                    bytessentnet INTEGER,
+                    droppkts INTEGER,
+                    lateavggm INTEGER,
+                    lateavgnet INTEGER,
+                    latehigm INTEGER,
+                    latehinet INTEGER,
+                    latelowgm INTEGER,
+                    latelownet INTEGER,
+                    latesdevgm INTEGER,
+                    latesdevnet INTEGER,
+                    pktloss INTEGER,
+                    -- Performance/Session Stats
+                    fpsavg INTEGER,
+                    fpsdev INTEGER,
+                    fpshi INTEGER,
+                    fpslow INTEGER,
+                    gdesyncend INTEGER,
+                    gdesyncrsn INTEGER,
+                    gendphase INTEGER,
+                    gresult INTEGER,
+                    grpttype INTEGER,
+                    grptver VARCHAR,
+                    guests0 INTEGER,
+                    guests1 INTEGER,
                     usersend0 INTEGER,
-                    toa INTEGER,
+                    usersend1 INTEGER,
+                    usersstrt0 INTEGER,
+                    usersstrt1 INTEGER,
+                    voipend0 INTEGER,
+                    voipend1 INTEGER,
+                    voipstrt0 INTEGER,
+                    voipstrt1 INTEGER,
+                    -- Game & Player Metadata
+                    gamertag VARCHAR,
+                    name VARCHAR,
+                    plycrfirst VARCHAR,
+                    plycrlast VARCHAR,
+                    plycrname VARCHAR,
                     team_name VARCHAR,
                     team INTEGER,
-                    shots INTEGER,
-                    shg INTEGER,
-                    score INTEGER,
-                    quit INTEGER,
-                    pshgoal INTEGER,
-                    pshchance INTEGER,
-                    ppo INTEGER,
-                    ppg INTEGER,
-                    pktloss INTEGER,
-                    penmin INTEGER,
-                    passcomp INTEGER,
-                    passchance INTEGER,
-                    onetgoal INTEGER,
-                    onetchance INTEGER,
-                    latesdevnet INTEGER,
-                    latesdevgm INTEGER,
-                    latelownet INTEGER,
-                    latelowgm INTEGER,
-                    latehinet INTEGER,
-                    latehigm INTEGER,
-                    lateavgnet INTEGER,
-                    lateavggm INTEGER,
                     home INTEGER,
-                    hits INTEGER,
-                    guests1 INTEGER,
-                    guests0 INTEGER,
-                    grptver VARCHAR,
-                    grpttype INTEGER,
-                    gresult INTEGER,
-                    gendphase INTEGER,
-                    gdesyncrsn INTEGER,
-                    gdesyncend INTEGER,
-                    gamertag VARCHAR,
-                    fpslow INTEGER,
-                    fpshi INTEGER,
-                    fpsdev INTEGER,
-                    fpsavg INTEGER,
-                    faceoff INTEGER,
-                    name VARCHAR,
-                    userresult INTEGER,
-                    droppkts INTEGER,
+                    pos INTEGER,
+                    quit INTEGER,
                     disc INTEGER,
                     cheat INTEGER,
-                    bytessentnet INTEGER,
-                    bytessentgm INTEGER,
-                    bytesrcvdnet INTEGER,
-                    bytesrcvdgm INTEGER,
-                    blkshot INTEGER,
-                    bkgoal INTEGER,
-                    bkchance INTEGER,
-                    bandlownet INTEGER,
-                    bandlowgm INTEGER,
-                    bandhinet INTEGER,
-                    bandhigm INTEGER,
-                    bandavgnet INTEGER,
-                    bandavggm INTEGER,
+                    score INTEGER,
+                    userresult INTEGER,
+                    -- Player In-Game Stats
+                    lass INTEGER,
+                    lblkshots INTEGER,
+                    ldekemade INTEGER,
+                    ldeketry INTEGER,
+                    lfit INTEGER,
+                    lfitwon INTEGER,
+                    lfo INTEGER,
+                    lfowon INTEGER,
+                    lgdespsave INTEGER,
+                    lgive INTEGER,
+                    lgminplay INTEGER,
+                    lgoal INTEGER,
+                    lgpsave INTEGER,
+                    lgpshot INTEGER,
+                    lgrateo INTEGER,
+                    lgratep INTEGER,
+                    lgrates INTEGER,
+                    lgratet INTEGER,
+                    lgsa INTEGER,
+                    lgsave INTEGER,
+                    lgso INTEGER,
+                    lgsosave INTEGER,
+                    lgsoshot INTEGER,
+                    lgwg INTEGER,
+                    lgwin INTEGER,
+                    lhits INTEGER,
+                    loff INTEGER,
+                    lpim INTEGER,
+                    lplusmin INTEGER,
+                    lpos INTEGER,
+                    lppg INTEGER,
+                    lscrchnce INTEGER,
+                    lscrngoal INTEGER,
+                    lshg INTEGER,
+                    lshots INTEGER,
+                    lsrateo INTEGER,
+                    lsratep INTEGER,
+                    lsrates INTEGER,
+                    lsratet INTEGER,
+                    lswin INTEGER,
+                    ltake INTEGER,
+                    -- Audit Field
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     PRIMARY KEY (game_id, user_id)
                 );";
@@ -201,11 +401,25 @@ public class Database
             cmd1.ExecuteNonQuery();
         }
 
+        var tableName = "reports";
+        switch (report.mGameTypeId)
+        {
+            case 1:
+                tableName = "reports";
+                break;
+            case 2:
+                tableName = "so_reports";
+                break;
+            case 3:
+                tableName = "otp_reports";
+                break;
+        }
+
         var mPlayerReportMap = report.mPlayerReportMap;
         foreach (var userId in mPlayerReportMap.Keys)
         {
-            const string insertPlayerQuery = @"
-                INSERT INTO reports (
+            var insertPlayerQuery = $@"
+                INSERT INTO {tableName} ( 
                     game_id, user_id
                 ) VALUES (
                     @game_id, @user_id
@@ -225,7 +439,7 @@ public class Database
             {
                 var column = key.ToLower();
                 var insertPlayerAttributeQuery = $@"
-                    INSERT INTO reports (game_id, user_id, {column})
+                    INSERT INTO {tableName} (game_id, user_id, {column})
                         VALUES (@game_id, @user_id, @value)
                     ON CONFLICT (game_id, user_id) DO UPDATE
                         SET {column} = EXCLUDED.{column};";

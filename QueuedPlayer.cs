@@ -1,7 +1,6 @@
 using Blaze3SDK.Blaze.GameManager;
-using Zamboni11;
 
-namespace Zamboni;
+namespace Zamboni11;
 
 public class QueuedPlayer
 {

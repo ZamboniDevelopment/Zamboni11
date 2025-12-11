@@ -10,4 +10,14 @@ internal class ClubsComponent : ClubsComponentBase.Server
     {
         return Task.FromResult(new NullStruct());
     }
+
+    public override Task<NullStruct> GetInvitationsAsync(NullStruct request, BlazeRpcContext context)
+    {
+        return Task.FromResult(new NullStruct());
+    }
+
+    public override Task<NullStruct> GetPetitionsAsync(NullStruct request, BlazeRpcContext context)
+    {
+        return Task.FromResult(new NullStruct());
+    }
 }

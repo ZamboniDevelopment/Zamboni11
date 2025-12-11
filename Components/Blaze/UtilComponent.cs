@@ -5,11 +5,14 @@ using Blaze3SDK.Blaze;
 using Blaze3SDK.Blaze.Util;
 using Blaze3SDK.Components;
 using BlazeCommon;
+using NLog;
 
 namespace Zamboni11.Components.Blaze;
 
 internal class UtilComponent : UtilComponentBase.Server
 {
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
     public override Task<PreAuthResponse> PreAuthAsync(PreAuthRequest request, BlazeRpcContext context)
     {
         return Task.FromResult(new PreAuthResponse
@@ -92,9 +95,15 @@ internal class UtilComponent : UtilComponentBase.Server
 
     public override Task<PingResponse> PingAsync(NullStruct request, BlazeRpcContext context)
     {
+        var time = (uint)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+        var serverPlayer = ServerManager.GetServerPlayer(context.BlazeConnection);
+        if (serverPlayer == null)
+            Logger.Debug("Trying to ping an unknown player!");
+        else
+            serverPlayer.LastPingedTime = time;
         return Task.FromResult(new PingResponse
         {
-            mServerTime = (uint)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds
+            mServerTime = time
         });
     }
 
@@ -171,18 +180,20 @@ internal class UtilComponent : UtilComponentBase.Server
         });
     }
 
-    // public virtual Task<FilterUserTextResponse> FilterForProfanityAsync(FilterUserTextResponse request, BlazeRpcContext context)
-    // {
-    //     return Task.FromResult(new FilterUserTextResponse
-    //     {
-    //         mFilteredTextList = new List<FilteredUserText>
-    //         {
-    //             new FilteredUserText
-    //             {
-    //                 mFilteredText = request.mFilteredTextList[0].mFilteredText,
-    //                 mResult = FilterResult.FILTER_RESULT_PASSED
-    //             }
-    //         }
-    //     });
-    // }
+    public override Task<FilterUserTextResponse> FilterForProfanityAsync(FilterUserTextResponse request, BlazeRpcContext context)
+    {
+        var response = new List<FilteredUserText>();
+
+        foreach (var filteredUserText in request.mFilteredTextList)
+            response.Add(new FilteredUserText
+            {
+                mFilteredText = filteredUserText.mFilteredText,
+                mResult = FilterResult.FILTER_RESULT_PASSED
+            });
+
+        return Task.FromResult(new FilterUserTextResponse
+        {
+            mFilteredTextList = response
+        });
+    }
 }
