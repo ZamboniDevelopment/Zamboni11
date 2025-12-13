@@ -135,6 +135,11 @@ internal class Program
         //"Hut" Component, not official name
         //Work in progress
         core.AddComponent<HutComponent>();
+
+        //2257 NHL SPECIFIC COMPONENT
+        //"EAHockeyLeague" Component, not official name
+        //Work in progress
+        core.AddComponent<EAHockeyLeagueComponent>();
         await core.Start(-1).ConfigureAwait(false);
     }
 
