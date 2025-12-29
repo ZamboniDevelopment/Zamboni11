@@ -9,7 +9,7 @@ using Zamboni11.Components.NHL11.Responses;
 
 namespace Zamboni11.Components.NHL11.Bases;
 
-public static class HutComponentBase
+public static class CardHouseComponentBase
 {
     public enum HutComponentCommand : ushort
     {
@@ -105,7 +105,7 @@ public static class HutComponentBase
 
     public class Server : BlazeServerComponent<HutComponentCommand, HutComponentNotification, Blaze3RpcError>
     {
-        public Server() : base(HutComponentBase.Id, HutComponentBase.Name)
+        public Server() : base(CardHouseComponentBase.Id, CardHouseComponentBase.Name)
         {
         }
 
@@ -207,22 +207,22 @@ public static class HutComponentBase
 
         public override Type GetCommandRequestType(HutComponentCommand componentCommand)
         {
-            return HutComponentBase.GetCommandRequestType(componentCommand);
+            return CardHouseComponentBase.GetCommandRequestType(componentCommand);
         }
 
         public override Type GetCommandResponseType(HutComponentCommand componentCommand)
         {
-            return HutComponentBase.GetCommandResponseType(componentCommand);
+            return CardHouseComponentBase.GetCommandResponseType(componentCommand);
         }
 
         public override Type GetCommandErrorResponseType(HutComponentCommand componentCommand)
         {
-            return HutComponentBase.GetCommandErrorResponseType(componentCommand);
+            return CardHouseComponentBase.GetCommandErrorResponseType(componentCommand);
         }
 
         public override Type GetNotificationType(HutComponentNotification notification)
         {
-            return HutComponentBase.GetNotificationType(notification);
+            return CardHouseComponentBase.GetNotificationType(notification);
         }
     }
 
@@ -230,7 +230,7 @@ public static class HutComponentBase
     {
         private static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public Client(BlazeClientConnection connection) : base(HutComponentBase.Id, HutComponentBase.Name)
+        public Client(BlazeClientConnection connection) : base(CardHouseComponentBase.Id, CardHouseComponentBase.Name)
         {
             Connection = connection;
             if (!Connection.Config.AddComponent(this))
@@ -392,22 +392,22 @@ public static class HutComponentBase
 
         public override Type GetCommandRequestType(HutComponentCommand componentCommand)
         {
-            return HutComponentBase.GetCommandRequestType(componentCommand);
+            return CardHouseComponentBase.GetCommandRequestType(componentCommand);
         }
 
         public override Type GetCommandResponseType(HutComponentCommand componentCommand)
         {
-            return HutComponentBase.GetCommandResponseType(componentCommand);
+            return CardHouseComponentBase.GetCommandResponseType(componentCommand);
         }
 
         public override Type GetCommandErrorResponseType(HutComponentCommand componentCommand)
         {
-            return HutComponentBase.GetCommandErrorResponseType(componentCommand);
+            return CardHouseComponentBase.GetCommandErrorResponseType(componentCommand);
         }
 
         public override Type GetNotificationType(HutComponentNotification notification)
         {
-            return HutComponentBase.GetNotificationType(notification);
+            return CardHouseComponentBase.GetNotificationType(notification);
         }
     }
 }

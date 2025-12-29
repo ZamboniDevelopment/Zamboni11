@@ -4,7 +4,6 @@ namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
 public struct INFO
-
 {
     [TdfMember("CTAC")] 
     public string mCTAC;
@@ -22,7 +21,7 @@ public struct INFO
     public string mLOGU;
 
     [TdfMember("NAME")] 
-    public string mNAME;
+    public string mTeamName;
 
     [TdfMember("PLYQ")] 
     public uint mPLYQ;
@@ -37,7 +36,7 @@ public struct INFO
     public uint mSPBT;
 
     [TdfMember("TMAB")] 
-    public string mTMAB;
+    public string mTeamAbbreviation;
 
     [TdfMember("TOUR")] 
     public string mTOUR;

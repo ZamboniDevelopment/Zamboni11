@@ -132,9 +132,9 @@ internal class Program
         core.AddComponent<TwoTwoFourNineComponent>();
 
         //2148 NHL SPECIFIC COMPONENT
-        //"Hut" Component, not official name
+        //"CardHouseComponent" (hut)
         //Work in progress
-        core.AddComponent<HutComponent>();
+        core.AddComponent<CardHouseComponent>();
 
         //2257 NHL SPECIFIC COMPONENT
         //"EAHockeyLeague" Component, not official name

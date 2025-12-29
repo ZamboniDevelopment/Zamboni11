@@ -6,13 +6,13 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct HutLoginResponse
 {
     [TdfMember("ABBR")] 
-    public string mABBR;
+    public string mTeamAbbreviation;
 
     [TdfMember("BNUS")] 
     public byte mBNUS;
 
     [TdfMember("NAME")] 
-    public string mName;
+    public string mTeamName;
 
     [TdfMember("RWRD")] 
     public byte mRWRD;
