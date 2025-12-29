@@ -13,6 +13,6 @@ public struct DeckInfoRequest
     public long mUID;
     
     [TdfMember("VER")] 
-    public VER mVER;
+    public Version MVersion;
     
 }

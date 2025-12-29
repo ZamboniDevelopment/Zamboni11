@@ -1,6 +1,6 @@
 namespace Zamboni11.Components.NHL11.Structs;
 
-public enum CTYP : int
+public enum CollectionSearchType : int
 {
     COLLECTION_SEARCH_TYPE_ALL = 0,
     COLLECTION_SEARCH_TYPE_PLAYER = 1,

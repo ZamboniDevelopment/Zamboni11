@@ -5,7 +5,7 @@ using Tdf;
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct SQAD
+public struct Squad
 {
     [TdfMember("CHEM")] 
     public uint mCHEM;

@@ -29,13 +29,13 @@ internal class OsdkDynamicMessagingComponent : OsdkDynamicMessagingComponentBase
         // throw new Exception();
         return Task.FromResult(new MessageResponse
         {
-            mEnum = ENUM.DYNAMICMESSAGE_ENUM_SUCCESS,
+            mDynamicMessageEnum = DynamicMessageEnum.DYNAMICMESSAGE_ENUM_SUCCESS,
             mMessagesList = new List<MSGS>
             {
                 new()
                 {
                     mData = "This might be some proprietary ea format. Strings just crash",
-                    mFormat = FMAT.DYNAMICMESSAGE_FORMAT_PLAINTEXT,
+                    mFormat = DynamicMessageFormat.DYNAMICMESSAGE_FORMAT_PLAINTEXT,
                     mHint = "loadingScreen",
                     mMessageUid = 0,
                     mText = new List<DATADURN>
@@ -47,7 +47,7 @@ internal class OsdkDynamicMessagingComponent : OsdkDynamicMessagingComponentBase
                         }
                     },
                     mTitle = "NHL11",
-                    mType = TYPE.DYNAMICMESSAGE_TYPE_MATCHMAKING
+                    MDynamicMessageType = DynamicMessageType.DYNAMICMESSAGE_TYPE_MATCHMAKING
                 }
             }
         });

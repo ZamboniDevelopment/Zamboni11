@@ -3,7 +3,7 @@ using Tdf;
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct VER
+public struct Version
 {
     [TdfMember("VESC")] 
     public uint mVESC;

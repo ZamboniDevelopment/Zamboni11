@@ -8,7 +8,7 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct MessageResponse
 {
     [TdfMember("ENUM")] 
-    public ENUM mEnum;
+    public DynamicMessageEnum mDynamicMessageEnum;
 
     [TdfMember("MSGS")] 
     public List<MSGS> mMessagesList;

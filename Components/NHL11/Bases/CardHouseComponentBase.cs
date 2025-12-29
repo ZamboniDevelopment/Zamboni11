@@ -42,8 +42,8 @@ public static class CardHouseComponentBase
     {
         return componentCommand switch
         {
-            HutComponentCommand.login => typeof(HutLoginRequest),
-            HutComponentCommand.logout => typeof(HutLogoutRequest),
+            HutComponentCommand.login => typeof(LoginRequest),
+            HutComponentCommand.logout => typeof(LogoutRequest),
             HutComponentCommand.gamerSetInfo => typeof(GamerSetInfoRequest),
             HutComponentCommand.gamerGetInfo => typeof(GamerGetInfoRequest),
             HutComponentCommand.getConfig => typeof(ProvidedUID),
@@ -110,13 +110,13 @@ public static class CardHouseComponentBase
         }
 
         [BlazeCommand((ushort)HutComponentCommand.login)]
-        public virtual Task<HutLoginResponse> LoginRequestAsync(HutLoginRequest request, BlazeRpcContext context)
+        public virtual Task<HutLoginResponse> LoginRequestAsync(LoginRequest request, BlazeRpcContext context)
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
 
         [BlazeCommand((ushort)HutComponentCommand.logout)]
-        public virtual Task<ExampleResponse> LogoutRequestAsync(HutLogoutRequest request, BlazeRpcContext context)
+        public virtual Task<ExampleResponse> LogoutRequestAsync(LogoutRequest request, BlazeRpcContext context)
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
@@ -239,14 +239,14 @@ public static class CardHouseComponentBase
 
         private BlazeClientConnection Connection { get; }
 
-        public HutLoginResponse LoginRequest(HutLoginRequest request)
+        public HutLoginResponse LoginRequest(LoginRequest request)
         {
-            return Connection.SendRequest<HutLoginRequest, HutLoginResponse, NullStruct>(this, (ushort)HutComponentCommand.login, request);
+            return Connection.SendRequest<LoginRequest, HutLoginResponse, NullStruct>(this, (ushort)HutComponentCommand.login, request);
         }
 
-        public Task<HutLoginResponse> LoginRequestAsync(HutLoginRequest request)
+        public Task<HutLoginResponse> LoginRequestAsync(LoginRequest request)
         {
-            return Connection.SendRequestAsync<HutLoginRequest, HutLoginResponse, NullStruct>(this, (ushort)HutComponentCommand.login, request);
+            return Connection.SendRequestAsync<LoginRequest, HutLoginResponse, NullStruct>(this, (ushort)HutComponentCommand.login, request);
         }
 
         public NumericResponse SetGamerInfoRequest(GamerSetInfoRequest request)

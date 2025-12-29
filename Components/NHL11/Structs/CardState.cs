@@ -1,6 +1,6 @@
 namespace Zamboni11.Components.NHL11.Structs;
 
-public enum STAT : int
+public enum CardState : int
 {
     ZERO = 0,
     ONE = 1,

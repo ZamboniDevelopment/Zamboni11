@@ -8,7 +8,7 @@ namespace Zamboni11.Components.NHL11.Structs;
 public struct SCDL
 {
     [TdfMember("ATTR")] 
-    public List<byte> mATTR;
+    public List<byte> mAttributes;
 
     [TdfMember("CDST")] 
     public byte mCDST;
@@ -56,7 +56,7 @@ public struct SCDL
     public short mSCAP;
     
     [TdfMember("STAT")] 
-    public List<byte>  mSTAT;
+    public List<byte> mSTAT;
     
     [TdfMember("SUB")] 
     public short mSUB;

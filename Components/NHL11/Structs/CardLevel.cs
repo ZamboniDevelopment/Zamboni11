@@ -1,6 +1,6 @@
 namespace Zamboni11.Components.NHL11.Structs;
 
-public enum LEV : int
+public enum CardLevel : int
 {
     ZERO = 0,
     ONE = 1,

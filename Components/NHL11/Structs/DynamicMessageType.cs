@@ -1,6 +1,6 @@
 namespace Zamboni11.Components.NHL11.Structs;
 
-public enum TYPE : int
+public enum DynamicMessageType : int
 {
     DYNAMICMESSAGE_TYPE_MARKETPLACE = 0,
     DYNAMICMESSAGE_TYPE_WEBOFFER = 1,

@@ -12,7 +12,7 @@ public struct SquadLoadActiveResponse
     public List<SCDL> mACTV;
     
     [TdfMember("SQAD")] 
-    public SQAD mSQAD;
+    public Squad MSquad;
     
     [TdfMember("TUID")] 
     public long mTUID;

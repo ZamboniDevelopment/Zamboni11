@@ -24,6 +24,6 @@ public struct CreatePackResponse
     public uint mPKTY;
     
     [TdfMember("VER")] 
-    public VER mVER;
+    public Version MVersion;
     
 }

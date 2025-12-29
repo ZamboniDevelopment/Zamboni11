@@ -13,7 +13,7 @@ public struct StickerBookSearchRequest
     public int mCOUN;
     
     [TdfMember("CTYP")] 
-    public CTYP mCTYP;
+    public CollectionSearchType mCollectionSearchType;
     
     [TdfMember("FORM")] 
     public int mFORM;
@@ -22,7 +22,7 @@ public struct StickerBookSearchRequest
     public int mLEAG;
     
     [TdfMember("LEV")] 
-    public LEV mLEV;
+    public CardLevel mCardLevel;
     
     [TdfMember("NAT")] 
     public int mNAT;
@@ -34,7 +34,7 @@ public struct StickerBookSearchRequest
     public int mPOS;
     
     [TdfMember("STAT")] 
-    public STAT mSTAT;
+    public CardState mCardState;
     
     [TdfMember("STRT")] 
     public int mSTRT;

@@ -10,7 +10,7 @@ public struct MSGS
     public string mData;
 
     [TdfMember("FMAT")]
-    public FMAT mFormat;
+    public DynamicMessageFormat mFormat;
 
     [TdfMember("HINT")] 
     public string mHint;
@@ -28,5 +28,5 @@ public struct MSGS
     public string mTitle;
 
     [TdfMember("TYPE")] 
-    public TYPE mType;
+    public DynamicMessageType MDynamicMessageType;
 }

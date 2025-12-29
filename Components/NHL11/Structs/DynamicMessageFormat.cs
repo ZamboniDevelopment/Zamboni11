@@ -1,6 +1,6 @@
 namespace Zamboni11.Components.NHL11.Structs;
 
-public enum FMAT : int
+public enum DynamicMessageFormat : int
 {
     DYNAMICMESSAGE_FORMAT_PLAINTEXT = 0,
     DYNAMICMESSAGE_FORMAT_TEXTIMAGE = 1,
