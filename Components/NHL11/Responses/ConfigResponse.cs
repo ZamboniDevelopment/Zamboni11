@@ -6,7 +6,7 @@ using Zamboni11.Components.NHL11.Structs;
 namespace Zamboni11.Components.NHL11.Responses;
 
 [TdfStruct]
-public struct HutConfigResponse
+public struct ConfigResponse
 {
     
     [TdfMember("GCFL")] 

@@ -3,7 +3,7 @@ using Tdf;
 namespace Zamboni11.Components.NHL11.Responses;
 
 [TdfStruct]
-public struct HutLoginResponse
+public struct LoginResponse
 {
     [TdfMember("ABBR")] 
     public string mTeamAbbreviation;

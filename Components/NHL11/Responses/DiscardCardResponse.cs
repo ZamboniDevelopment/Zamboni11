@@ -12,6 +12,6 @@ public struct DiscardCardResponse
     public uint mCRED;
 
     [TdfMember("VER")] 
-    public Version MVersion;
+    public Version mVersion;
     
 }
