@@ -15,5 +15,5 @@ public struct HutLoginRequest
     public uint mPUR;
 
     [TdfMember("UID")] 
-    public long mUID;
+    public ulong mUID;
 }

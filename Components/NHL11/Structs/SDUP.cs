@@ -5,11 +5,11 @@ using Tdf;
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct GEN
+public struct SDUP
 {
-    [TdfMember("CRED")] 
-    public uint mCRED;
+    [TdfMember("CID")] 
+    public long mCID;
 
-    [TdfMember("STAT")] 
-    public List<byte> mSTAT;
+    [TdfMember("DCID")] 
+    public long mDCID;
 }

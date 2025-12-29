@@ -9,13 +9,13 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct DeckInfoResponse
 {
     [TdfMember("DUPE")] 
-    public List<ExampleResponse> mDUPE;
+    public List<SDUP> mDUPE;
 
     [TdfMember("DUPU")] 
-    public List<ExampleResponse> mDUPU;
+    public List<SDUP> mDUPU;
     
     [TdfMember("ECDL")] 
-    public List<ExampleResponse> mECDL;
+    public List<SCDL> mECDL;
     
     [TdfMember("ECNT")] 
     public byte mECNT;
@@ -23,8 +23,11 @@ public struct DeckInfoResponse
     [TdfMember("GEN")] 
     public GEN mGEN;
     
+    [TdfMember("RATE")] 
+    public uint mRATE;
+    
     [TdfMember("UCDL")] 
-    public List<ExampleResponse> mUCDL;
+    public List<SCDL> mUCDL;
     
     [TdfMember("UID")] 
     public long mUID;
