@@ -9,6 +9,6 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct ViewCardsResponse
 {
     [TdfMember("CDAT")] 
-    public List<SCDL> mCDAT;
+    public List<Card> mCDAT;
     
 }

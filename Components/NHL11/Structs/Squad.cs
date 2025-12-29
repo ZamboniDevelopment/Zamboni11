@@ -20,13 +20,13 @@ public struct Squad
     public List<uint> mLINE;
     
     [TdfMember("MNGR")] 
-    public SCDL mMNGR;
+    public Card mMNGR;
     
     [TdfMember("NAME")] 
     public string mNAME;
 
     [TdfMember("PLRS")] 
-    public List<SCDL> mPLRS;
+    public List<Card> mPLRS;
     
     [TdfMember("RTNG")] 
     public uint mRTNG;

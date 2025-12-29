@@ -18,7 +18,9 @@ public static class CardHouseComponentBase
         gamerSetInfo = 103,
         gamerGetInfo = 104,
         getConfig = 106,
+        resetUser = 108,
         getDeckInfo = 301,
+        assignCards = 307,
         createPack = 401,
         viewCards = 402,
         discardCard = 403,
@@ -47,7 +49,9 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.gamerSetInfo => typeof(GamerSetInfoRequest),
             CardHouseComponentCommand.gamerGetInfo => typeof(GamerGetInfoRequest),
             CardHouseComponentCommand.getConfig => typeof(ProvidedUID),
+            CardHouseComponentCommand.resetUser => typeof(ProvidedUID),
             CardHouseComponentCommand.getDeckInfo => typeof(DeckInfoRequest),
+            CardHouseComponentCommand.assignCards => typeof(AssignCardsRequest),
             CardHouseComponentCommand.createPack => typeof(CreatePackRequest),
             CardHouseComponentCommand.viewCards => typeof(ViewCardsRequest),
             CardHouseComponentCommand.discardCard => typeof(DiscardCardRequest),
@@ -67,11 +71,12 @@ public static class CardHouseComponentBase
         return componentCommand switch
         {
             CardHouseComponentCommand.login => typeof(LoginResponse),
-            CardHouseComponentCommand.logout => typeof(ExampleResponse),
+            CardHouseComponentCommand.logout => typeof(NumericResponse),
             CardHouseComponentCommand.gamerSetInfo => typeof(NumericResponse),
             CardHouseComponentCommand.gamerGetInfo => typeof(GamerGetInfoResponse),
             CardHouseComponentCommand.getConfig => typeof(ConfigResponse),
             CardHouseComponentCommand.getDeckInfo => typeof(DeckInfoResponse),
+            CardHouseComponentCommand.assignCards => typeof(AssignCardsResponse),
             CardHouseComponentCommand.createPack => typeof(CreatePackResponse),
             CardHouseComponentCommand.viewCards => typeof(ViewCardsResponse),
             CardHouseComponentCommand.discardCard => typeof(DiscardCardResponse),
@@ -116,7 +121,7 @@ public static class CardHouseComponentBase
         }
 
         [BlazeCommand((ushort)CardHouseComponentCommand.logout)]
-        public virtual Task<ExampleResponse> LogoutRequestAsync(LogoutRequest request, BlazeRpcContext context)
+        public virtual Task<NumericResponse> LogoutRequestAsync(LogoutRequest request, BlazeRpcContext context)
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
@@ -129,6 +134,12 @@ public static class CardHouseComponentBase
 
         [BlazeCommand((ushort)CardHouseComponentCommand.gamerGetInfo)]
         public virtual Task<GamerGetInfoResponse> GetGamerInfoRequestAsync(GamerGetInfoRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.resetUser)]
+        public virtual Task<NumericResponse> ResetUserRequestAsync(ProvidedUID request, BlazeRpcContext context)
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
@@ -156,6 +167,13 @@ public static class CardHouseComponentBase
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.assignCards)]
+        public virtual Task<AssignCardsResponse> AssignCardsAsync(AssignCardsRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+
 
         [BlazeCommand((ushort)CardHouseComponentCommand.discardCard)]
         public virtual Task<DiscardCardResponse> DiscardCardAsync(DiscardCardRequest request, BlazeRpcContext context)
@@ -248,6 +266,16 @@ public static class CardHouseComponentBase
         {
             return Connection.SendRequestAsync<LoginRequest, LoginResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.login, request);
         }
+        
+        public NumericResponse LogoutRequest(LogoutRequest request)
+        {
+            return Connection.SendRequest<LogoutRequest, NumericResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.logout, request);
+        }
+
+        public Task<NumericResponse> LogoutRequestAsync(LogoutRequest request)
+        {
+            return Connection.SendRequestAsync<LogoutRequest, NumericResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.logout, request);
+        }
 
         public NumericResponse SetGamerInfoRequest(GamerSetInfoRequest request)
         {
@@ -269,6 +297,16 @@ public static class CardHouseComponentBase
             return Connection.SendRequestAsync<GamerGetInfoRequest, GamerGetInfoResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.gamerGetInfo, request);
         }
 
+        public NumericResponse ResetUserRequest(ProvidedUID request)
+        {
+            return Connection.SendRequest<ProvidedUID, NumericResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.resetUser, request);
+        }
+
+        public Task<NumericResponse> ResetUserRequestAsync(ProvidedUID request)
+        {
+            return Connection.SendRequestAsync<ProvidedUID, NumericResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.resetUser, request);
+        }
+        
         public ConfigResponse GetConfigRequest(ProvidedUID request)
         {
             return Connection.SendRequest<ProvidedUID, ConfigResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.getConfig, request);
@@ -278,6 +316,17 @@ public static class CardHouseComponentBase
         {
             return Connection.SendRequestAsync<ProvidedUID, ConfigResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.getConfig, request);
         }
+        
+        public AssignCardsResponse AssignCardsRequest(AssignCardsRequest request)
+        {
+            return Connection.SendRequest<AssignCardsRequest, AssignCardsResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.assignCards, request);
+        }
+
+        public Task<AssignCardsResponse> AssignCardsRequestAsync(AssignCardsRequest request)
+        {
+            return Connection.SendRequestAsync<AssignCardsRequest, AssignCardsResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.assignCards, request);
+        }
+
 
         public DeckInfoResponse GetDeckInfo(DeckInfoRequest request)
         {

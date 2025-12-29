@@ -6,9 +6,10 @@ using Zamboni11.Components.NHL11.Structs;
 namespace Zamboni11.Components.NHL11.Responses;
 
 [TdfStruct]
-public struct StickerBookSearchResponse
+public struct AssignCardsResponse
 {
-    [TdfMember("SRES")] 
-    public List<Card> mSRES;
-
+    
+    [TdfMember("VER")] 
+    public Version mVersion;
+    
 }

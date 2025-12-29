@@ -9,10 +9,10 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct SquadLoadActiveResponse
 {
     [TdfMember("ACTV")] 
-    public List<SCDL> mACTV;
+    public List<Card> mACTV;
     
     [TdfMember("SQAD")] 
-    public Squad MSquad;
+    public Squad mSquad;
     
     [TdfMember("TUID")] 
     public long mTUID;

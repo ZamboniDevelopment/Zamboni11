@@ -9,7 +9,7 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct CreatePackResponse
 {
     [TdfMember("CDAT")] 
-    public List<SCDL> mCDAT;
+    public List<Card> mCDAT;
 
     [TdfMember("DUPL")] 
     public List<SDUP> mDUPL;
@@ -24,6 +24,6 @@ public struct CreatePackResponse
     public uint mPKTY;
     
     [TdfMember("VER")] 
-    public Version MVersion;
+    public Version mVersion;
     
 }

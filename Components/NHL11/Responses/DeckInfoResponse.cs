@@ -15,7 +15,7 @@ public struct DeckInfoResponse
     public List<SDUP> mDUPU;
     
     [TdfMember("ECDL")] 
-    public List<SCDL> mECDL;
+    public List<Card> mECDL;
     
     [TdfMember("ECNT")] 
     public byte mECNT;
@@ -27,11 +27,11 @@ public struct DeckInfoResponse
     public uint mRATE;
     
     [TdfMember("UCDL")] 
-    public List<SCDL> mUCDL;
+    public List<Card> mUCDL;
     
     [TdfMember("UID")] 
     public long mUID;
     
     [TdfMember("VER")] 
-    public Version MVersion;
+    public Version mVersion;
 }

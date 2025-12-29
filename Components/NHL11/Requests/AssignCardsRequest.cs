@@ -1,18 +1,16 @@
+using System.Collections.Generic;
 using Tdf;
 using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11.Components.NHL11.Requests;
 
 [TdfStruct]
-public struct DeckInfoRequest
+public struct AssignCardsRequest
 {
-    [TdfMember("PERS")] 
-    public string mPersona;
-
+    [TdfMember("LIST")] 
+    public List<AssignCardsRequestsList> mLIST;
+    
     [TdfMember("UID")] 
     public long mUID;
-    
-    [TdfMember("VER")] 
-    public Version mVersion;
-    
+
 }

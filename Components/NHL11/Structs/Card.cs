@@ -5,7 +5,7 @@ using Tdf;
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct SCDL
+public struct Card
 {
     [TdfMember("ATTR")] 
     public List<byte> mAttributes;
@@ -17,7 +17,7 @@ public struct SCDL
     public long mCID;
     
     [TdfMember("DBID")] 
-    public uint mDBID;
+    public uint mDatabaseId; //The players databaseId, (Refer nhlng.db file and nhlviewng program)
     
     [TdfMember("FORM")] 
     public byte mFORM;
@@ -38,7 +38,7 @@ public struct SCDL
     public byte mMORL;
     
     [TdfMember("OWNR")] 
-    public byte mOWNR;
+    public byte mNumberOfOwners;
 
     [TdfMember("POSI")] 
     public byte mPOSI;
@@ -62,7 +62,7 @@ public struct SCDL
     public short mSUB;
     
     [TdfMember("TIME")] 
-    public uint mTIME;
+    public uint mDateIssued;
     
     [TdfMember("TMID")] 
     public uint mTMID;
@@ -71,6 +71,6 @@ public struct SCDL
     public List<byte> mTRNG;
     
     [TdfMember("USRE")] 
-    public byte mUSRE;
+    public byte mContractLenght;
 
 }
