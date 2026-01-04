@@ -64,35 +64,35 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             {
                 // new SDUP
                 // {
-                // mCID = 1,
-                // mDCID = 1
+                    // mCID = 4,
+                    // mDCID = 4
                 // }
             },
             mDUPU = new List<SDUP>
             {
                 // new SDUP
                 // {
-                // mCID = 1,
-                // mDCID = 1
+                    // mCID = 4,
+                    // mDCID = 4
                 // }
             },
             mECDL = new List<Card>
             {
-                // GetCards(1), GetCards(2), GetCards(3)
+                // GetCards(1)
             },
-            // mECNT = 1,
+            mECNT = 1,
             mGEN = new GEN
             {
                 // mCRED = 3,
                 // mSTAT = new List<byte>
                 // {
-                // 10,10,10
+                    // 60, 60, 60, 60 ,60
                 // },
             },
             mRATE = 3,
             mUCDL = new List<Card> //TODO These are the cards shown to the user.
             {
-                GetCards(10),
+                GetCards(10)
             },
             mUID = 0,
             mVersion = GetVER()
@@ -212,14 +212,14 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     }
 
     //
-    // public override Task<SquadSaveResponse> SquadSaveAsync(SquadSaveRequest request, BlazeRpcContext context)
-    // {
-    //     return Task.FromResult(new SquadSaveResponse
-    //     {
-    //         mSQID = request.mSQID
-    //     });
-    // }
-    //
+    public override Task<SquadSaveResponse> SquadSaveAsync(SquadSaveRequest request, BlazeRpcContext context)
+    {
+        return Task.FromResult(new SquadSaveResponse
+        {
+            mSQID = request.mSQID
+        });
+    }
+    
     public override Task<StickerBookStats2Response> StickerBookStats2Async(StickerBookStats2Request request, BlazeRpcContext context)
     {
         return Task.FromResult(new StickerBookStats2Response
@@ -228,10 +228,10 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             {
                 new SSTAT
                 {
-                    mCTTP = 1,
-                    mCTVL = 1,
-                    mTYPE = 1,
-                    mVALU = request.mVALU
+                    mCTTP = 2,
+                    mCTVL = 2,
+                    mTYPE = 2,
+                    mVALU = 2
                 }
             }
         });
@@ -256,7 +256,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         {
             mSRES = new List<Card>
             {
-                GetCards(10),
+                // GetCards(10),GetCards(20),GetCards(30)
             }
         });
     }
@@ -267,7 +267,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     //     {
     //         mACTV = new List<Card>
     //         {
-    //             GetCards()
+    //             GetCards(10)
     //         },
     //         mSquad = new Squad()
     //         {
@@ -278,11 +278,11 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     //             {
     //                 10
     //             },
-    //             mMNGR = GetCards(),
+    //             mMNGR = GetCards(1),
     //             mNAME = "aaaaa",
     //             mPLRS = new List<Card>
     //             {
-    //                 GetCards()
+    //                 GetCards(1)
     //             },
     //             mRTNG = 1,
     //             mSQID = 0
@@ -298,30 +298,30 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     //
 
     //
-    // public override Task<CreatePackResponse> CreatePackAsync(CreatePackRequest request, BlazeRpcContext context)
-    // {
-    //     return Task.FromResult(new CreatePackResponse
-    //     {
-    //         mCDAT = new List<Card>
-    //         {
-    //             GetCards()
-    //         },
-    //
-    //         mDUPL = new List<SDUP>
-    //         {
-    //             new SDUP
-    //             {
-    //                 mCID = 1,
-    //                 mDCID = 1
-    //             }
-    //         },
-    //         mNUM = 1,
-    //         mPCNT = 1,
-    //         mPKTY = 1,
-    //         mVersion = GetVER()
-    //     });
-    // }
-    //
+    public override Task<CreatePackResponse> CreatePackAsync(CreatePackRequest request, BlazeRpcContext context)
+    {
+        return Task.FromResult(new CreatePackResponse
+        {
+            mCDAT = new List<Card>
+            {
+                GetCards(1)
+            },
+    
+            mDUPL = new List<SDUP>
+            {
+                new SDUP
+                {
+                    mCID = 1,
+                    mDCID = 1
+                }
+            },
+            mNUM = 1,
+            mPCNT = 1,
+            mPKTY = 1,
+            mVersion = GetVER()
+        });
+    }
+    
     public static Version GetVER()
     {
         return new Version()
@@ -339,30 +339,30 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         {
             mAttributes = new List<byte>
             {
-                51, 52, 53, 54, 55, 56, 57, 58, 59, 60
+                51, 52, 53, 54, 55
             },
-            mCDST = 3,
-            mCID = 4,
-            mDatabaseId = 2,
-            mFORM = 3,
-            mFREE = 3,
-            mFTNS = 3,
+            mCDST = 2,
+            mCID = 3,
+            mDatabaseId = val,
+            mFORM = 2,
+            mFREE = 1,
+            mFTNS = 2,
             mINJG = 3,
-            mINJT = 3,
-            mMORL = 3,
+            mINJT = 2,
+            mMORL = 1,
             mNumberOfOwners = 4,
-            mPOSI = 4,
-            mPRIC = 3,
-            mRARE = 3,
-            mRTNG = 3,
-            mSCAP = 3,
+            mPOSI = 3,
+            mPRIC = 2,
+            mRARE = 1,
+            mRTNG = 2,
+            mSCAP = 4,
             mSTAT = new List<byte>
             {
-                61, 62, 63, 64, 65, 66, 67, 68, 69, 70
+                61, 62, 63, 64, 65
             },
-            mSUB = 3,
+            mSUB = 2,
             mDateIssued = 1767011983,
-            mTMID = 3,
+            mTMID = 1,
             mTRNG = new List<byte>
             {
                 0, 72, 73, 74, 75, 78, 79, 255

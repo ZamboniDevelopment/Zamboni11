@@ -155,43 +155,5 @@ public static class OsdkDynamicMessagingComponentBase
             return OsdkDynamicMessagingComponentBase.GetNotificationType(notification);
         }
     }
-
-    public class Proxy : BlazeProxyComponent<OsdkDynamicMessagingComponentCommand, OsdkDynamicMessagingComponentNotification, Blaze3RpcError>
-    {
-        public Proxy() : base(OsdkDynamicMessagingComponentBase.Id, OsdkDynamicMessagingComponentBase.Name)
-        {
-        }
-
-        [BlazeCommand((ushort)OsdkDynamicMessagingComponentCommand.getConfig)]
-        public virtual Task<ExampleResponse> GetConfigAsync(NullStruct request, BlazeProxyContext context)
-        {
-            return context.ClientConnection.SendRequestAsync<NullStruct, ExampleResponse, NullStruct>(this, (ushort)OsdkDynamicMessagingComponentCommand.getConfig, request);
-        }
-
-        [BlazeCommand((ushort)OsdkDynamicMessagingComponentCommand.getMessages)]
-        public virtual Task<MessageResponse> GetMessagesAsync(MessageRequest request, BlazeProxyContext context)
-        {
-            return context.ClientConnection.SendRequestAsync<MessageRequest, MessageResponse, NullStruct>(this, (ushort)OsdkDynamicMessagingComponentCommand.getMessages, request);
-        }
-
-        public override Type GetCommandRequestType(OsdkDynamicMessagingComponentCommand componentCommand)
-        {
-            return OsdkDynamicMessagingComponentBase.GetCommandRequestType(componentCommand);
-        }
-
-        public override Type GetCommandResponseType(OsdkDynamicMessagingComponentCommand componentCommand)
-        {
-            return OsdkDynamicMessagingComponentBase.GetCommandResponseType(componentCommand);
-        }
-
-        public override Type GetCommandErrorResponseType(OsdkDynamicMessagingComponentCommand componentCommand)
-        {
-            return OsdkDynamicMessagingComponentBase.GetCommandErrorResponseType(componentCommand);
-        }
-
-        public override Type GetNotificationType(OsdkDynamicMessagingComponentNotification notification)
-        {
-            return OsdkDynamicMessagingComponentBase.GetNotificationType(notification);
-        }
-    }
+    
 }
