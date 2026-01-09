@@ -7,6 +7,6 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct StaffBonusResponse
 {
     [TdfMember("SDAT")] 
-    public SDAT mSDAT;
+    public StaffBonusInfo mStaffBonusInfo;
 
 }

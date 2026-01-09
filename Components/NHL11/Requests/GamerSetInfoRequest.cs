@@ -7,7 +7,7 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct GamerSetInfoRequest
 {
     [TdfMember("INFO")] 
-    public INFO mINFO;
+    public GamerInfo mGamerInfo;
 
     [TdfMember("UID")] 
     public long mUID;

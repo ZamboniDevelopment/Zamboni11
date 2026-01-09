@@ -7,7 +7,7 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct ViewCardsRequest
 {
     [TdfMember("CARD")] 
-    public List<long> mCARD;
+    public List<long> mCardIdList;
 
     [TdfMember("UID")] 
     public long mUID;

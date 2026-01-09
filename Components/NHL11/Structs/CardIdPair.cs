@@ -5,7 +5,7 @@ using Tdf;
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct SDUP
+public struct CardIdPair
 {
     [TdfMember("CID")] 
     public long mCID;

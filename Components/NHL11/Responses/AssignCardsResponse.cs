@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 using Zamboni11.Components.NHL11.Structs;
 
@@ -10,6 +8,6 @@ public struct AssignCardsResponse
 {
     
     [TdfMember("VER")] 
-    public Version mVersion;
+    public VersionInfo mVersionInfo;
     
 }

@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct SDAT
+public struct StaffBonusInfo
 {
     [TdfMember("ARM")] 
     public byte mARM;

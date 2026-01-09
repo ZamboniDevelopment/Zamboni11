@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Tdf;
 using Zamboni11.Components.NHL11.Structs;
 
@@ -29,5 +28,5 @@ public struct SeasonDetailsResponse
     public uint mSeasonNumber;
 
     [TdfMember("STAT")] 
-    public SeasonState MSeasonState;
+    public SeasonState mSeasonState;
 }

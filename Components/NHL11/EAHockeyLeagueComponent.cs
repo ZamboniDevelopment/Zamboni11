@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Blaze3SDK.Blaze.Example;
 using BlazeCommon;
 using Zamboni11.Components.NHL11.Bases;
 using Zamboni11.Components.NHL11.Requests;
@@ -15,7 +14,7 @@ internal class EAHockeyLeagueComponent : EAHockeyLeagueComponentBase.Server
     {
         return Task.FromResult(new GetSeasonConfigurationResponse
         {
-            mCFGL = new List<SeasonConfiguration>()
+            mInstanceConfigList = new List<SeasonConfiguration>()
             {
                 {
                     new SeasonConfiguration
@@ -86,7 +85,7 @@ internal class EAHockeyLeagueComponent : EAHockeyLeagueComponentBase.Server
             mRST = 4210,
             mSeasonID = request.mSeasonId,
             mSeasonNumber = request.mSeasonId,
-            MSeasonState = SeasonState.SEASONALPLAY_SEASON_STATE_PLAYOFF
+            mSeasonState = SeasonState.SEASONALPLAY_SEASON_STATE_PLAYOFF
         });
     }
 }

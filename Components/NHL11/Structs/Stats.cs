@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct SSTAT
+public struct Stats
 {
     [TdfMember("CTTP")] 
     public byte mCTTP;

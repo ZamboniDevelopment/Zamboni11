@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Blaze3SDK.Blaze.Example;
 using BlazeCommon;
 using Zamboni11.Components.NHL11.Bases;
 using Zamboni11.Components.NHL11.Requests;
 using Zamboni11.Components.NHL11.Responses;
 using Zamboni11.Components.NHL11.Structs;
-using Version = Zamboni11.Components.NHL11.Structs.Version;
 
 namespace Zamboni11.Components.NHL11;
 
@@ -43,13 +40,13 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     //     if (hutPlayerInstance == null) throw new Exception();
     //     return Task.FromResult(new GamerGetInfoResponse
     //     {
-    //         mINFO = hutPlayerInstance.Info,
+    //         MGamerInfo = hutPlayerInstance.GamerInfo,
     //         mUID = 0
     //     });
     // }
     public override Task<NumericResponse> SetGamerInfoRequestAsync(GamerSetInfoRequest request, BlazeRpcContext context)
     {
-        HutManager.HutPlayerInstances.Add(new HutPlayerInstance(ServerManager.GetServerPlayer(context.BlazeConnection), request.mINFO));
+        HutManager.HutPlayerInstances.Add(new HutPlayerInstance(ServerManager.GetServerPlayer(context.BlazeConnection), request.mGamerInfo));
         return Task.FromResult(new NumericResponse
         {
             mNUM = 1
@@ -60,42 +57,26 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new DeckInfoResponse
         {
-            mDUPE = new List<SDUP>
+            mDuplicateEscrowCardIdPairList = new List<CardIdPair>
             {
-                // new SDUP
-                // {
-                    // mCID = 4,
-                    // mDCID = 4
-                // }
             },
-            mDUPU = new List<SDUP>
+            mDuplicateUnassignedCardIdPairList = new List<CardIdPair>
             {
-                // new SDUP
-                // {
-                    // mCID = 4,
-                    // mDCID = 4
-                // }
             },
-            mECDL = new List<Card>
+            mEscrowCardDataList = new List<CardData>
             {
-                // GetCards(1)
             },
             mECNT = 1,
-            mGEN = new GEN
+            mGeneralInfo = new GeneralInfo
             {
-                // mCRED = 3,
-                // mSTAT = new List<byte>
-                // {
-                    // 60, 60, 60, 60 ,60
-                // },
             },
             mRATE = 3,
-            mUCDL = new List<Card> //TODO These are the cards shown to the user.
+            mUnassignedCardDataList = new List<CardData> //TODO These are the cards shown to the user.
             {
                 GetCards(10)
             },
             mUID = 0,
-            mVersion = GetVER()
+            mVersionInfo = GetVER()
         });
     }
 
@@ -124,7 +105,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new StaffBonusResponse
         {
-            mSDAT = new SDAT
+            mStaffBonusInfo = new StaffBonusInfo
             {
                 mARM = 1,
                 mBACK = 1,
@@ -156,7 +137,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new AssignCardsResponse
         {
-            mVersion = GetVER()
+            mVersionInfo = GetVER()
         });
     }
 
@@ -204,7 +185,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new ViewCardsResponse
         {
-            mCDAT = new List<Card>
+            mCardDataList = new List<CardData>
             {
                 GetCards(10),
             }
@@ -224,9 +205,9 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new StickerBookStats2Response
         {
-            mSTAT = new List<SSTAT>
+            mStats = new List<Stats>
             {
-                new SSTAT
+                new Stats
                 {
                     mCTTP = 2,
                     mCTVL = 2,
@@ -254,7 +235,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new StickerBookSearchResponse
         {
-            mSRES = new List<Card>
+            mSearchResults = new List<CardData>
             {
                 // GetCards(10),GetCards(20),GetCards(30)
             }
@@ -302,14 +283,14 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new CreatePackResponse
         {
-            mCDAT = new List<Card>
+            mCardDataList = new List<CardData>
             {
                 GetCards(1)
             },
     
-            mDUPL = new List<SDUP>
+            mDuplicateCardIdPairList = new List<CardIdPair>
             {
-                new SDUP
+                new CardIdPair
                 {
                     mCID = 1,
                     mDCID = 1
@@ -318,13 +299,13 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             mNUM = 1,
             mPCNT = 1,
             mPKTY = 1,
-            mVersion = GetVER()
+            mVersionInfo = GetVER()
         });
     }
     
-    public static Version GetVER()
+    public static VersionInfo GetVER()
     {
-        return new Version()
+        return new VersionInfo()
         {
             mVESC = 0,
             mVGEN = 0,
@@ -333,9 +314,9 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     }
 
     //
-    public static Card GetCards(uint val)
+    public static CardData GetCards(uint val)
     {
-        return new Card
+        return new CardData
         {
             mAttributes = new List<byte>
             {

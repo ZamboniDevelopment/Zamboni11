@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 using Zamboni11.Components.NHL11.Structs;
 
@@ -9,10 +8,10 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct CreatePackResponse
 {
     [TdfMember("CDAT")] 
-    public List<Card> mCDAT;
+    public List<CardData> mCardDataList;
 
     [TdfMember("DUPL")] 
-    public List<SDUP> mDUPL;
+    public List<CardIdPair> mDuplicateCardIdPairList;
     
     [TdfMember("NUM")] 
     public uint mNUM;
@@ -24,6 +23,6 @@ public struct CreatePackResponse
     public uint mPKTY;
     
     [TdfMember("VER")] 
-    public Version mVersion;
+    public VersionInfo mVersionInfo;
     
 }

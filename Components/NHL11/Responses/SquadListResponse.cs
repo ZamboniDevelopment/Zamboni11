@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 using Zamboni11.Components.NHL11.Structs;
 
@@ -12,6 +11,6 @@ public struct SquadListResponse
     public uint mACTV;
     
     [TdfMember("SQDS")] 
-    public List<SQDS> mSQDS;
+    public List<SQDS> mSquads;
 
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 using Zamboni11.Components.NHL11.Structs;
 
@@ -9,6 +8,6 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct ViewCardsResponse
 {
     [TdfMember("CDAT")] 
-    public List<Card> mCDAT;
+    public List<CardData> mCardDataList;
     
 }

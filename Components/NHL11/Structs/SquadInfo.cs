@@ -1,14 +1,13 @@
 using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct Squad
+public struct SquadInfo
 {
     [TdfMember("CHEM")] 
-    public uint mCHEM;
+    public uint mChemistry;
     
     [TdfMember("CHNG")] 
     public uint mCHNG;
@@ -17,20 +16,20 @@ public struct Squad
     public uint mFORM;
     
     [TdfMember("LINE")] 
-    public List<uint> mLINE;
+    public List<uint> mLines;
     
     [TdfMember("MNGR")] 
-    public Card mMNGR;
+    public CardData mManager; //Coach of the team?
     
     [TdfMember("NAME")] 
-    public string mNAME;
+    public string mName;
 
     [TdfMember("PLRS")] 
-    public List<Card> mPLRS;
+    public List<CardData> mPlayers;
     
     [TdfMember("RTNG")] 
-    public uint mRTNG;
+    public uint mRating;
     
     [TdfMember("SQID")] 
-    public uint mSQID;
+    public uint mSquadId;
 }

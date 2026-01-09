@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct Card
+public struct CardData
 {
     [TdfMember("ATTR")] 
     public List<byte> mAttributes;

@@ -3,7 +3,7 @@ using Tdf;
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct INFO
+public struct GamerInfo
 {
     [TdfMember("CTAC")] 
     public string mCTAC;

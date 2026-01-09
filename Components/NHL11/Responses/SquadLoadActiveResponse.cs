@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 using Zamboni11.Components.NHL11.Structs;
 
@@ -9,10 +8,10 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct SquadLoadActiveResponse
 {
     [TdfMember("ACTV")] 
-    public List<Card> mACTV;
+    public List<CardData> mActiveCards;
     
     [TdfMember("SQAD")] 
-    public Squad mSquad;
+    public SquadInfo mSquadInfo;
     
     [TdfMember("TUID")] 
     public long mTUID;

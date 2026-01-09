@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 using Zamboni11.Components.NHL11.Structs;
 
@@ -9,29 +8,29 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct DeckInfoResponse
 {
     [TdfMember("DUPE")] 
-    public List<SDUP> mDUPE;
+    public List<CardIdPair> mDuplicateEscrowCardIdPairList;
 
     [TdfMember("DUPU")] 
-    public List<SDUP> mDUPU;
+    public List<CardIdPair> mDuplicateUnassignedCardIdPairList;
     
     [TdfMember("ECDL")] 
-    public List<Card> mECDL;
+    public List<CardData> mEscrowCardDataList;
     
     [TdfMember("ECNT")] 
     public byte mECNT;
     
     [TdfMember("GEN")] 
-    public GEN mGEN;
+    public GeneralInfo mGeneralInfo;
     
     [TdfMember("RATE")] 
     public uint mRATE;
     
     [TdfMember("UCDL")] 
-    public List<Card> mUCDL;
+    public List<CardData> mUnassignedCardDataList;
     
     [TdfMember("UID")] 
     public long mUID;
     
     [TdfMember("VER")] 
-    public Version mVersion;
+    public VersionInfo mVersionInfo;
 }

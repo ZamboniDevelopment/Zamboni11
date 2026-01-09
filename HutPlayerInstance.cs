@@ -5,11 +5,11 @@ namespace Zamboni11;
 public class HutPlayerInstance
 {
     public ServerPlayer ServerPlayer { get; set; }
-    public INFO Info { get; set; }
+    public GamerInfo GamerInfo { get; set; }
 
-    public HutPlayerInstance(ServerPlayer serverPlayer, INFO info)
+    public HutPlayerInstance(ServerPlayer serverPlayer, GamerInfo gamerInfo)
     {
         ServerPlayer = serverPlayer;
-        Info = info;
+        GamerInfo = gamerInfo;
     }
 }
