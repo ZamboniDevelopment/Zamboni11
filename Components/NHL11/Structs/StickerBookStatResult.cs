@@ -3,18 +3,18 @@ using Tdf;
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct Stats
+public struct StickerBookStatResult
 {
     [TdfMember("CTTP")] 
-    public byte mCTTP;
+    public byte mContextTypeId;
     
     [TdfMember("CTVL")] 
-    public uint mCTVL;
+    public uint mContextValue;
     
     [TdfMember("TYPE")] 
-    public byte mTYPE;
+    public byte mTypeId;
     
     [TdfMember("VALU")] 
-    public uint mVALU;
+    public uint mValue;
     
 }

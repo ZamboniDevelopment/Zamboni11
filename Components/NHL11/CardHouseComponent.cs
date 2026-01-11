@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Blaze3SDK;
+using Blaze3SDK.Blaze.Example;
 using BlazeCommon;
 using Zamboni11.Components.NHL11.Bases;
 using Zamboni11.Components.NHL11.Requests;
@@ -12,14 +15,16 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 {
     public override Task<LoginResponse> LoginRequestAsync(LoginRequest request, BlazeRpcContext context)
     {
+        var hutPlayerInstance = HutManager.GetHutPlayerInstance(context.BlazeConnection);
+        if (hutPlayerInstance == null) return Task.FromResult(new LoginResponse());
         return Task.FromResult(new LoginResponse
         {
-            mTeamAbbreviation = "",
-            mBNUS = 0,
-            mTeamName = "",
-            mRWRD = 0,
-            mTNOW = 0,
-            mUID = 0
+            mTeamAbbreviation = hutPlayerInstance.GamerInfo.mTeamAbbreviation,
+            mBonusAwarded = 1, //TODO UNKNOWN
+            mTeamName = hutPlayerInstance.GamerInfo.mTeamName,
+            mRewardType = 0, //TODO UNKNOWN
+            mRewardValue = 10, //TODO UNKNOWN
+            mUserId = 0 //TODO USE 0 FOR NOW FOR EVERYONE BECAUSE CLIENT SEEMS TO NOT "KNOW" HIS UID
         });
     }
 
@@ -27,29 +32,43 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new NumericResponse
         {
-            mNUM = 1,
+            mNumber = 1, //TODO UNKNOWN VALUES
         });
     }
 
+    public override Task<MoveCardResponse> MoveCardAsync(MoveCardRequest request, BlazeRpcContext context)
+    {
+        return Task.FromResult(new MoveCardResponse
+        {
+        });
+    }
 
-    //
+    public override Task<GamerGetInfoResponse> GetGamerInfoRequestAsync(GamerGetInfoRequest request, BlazeRpcContext context)
+    {
+        var hutPlayerInstance = HutManager.GetHutPlayerInstance(context.BlazeConnection);
+        if (hutPlayerInstance == null) throw new BlazeRpcException(Blaze3RpcError.CARDHOUSE_ERR_NO_PLAYER_INFO);
+        return Task.FromResult(new GamerGetInfoResponse
+        {
+            mGamerInfo = hutPlayerInstance.GamerInfo,
+            mUserId = 0 //TODO USE 0 FOR NOW FOR EVERYONE BECAUSE CLIENT SEEMS TO NOT "KNOW" ITS UID
+        });
+    }
 
-    // public override Task<GamerGetInfoResponse> GetGamerInfoRequestAsync(GamerGetInfoRequest request, BlazeRpcContext context)
-    // {
-    //     HutPlayerInstance hutPlayerInstance = HutManager.HutPlayerInstances.Find(instance => instance.ServerPlayer.Equals(ServerManager.GetServerPlayer(context.Connection)));
-    //     if (hutPlayerInstance == null) throw new Exception();
-    //     return Task.FromResult(new GamerGetInfoResponse
-    //     {
-    //         MGamerInfo = hutPlayerInstance.GamerInfo,
-    //         mUID = 0
-    //     });
-    // }
     public override Task<NumericResponse> SetGamerInfoRequestAsync(GamerSetInfoRequest request, BlazeRpcContext context)
     {
-        HutManager.HutPlayerInstances.Add(new HutPlayerInstance(ServerManager.GetServerPlayer(context.BlazeConnection), request.mGamerInfo));
+        var hutPlayerInstance = HutManager.GetHutPlayerInstance(context.BlazeConnection);
+        if (hutPlayerInstance == null)
+        {
+            HutManager.AddHutPlayerInstance(new HutPlayerInstance(ServerManager.GetServerPlayer(context.BlazeConnection), request.mGamerInfo));
+        }
+        else
+        {
+            hutPlayerInstance.GamerInfo = request.mGamerInfo;
+        }
+
         return Task.FromResult(new NumericResponse
         {
-            mNUM = 1
+            mNumber = 1
         });
     }
 
@@ -66,27 +85,31 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             mEscrowCardDataList = new List<CardData>
             {
             },
-            mECNT = 1,
+            mEscrowCount = 1,
             mGeneralInfo = new GeneralInfo
             {
+                mCredits = 100, //TODO This is EA pucks
+                mStats = new List<byte>
+                {
+                    6, 7, 10, 30, 50, 60, 80
+                }
             },
-            mRATE = 3,
+            mTeamRating = 3,
             mUnassignedCardDataList = new List<CardData> //TODO These are the cards shown to the user.
             {
-                GetCards(10)
+                GetCard(29), GetCard(30), GetCard(35), GetCard(37), GetCard(76), GetCard(99), GetCard(158), GetArenaCard(1)
             },
-            mUID = 0,
-            mVersionInfo = GetVER()
+            mUserId = 0,
+            mVersionInfo = HutManager.GetHutPlayerInstance(context.BlazeConnection).GetVersionInfo()
         });
     }
 
-    public override Task<ConfigResponse> GetConfigRequestAsync(ProvidedUID request, BlazeRpcContext context)
+    public override Task<GetConfigResponse> GetConfigRequestAsync(ProvidedUID request, BlazeRpcContext context)
     {
-        return Task.FromResult(new ConfigResponse
+        return Task.FromResult(new GetConfigResponse
         {
-            mGCFL = new List<uint>
+            mConfigList = new List<uint>
             {
-                10
             }
         });
     }
@@ -107,28 +130,28 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         {
             mStaffBonusInfo = new StaffBonusInfo
             {
-                mARM = 1,
-                mBACK = 1,
-                mCON = 1,
-                mFIT = 1,
-                mFOOT = 1,
-                mGKD = 1,
-                mGKH = 1,
-                mGKK = 1,
-                mGKO = 1,
-                mGKP = 1,
-                mGKR = 1,
-                mHEAD = 1,
-                mHIP = 1,
-                mLEG = 1,
-                mPDEF = 1,
-                mPDR = 1,
-                mPHE = 1,
-                mPPAC = 1,
-                mPPAS = 1,
-                mPSH = 1,
-                mSHOU = 1,
-                mTALK = 1
+                mPhysioArmBonus = 11,
+                mPhysioBackBonus = 11,
+                mContractBonus = 11,
+                mFitnessBonus = 11,
+                mPhysioFootBonus = 11,
+                mGKDivingBonus = 11,
+                mGKHandlingBonus = 11,
+                mGKKickingBonus = 11,
+                mGKOneOnOneBonus = 11,
+                mGKPositioningBonus = 11,
+                mGKReflexesBonus = 11,
+                mPhysioHeadBonus = 11,
+                mPhysioHipBonus = 11,
+                mPhysioLegBonus = 11,
+                mDefendingBonus = 11,
+                mDribblingBonus = 1,
+                mHeadingBonus = 11,
+                mPaceBonus = 11,
+                mPassingBonus = 11,
+                mShootingBonus = 11,
+                mPhysioShoulderBonus = 11,
+                mManagerTalkBonus = 11
             }
         });
     }
@@ -137,7 +160,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new AssignCardsResponse
         {
-            mVersionInfo = GetVER()
+            mVersionInfo = HutManager.GetHutPlayerInstance(context.BlazeConnection).GetVersionInfo()
         });
     }
 
@@ -146,11 +169,11 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new UserReliabilityInfoResponse
         {
-            mDISC = 0,
-            mMFI = 0,
-            mMST = 0,
-            mREL = 0,
-            mUID = 0
+            mPreviousMatchUnfinished = 0,
+            mMatchesFinished = 0,
+            mMatchesStarted = 0,
+            mReliability = 0,
+            mUserId = 0
         });
     }
 
@@ -158,7 +181,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         return Task.FromResult(new NumericResponse
         {
-            mNUM = 1,
+            mNumber = 1,
         });
     }
 
@@ -187,90 +210,119 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         {
             mCardDataList = new List<CardData>
             {
-                GetCards(10),
             }
         });
     }
 
-    //
     public override Task<SquadSaveResponse> SquadSaveAsync(SquadSaveRequest request, BlazeRpcContext context)
     {
+        var hutPlayerInstance = HutManager.GetHutPlayerInstance(context.BlazeConnection);
+        if (hutPlayerInstance == null) throw new BlazeRpcException(Blaze3RpcError.CARDHOUSE_ERR_NO_PLAYER_INFO);
+        hutPlayerInstance.SquadInfo = new SquadInfo
+        {
+            mChemistry = request.mChemistry,
+            mFormationId = request.mFormation,
+            mLines = request.mLines,
+            mManager = HutManager.CardData[request.mManager],
+            mSquadName = request.mSquadName,
+            mPlayers = request.mPlayers.Select(variable => HutManager.CardData[variable]).ToList(),
+            mStarRating = request.mStarRating,
+            mSquadId = request.mSquadId
+        };
         return Task.FromResult(new SquadSaveResponse
         {
-            mSQID = request.mSQID
+            mSQID = request.mSquadId
         });
     }
-    
+
     public override Task<StickerBookStats2Response> StickerBookStats2Async(StickerBookStats2Request request, BlazeRpcContext context)
     {
         return Task.FromResult(new StickerBookStats2Response
         {
-            mStats = new List<Stats>
+            mStats = new List<StickerBookStatResult>
             {
-                new Stats
+                new StickerBookStatResult
                 {
-                    mCTTP = 2,
-                    mCTVL = 2,
-                    mTYPE = 2,
-                    mVALU = 2
-                }
+                    mContextTypeId = 0,
+                    mContextValue = 0,
+                    mTypeId = 0,
+                    mValue = 0
+                },
+                new StickerBookStatResult
+                {
+                    mContextTypeId = 2,
+                    mContextValue = 2,
+                    mTypeId = 2,
+                    mValue = 2
+                },
+                new StickerBookStatResult
+                {
+                    mContextTypeId = 3,
+                    mContextValue = 3,
+                    mTypeId = 3,
+                    mValue = 3
+                },
+                new StickerBookStatResult
+                {
+                    mContextTypeId = 4,
+                    mContextValue = 4,
+                    mTypeId = 4,
+                    mValue = 4
+                },
+                new StickerBookStatResult
+                {
+                    mContextTypeId = 5,
+                    mContextValue = 5,
+                    mTypeId = 5,
+                    mValue = 5
+                },
+                new StickerBookStatResult
+                {
+                    mContextTypeId = 6,
+                    mContextValue = 6,
+                    mTypeId = 6,
+                    mValue = 6
+                },
             }
         });
     }
-    //
-    // public override Task<ConfigResponse> GetConfigRequestAsync(ProvidedUID request, BlazeRpcContext context)
-    // {
-    //     return Task.FromResult(new ConfigResponse
-    //     {
-    //         mGCFL = new List<uint>
-    //         {
-    //             10
-    //         }
-    //     });
-    // }
-    //
 
-    //
     public override Task<StickerBookSearchResponse> StickerBookSearchAsync(StickerBookSearchRequest request, BlazeRpcContext context)
     {
+        var hut = HutManager.GetHutPlayerInstance(context.BlazeConnection);
         return Task.FromResult(new StickerBookSearchResponse
         {
             mSearchResults = new List<CardData>
             {
-                // GetCards(10),GetCards(20),GetCards(30)
+                GetCard(29), GetCard(30), GetCard(35), GetCard(37), GetCard(76), GetCard(99), GetCard(158), GetArenaCard(1)
             }
         });
     }
+
     //
-    // public override Task<SquadLoadActiveResponse> SquadLoadActiveAsync(SquadLoadActiveRequest request, BlazeRpcContext context)
-    // {
-    //     return Task.FromResult(new SquadLoadActiveResponse
-    //     {
-    //         mACTV = new List<Card>
-    //         {
-    //             GetCards(10)
-    //         },
-    //         mSquad = new Squad()
-    //         {
-    //             mCHEM = 1,
-    //             mCHNG = 1,
-    //             mFORM = 1,
-    //             mLINE = new List<uint>
-    //             {
-    //                 10
-    //             },
-    //             mMNGR = GetCards(1),
-    //             mNAME = "aaaaa",
-    //             mPLRS = new List<Card>
-    //             {
-    //                 GetCards(1)
-    //             },
-    //             mRTNG = 1,
-    //             mSQID = 0
-    //         },
-    //         mTUID = 0
-    //     });
-    // }
+    public override Task<SquadLoadActiveResponse> SquadLoadActiveAsync(SquadLoadActiveRequest request, BlazeRpcContext context)
+    {
+        return Task.FromResult(new SquadLoadActiveResponse
+        {
+            mActiveCards = new List<CardData>
+            {
+                GetCard(29), GetCard(30), GetCard(35), GetCard(37), GetCard(76), GetCard(99), GetCard(158), GetArenaCard(1)
+            },
+            mSquadInfo = new SquadInfo
+            {
+                mChemistry = 10,
+                mCHNG = 0,
+                mFormationId = 10,
+                mLines = null,
+                mManager = default,
+                mSquadName = null,
+                mPlayers = null,
+                mStarRating = 0,
+                mSquadId = 0
+            },
+            mTargetUserId = 0
+        });
+    }
     //
     //
 
@@ -285,36 +337,29 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         {
             mCardDataList = new List<CardData>
             {
-                GetCards(1)
+                GetCard(29)
             },
-    
+
             mDuplicateCardIdPairList = new List<CardIdPair>
             {
                 new CardIdPair
                 {
-                    mCID = 1,
-                    mDCID = 1
+                    mCardId = 1,
+                    mDuplicateCardId = 1
                 }
             },
-            mNUM = 1,
+            mNumCards = 1,
             mPCNT = 1,
             mPKTY = 1,
-            mVersionInfo = GetVER()
+            mVersionInfo = HutManager.GetHutPlayerInstance(context.BlazeConnection).GetVersionInfo()
         });
     }
-    
-    public static VersionInfo GetVER()
-    {
-        return new VersionInfo()
-        {
-            mVESC = 0,
-            mVGEN = 0,
-            mVUNA = 0
-        };
-    }
+
+    public static uint _syncCounter;
+
 
     //
-    public static CardData GetCards(uint val)
+    public static CardData GetCard(uint val)
     {
         return new CardData
         {
@@ -322,33 +367,80 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             {
                 51, 52, 53, 54, 55
             },
-            mCDST = 2,
-            mCID = 3,
+            mCardStateId = 1,
+            mCardId = val,
             mDatabaseId = val,
-            mFORM = 2,
-            mFREE = 1,
-            mFTNS = 2,
-            mINJG = 3,
-            mINJT = 2,
-            mMORL = 1,
-            mNumberOfOwners = 4,
-            mPOSI = 3,
-            mPRIC = 2,
-            mRARE = 1,
-            mRTNG = 2,
-            mSCAP = 4,
-            mSTAT = new List<byte>
+            mFormationId = 2,
+            mFREE = 0,
+            mFitness = 2,
+            mInjuryGames = 0,
+            mInjuryType = 0,
+            mMoral = 1,
+            mNumberOfOwners = 1,
+            mPreferredPositionId = 1,
+            mDiscardPrice = 2,
+            mRareFlag = 1,
+            mRating = 2,
+            mSalaryCap = 1,
+            mListStats = new List<byte>
             {
-                61, 62, 63, 64, 65
+                1, //Games Played 
+                62, //Goals 
+                63, //Assists 
+                64, //Plus/Minus
+                65, //Penalty Minutes
+                66,
+                67,
+                68,
+                69,
+                70
             },
-            mSUB = 2,
+            mCardSubTypeId = 1,
             mDateIssued = 1767011983,
-            mTMID = 1,
-            mTRNG = new List<byte>
+            mTeamId = 0,
+            mListTrainingCards = new List<byte>
             {
                 0, 72, 73, 74, 75, 78, 79, 255
             },
-            mContractLenght = 5
+            mUsesRemaining = 5
+        };
+    }
+
+    public static CardData GetArenaCard(uint val)
+    {
+        return new CardData
+        {
+            mAttributes = new List<byte>
+            {
+                1
+            },
+            mCardStateId = 3,
+            mCardId = 123,
+            mDatabaseId = 21,
+            mFormationId = 3,
+            mFREE = 3,
+            mFitness = 3,
+            // mInjuryGames = 1,
+            // mInjuryType = 1,
+            mMoral = 3,
+            mNumberOfOwners = 2,
+            mPreferredPositionId = 3,
+            mDiscardPrice = 3,
+            mRareFlag = 3,
+            mRating = 3,
+            mSalaryCap = 3,
+            mListStats = new List<byte>
+            {
+                3
+            },
+            mCardSubTypeId = 3,
+            mDateIssued = 3,
+            mTeamId = 3,
+            mListTrainingCards = new List<byte>
+            {
+                3
+            },
+            mUsesRemaining = 3
         };
     }
 }

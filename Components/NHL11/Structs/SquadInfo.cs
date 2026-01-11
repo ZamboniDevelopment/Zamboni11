@@ -13,7 +13,7 @@ public struct SquadInfo
     public uint mCHNG;
     
     [TdfMember("FORM")] 
-    public uint mFORM;
+    public uint mFormationId;
     
     [TdfMember("LINE")] 
     public List<uint> mLines;
@@ -22,13 +22,13 @@ public struct SquadInfo
     public CardData mManager; //Coach of the team?
     
     [TdfMember("NAME")] 
-    public string mName;
+    public string mSquadName;
 
     [TdfMember("PLRS")] 
     public List<CardData> mPlayers;
     
     [TdfMember("RTNG")] 
-    public uint mRating;
+    public uint mStarRating;
     
     [TdfMember("SQID")] 
     public uint mSquadId;

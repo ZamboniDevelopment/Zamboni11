@@ -8,9 +8,9 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct SquadListResponse
 {
     [TdfMember("ACTV")] 
-    public uint mACTV;
+    public uint mActiveSquad;
     
     [TdfMember("SQDS")] 
-    public List<SQDS> mSquads;
+    public List<SquadInfo> mSquads;
 
 }

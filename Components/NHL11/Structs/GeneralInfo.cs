@@ -7,8 +7,8 @@ namespace Zamboni11.Components.NHL11.Structs;
 public struct GeneralInfo
 {
     [TdfMember("CRED")] 
-    public uint mCRED;
+    public uint mCredits; //EA Pucks?
 
     [TdfMember("STAT")] 
-    public List<byte> mSTAT;
+    public List<byte> mStats;
 }

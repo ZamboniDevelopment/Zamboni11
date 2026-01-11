@@ -6,14 +6,14 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct LoginRequest
 {
     [TdfMember("CP")] 
-    public uint mCP;
+    public uint mCreatePlayer;
 
     [TdfMember("PERS")] 
     public string mPersona;
 
     [TdfMember("PUR")] 
-    public uint mPUR;
+    public uint mPurchased;
 
     [TdfMember("UID")] 
-    public ulong mUID;
+    public ulong mUserId;
 }

@@ -10,5 +10,5 @@ public struct ViewCardsRequest
     public List<long> mCardIdList;
 
     [TdfMember("UID")] 
-    public long mUID;
+    public ulong mUserId;
 }

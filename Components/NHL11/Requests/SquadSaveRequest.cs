@@ -8,29 +8,29 @@ public struct SquadSaveRequest
 {
     
     [TdfMember("CHEM")] 
-    public uint mCHEM;
+    public uint mChemistry;
     
     [TdfMember("FORM")] 
-    public uint mFORM;
+    public uint mFormation;
     
     [TdfMember("LINE")] 
-    public List<uint> mLINE;
+    public List<uint> mLines;
     
     [TdfMember("MNGR")] 
-    public long mMNGR;
+    public ulong mManager;
     
     [TdfMember("NAME")] 
-    public string mNAME;
+    public string mSquadName;
     
     [TdfMember("PLRS")] 
-    public List<long> mPLRS;
+    public List<ulong> mPlayers;
     
     [TdfMember("RTNG")] 
-    public uint mRTNG;
+    public uint mStarRating;
     
     [TdfMember("SQID")] 
-    public uint mSQID;
+    public uint mSquadId;
     
     [TdfMember("UID")] 
-    public long mUID;
+    public long mUserId;
 }

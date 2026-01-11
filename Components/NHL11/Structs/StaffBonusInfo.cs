@@ -6,68 +6,68 @@ namespace Zamboni11.Components.NHL11.Structs;
 public struct StaffBonusInfo
 {
     [TdfMember("ARM")] 
-    public byte mARM;
+    public byte mPhysioArmBonus;
 
     [TdfMember("BACK")] 
-    public byte mBACK;
+    public byte mPhysioBackBonus;
 
     [TdfMember("CON")] 
-    public byte mCON;
+    public byte mContractBonus;
     
     [TdfMember("FIT")] 
-    public byte mFIT;
+    public byte mFitnessBonus;
 
     [TdfMember("FOOT")] 
-    public byte mFOOT;
+    public byte mPhysioFootBonus;
 
     [TdfMember("GKD")] 
-    public byte mGKD;
+    public byte mGKDivingBonus;
     
     [TdfMember("GKH")] 
-    public byte mGKH;
+    public byte mGKHandlingBonus;
     
     [TdfMember("GKK")] 
-    public byte mGKK;
+    public byte mGKKickingBonus;
 
     [TdfMember("GKO")] 
-    public byte mGKO;
+    public byte mGKOneOnOneBonus;
 
     [TdfMember("GKP")] 
-    public byte mGKP;
+    public byte mGKPositioningBonus;
     
     [TdfMember("GKR")] 
-    public byte mGKR;
+    public byte mGKReflexesBonus;
 
     [TdfMember("HEAD")] 
-    public byte mHEAD;
+    public byte mPhysioHeadBonus;
 
     [TdfMember("HIP")] 
-    public byte mHIP;
+    public byte mPhysioHipBonus;
     
     [TdfMember("LEG")] 
-    public byte mLEG;
+    public byte mPhysioLegBonus;
 
     [TdfMember("PDEF")] 
-    public byte mPDEF;
+    public byte mDefendingBonus;
 
     [TdfMember("PDR")] 
-    public byte mPDR;
+    public byte mDribblingBonus;
     
     [TdfMember("PHE")] 
-    public byte mPHE;
+    public byte mHeadingBonus;
     
     [TdfMember("PPAC")] 
-    public byte mPPAC;
+    public byte mPaceBonus;
 
     [TdfMember("PPAS")] 
-    public byte mPPAS;
+    public byte mPassingBonus;
 
     [TdfMember("PSH")] 
-    public byte mPSH;
+    public byte mShootingBonus;
     
     [TdfMember("SHOU")] 
-    public byte mSHOU;
+    public byte mPhysioShoulderBonus;
 
     [TdfMember("TALK")] 
-    public byte mTALK;
+    public byte mManagerTalkBonus;
 }

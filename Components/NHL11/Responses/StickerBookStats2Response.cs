@@ -8,6 +8,6 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct StickerBookStats2Response
 {
     [TdfMember("STAT")] 
-    public List<Stats> mStats;
+    public List<StickerBookStatResult> mStats;
 
 }

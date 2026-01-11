@@ -10,66 +10,66 @@ public struct CardData
     public List<byte> mAttributes;
 
     [TdfMember("CDST")] 
-    public byte mCDST;
+    public byte mCardStateId;
     
     [TdfMember("CID")] 
-    public long mCID;
+    public ulong mCardId;
     
     [TdfMember("DBID")] 
     public uint mDatabaseId; //The players databaseId, (Refer nhlng.db file and nhlviewng program)
     
     [TdfMember("FORM")] 
-    public byte mFORM;
+    public byte mFormationId;
 
     [TdfMember("FREE")] 
     public byte mFREE;
     
     [TdfMember("FTNS")] 
-    public byte mFTNS;
+    public byte mFitness;
 
     [TdfMember("INJG")] 
-    public byte mINJG;
+    public byte mInjuryGames;
 
     [TdfMember("INJT")] 
-    public byte mINJT;
+    public byte mInjuryType;
     
     [TdfMember("MORL")] 
-    public byte mMORL;
+    public byte mMoral;
     
     [TdfMember("OWNR")] 
     public byte mNumberOfOwners;
 
     [TdfMember("POSI")] 
-    public byte mPOSI;
+    public byte mPreferredPositionId;
     
     [TdfMember("PRIC")] 
-    public byte mPRIC;
+    public byte mDiscardPrice;
     
     [TdfMember("RARE")] 
-    public byte mRARE;
+    public byte mRareFlag;
 
     [TdfMember("RTNG")] 
-    public byte mRTNG;
+    public byte mRating;
     
     [TdfMember("SCAP")] 
-    public short mSCAP;
+    public short mSalaryCap;
     
     [TdfMember("STAT")] 
-    public List<byte> mSTAT;
+    public List<byte> mListStats;
     
     [TdfMember("SUB")] 
-    public short mSUB;
+    public short mCardSubTypeId;
     
     [TdfMember("TIME")] 
     public uint mDateIssued;
     
     [TdfMember("TMID")] 
-    public uint mTMID;
+    public uint mTeamId;
     
     [TdfMember("TRNG")] 
-    public List<byte> mTRNG;
+    public List<byte> mListTrainingCards;
     
     [TdfMember("USRE")] 
-    public byte mContractLenght;
+    public byte mUsesRemaining;
 
 }

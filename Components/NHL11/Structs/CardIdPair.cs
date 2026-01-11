@@ -8,8 +8,8 @@ namespace Zamboni11.Components.NHL11.Structs;
 public struct CardIdPair
 {
     [TdfMember("CID")] 
-    public long mCID;
+    public long mCardId;
 
     [TdfMember("DCID")] 
-    public long mDCID;
+    public long mDuplicateCardId;
 }

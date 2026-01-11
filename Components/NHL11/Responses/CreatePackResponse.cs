@@ -14,7 +14,7 @@ public struct CreatePackResponse
     public List<CardIdPair> mDuplicateCardIdPairList;
     
     [TdfMember("NUM")] 
-    public uint mNUM;
+    public uint mNumCards;
     
     [TdfMember("PCNT")] 
     public long mPCNT;

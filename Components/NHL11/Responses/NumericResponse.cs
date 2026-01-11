@@ -10,6 +10,6 @@ public struct NumericResponse
 {
     
     [TdfMember("NUM")] 
-    public uint mNUM;
+    public uint mNumber;
     
 }

@@ -6,15 +6,15 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct StickerBookStats2Request
 {
     [TdfMember("CONT")] 
-    public byte mCONT;
+    public byte mContextId;
 
     [TdfMember("UID")] 
-    public long mUID;
+    public long mUserId;
     
     [TdfMember("VALU")] 
-    public uint mVALU;
+    public uint mValue;
     
     [TdfMember("YEAR")] 
-    public byte mYEAR;
+    public byte mYearId;
     
 }

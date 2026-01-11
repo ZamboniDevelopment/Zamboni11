@@ -7,7 +7,7 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct DiscardCardResponse
 {
     [TdfMember("CRED")] 
-    public uint mCRED;
+    public uint mCredits;
 
     [TdfMember("VER")] 
     public VersionInfo mVersionInfo;

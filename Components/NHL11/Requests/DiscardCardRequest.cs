@@ -7,12 +7,12 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct DiscardCardRequest
 {
     [TdfMember("CID")] 
-    public long mCID;
+    public long mCardId;
 
     [TdfMember("CRED")] 
-    public uint mCRED;
+    public uint mCredits;
     
     [TdfMember("UID")] 
-    public long mUID;
+    public long mUserId;
     
 }

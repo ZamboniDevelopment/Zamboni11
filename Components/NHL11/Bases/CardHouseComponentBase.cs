@@ -20,6 +20,7 @@ public static class CardHouseComponentBase
         getConfig = 106,
         resetUser = 108,
         getDeckInfo = 301,
+        moveCard = 304,
         assignCards = 307,
         createPack = 401,
         viewCards = 402,
@@ -51,6 +52,7 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.getConfig => typeof(ProvidedUID),
             CardHouseComponentCommand.resetUser => typeof(ProvidedUID),
             CardHouseComponentCommand.getDeckInfo => typeof(DeckInfoRequest),
+            CardHouseComponentCommand.moveCard => typeof(MoveCardRequest),
             CardHouseComponentCommand.assignCards => typeof(AssignCardsRequest),
             CardHouseComponentCommand.createPack => typeof(CreatePackRequest),
             CardHouseComponentCommand.viewCards => typeof(ViewCardsRequest),
@@ -74,8 +76,9 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.logout => typeof(NumericResponse),
             CardHouseComponentCommand.gamerSetInfo => typeof(NumericResponse),
             CardHouseComponentCommand.gamerGetInfo => typeof(GamerGetInfoResponse),
-            CardHouseComponentCommand.getConfig => typeof(ConfigResponse),
+            CardHouseComponentCommand.getConfig => typeof(GetConfigResponse),
             CardHouseComponentCommand.getDeckInfo => typeof(DeckInfoResponse),
+            CardHouseComponentCommand.moveCard => typeof(MoveCardResponse),
             CardHouseComponentCommand.assignCards => typeof(AssignCardsResponse),
             CardHouseComponentCommand.createPack => typeof(CreatePackResponse),
             CardHouseComponentCommand.viewCards => typeof(ViewCardsResponse),
@@ -145,7 +148,7 @@ public static class CardHouseComponentBase
         }
 
         [BlazeCommand((ushort)CardHouseComponentCommand.getConfig)]
-        public virtual Task<ConfigResponse> GetConfigRequestAsync(ProvidedUID request, BlazeRpcContext context)
+        public virtual Task<GetConfigResponse> GetConfigRequestAsync(ProvidedUID request, BlazeRpcContext context)
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
@@ -170,6 +173,13 @@ public static class CardHouseComponentBase
         
         [BlazeCommand((ushort)CardHouseComponentCommand.assignCards)]
         public virtual Task<AssignCardsResponse> AssignCardsAsync(AssignCardsRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+                
+        [BlazeCommand((ushort)CardHouseComponentCommand.moveCard)]
+        public virtual Task<MoveCardResponse> MoveCardAsync(MoveCardRequest request, BlazeRpcContext context)
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
@@ -307,14 +317,24 @@ public static class CardHouseComponentBase
             return Connection.SendRequestAsync<ProvidedUID, NumericResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.resetUser, request);
         }
         
-        public ConfigResponse GetConfigRequest(ProvidedUID request)
+        public MoveCardResponse MoveCardRequest(MoveCardRequest request)
         {
-            return Connection.SendRequest<ProvidedUID, ConfigResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.getConfig, request);
+            return Connection.SendRequest<MoveCardRequest, MoveCardResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.moveCard, request);
         }
 
-        public Task<ConfigResponse> GetConfigRequestAsync(ProvidedUID request)
+        public Task<MoveCardResponse> MoveCardRequestAsync(MoveCardRequest request)
         {
-            return Connection.SendRequestAsync<ProvidedUID, ConfigResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.getConfig, request);
+            return Connection.SendRequestAsync<MoveCardRequest, MoveCardResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.moveCard, request);
+        }
+        
+        public GetConfigResponse GetConfigRequest(ProvidedUID request)
+        {
+            return Connection.SendRequest<ProvidedUID, GetConfigResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.getConfig, request);
+        }
+
+        public Task<GetConfigResponse> GetConfigRequestAsync(ProvidedUID request)
+        {
+            return Connection.SendRequestAsync<ProvidedUID, GetConfigResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.getConfig, request);
         }
         
         public AssignCardsResponse AssignCardsRequest(AssignCardsRequest request)

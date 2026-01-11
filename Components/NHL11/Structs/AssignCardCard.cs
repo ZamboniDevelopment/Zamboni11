@@ -3,18 +3,18 @@ using Tdf;
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct AssignCardsRequestsList
+public struct AssignCardCard
 {
     [TdfMember("CID")] 
-    public long mCID;
+    public long mCardId;
 
     [TdfMember("CSTT")] 
-    public byte mCSTT;
+    public byte mCardState;
     
     [TdfMember("DPOS")] 
-    public uint mDPOS;
+    public uint mDeckPos;
     
     [TdfMember("DTYP")] 
-    public uint mDTYP;
+    public uint mDeckType;
     
 }

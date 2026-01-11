@@ -6,9 +6,9 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct GamerGetInfoRequest
 {
     [TdfMember("TUID")] 
-    public long mCP;
+    public long mTargetUserId;
 
     [TdfMember("UID")] 
-    public long mPersona;
+    public long mUserId;
     
 }

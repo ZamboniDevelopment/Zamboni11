@@ -6,18 +6,18 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct UserReliabilityInfoResponse
 {
     [TdfMember("DISC")] 
-    public byte mDISC;
+    public byte mPreviousMatchUnfinished;
     
     [TdfMember("MFI")] 
-    public uint mMFI;
+    public uint mMatchesFinished;
     
     [TdfMember("MST")] 
-    public uint mMST;
+    public uint mMatchesStarted;
     
     [TdfMember("REL")] 
-    public uint mREL;
+    public uint mReliability;
     
     [TdfMember("UID")] 
-    public long mUID;
+    public ulong mUserId;
 
 }

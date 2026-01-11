@@ -14,6 +14,6 @@ public struct SquadLoadActiveResponse
     public SquadInfo mSquadInfo;
     
     [TdfMember("TUID")] 
-    public long mTUID;
+    public long mTargetUserId;
 
 }

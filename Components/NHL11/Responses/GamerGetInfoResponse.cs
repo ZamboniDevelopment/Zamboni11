@@ -10,6 +10,6 @@ public struct GamerGetInfoResponse
     public GamerInfo mGamerInfo;
 
     [TdfMember("UID")] 
-    public long mUID;
+    public long mUserId;
     
 }

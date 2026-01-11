@@ -7,42 +7,42 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct StickerBookSearchRequest
 {
     [TdfMember("COLL")] 
-    public byte mCOLL;
+    public byte mCollectionYearId;
 
     [TdfMember("COUN")] 
-    public int mCOUN;
+    public uint mCountryId;
     
     [TdfMember("CTYP")] 
-    public CollectionSearchType mCollectionSearchType;
+    public CollectionSearchType mCollectionSearchCardType;
     
     [TdfMember("FORM")] 
-    public int mFORM;
+    public uint mFormation;
     
     [TdfMember("LEAG")] 
-    public int mLEAG;
+    public uint mLeagueId;
     
     [TdfMember("LEV")] 
     public CardLevel mCardLevel;
     
     [TdfMember("NAT")] 
-    public int mNAT;
+    public uint mNation;
     
     [TdfMember("NUMR")] 
-    public int mNUMR;
+    public int mNumRetreive;
     
     [TdfMember("POS")] 
-    public int mPOS;
+    public uint mPosition;
     
     [TdfMember("STAT")] 
     public CardState mCardState;
     
     [TdfMember("STRT")] 
-    public int mSTRT;
+    public int mStart;
     
     [TdfMember("TEAM")] 
-    public int mTEAM;
+    public uint mTeamId;
     
     [TdfMember("UID")] 
-    public long mUID;
+    public long mUserId;
 
 }

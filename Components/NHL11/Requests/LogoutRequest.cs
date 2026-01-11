@@ -6,9 +6,9 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct LogoutRequest
 {
     [TdfMember("DU")] 
-    public uint mDU;
+    public uint mDiscardUnassigned;
 
     [TdfMember("UID")] 
-    public long mUID;
+    public long mUserId;
     
 }

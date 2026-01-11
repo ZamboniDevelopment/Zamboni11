@@ -6,12 +6,12 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct CreatePackRequest
 {
     [TdfMember("DCID")] 
-    public uint mDCID;
+    public uint mCardDbId;
 
     [TdfMember("PTYP")] 
-    public uint mPTYP;
+    public uint mPackType;
     
     [TdfMember("UID")] 
-    public uint mUID;
+    public uint mUserId;
     
 }

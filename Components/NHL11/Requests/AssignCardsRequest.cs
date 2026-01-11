@@ -8,7 +8,7 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct AssignCardsRequest
 {
     [TdfMember("LIST")] 
-    public List<AssignCardsRequestsList> mLIST;
+    public List<AssignCardCard> mList;
     
     [TdfMember("UID")] 
     public long mUID;

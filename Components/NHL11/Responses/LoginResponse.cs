@@ -9,17 +9,17 @@ public struct LoginResponse
     public string mTeamAbbreviation;
 
     [TdfMember("BNUS")] 
-    public byte mBNUS;
+    public byte mBonusAwarded;
 
     [TdfMember("NAME")] 
     public string mTeamName;
 
     [TdfMember("RWRD")] 
-    public byte mRWRD;
+    public byte mRewardType;
     
     [TdfMember("TNOW")] 
-    public uint mTNOW;
+    public uint mRewardValue;
     
     [TdfMember("UID")] 
-    public long mUID;
+    public long mUserId;
 }

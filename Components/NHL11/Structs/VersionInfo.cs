@@ -6,11 +6,11 @@ namespace Zamboni11.Components.NHL11.Structs;
 public struct VersionInfo
 {
     [TdfMember("VESC")] 
-    public uint mVESC;
+    public uint mVersionEscrow;
 
     [TdfMember("VGEN")] 
-    public uint mVGEN;
+    public uint mVersionGeneral;
     
     [TdfMember("VUNA")] 
-    public uint mVUNA;
+    public uint mVersionUnassigned;
 }

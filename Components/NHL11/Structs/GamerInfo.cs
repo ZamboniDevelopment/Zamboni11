@@ -6,44 +6,44 @@ namespace Zamboni11.Components.NHL11.Structs;
 public struct GamerInfo
 {
     [TdfMember("CTAC")] 
-    public string mCTAC;
+    public string mCustomTactics;
 
     [TdfMember("FORM")] 
-    public uint mFORM;
+    public uint mTeamFormation;
 
     [TdfMember("KTAK")] 
-    public string mKTAK;
+    public string mKickTakers;
 
     [TdfMember("LINE")] 
-    public string mLINE;
+    public string mLineup;
 
     [TdfMember("LOGU")] 
-    public string mLOGU;
+    public string mLogoUrl;
 
     [TdfMember("NAME")] 
     public string mTeamName;
 
     [TdfMember("PLYQ")] 
-    public uint mPLYQ;
+    public uint mPlayOffsQualified;
 
     [TdfMember("PLYW")] 
-    public uint mPLYW;
+    public uint mPlayoffWon;
 
     [TdfMember("QTAC")] 
-    public string mQTAC;
+    public string mQuickTactics;
 
     [TdfMember("SPBT")] 
-    public uint mSPBT;
+    public uint mSpecialPacksBought;
 
     [TdfMember("TMAB")] 
     public string mTeamAbbreviation;
 
     [TdfMember("TOUR")] 
-    public string mTOUR;
+    public string mTournaments;
 
     [TdfMember("TPPL")] 
     public uint mTPPL;
 
     [TdfMember("TROP")] 
-    public string mTROP;
+    public string mTrophies;
 }

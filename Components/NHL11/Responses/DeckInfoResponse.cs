@@ -17,19 +17,19 @@ public struct DeckInfoResponse
     public List<CardData> mEscrowCardDataList;
     
     [TdfMember("ECNT")] 
-    public byte mECNT;
+    public byte mEscrowCount;
     
     [TdfMember("GEN")] 
     public GeneralInfo mGeneralInfo;
     
     [TdfMember("RATE")] 
-    public uint mRATE;
+    public uint mTeamRating;
     
     [TdfMember("UCDL")] 
     public List<CardData> mUnassignedCardDataList;
     
     [TdfMember("UID")] 
-    public long mUID;
+    public ulong mUserId;
     
     [TdfMember("VER")] 
     public VersionInfo mVersionInfo;

@@ -7,9 +7,9 @@ public struct SquadLoadActiveRequest
 {
     
     [TdfMember("TUID")] 
-    public long mTUID;
+    public long mTargetUserId;
     
     [TdfMember("UID")] 
-    public long mUID;
+    public long mUserId;
     
 }
