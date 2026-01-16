@@ -58,7 +58,7 @@ public struct CardData
     public List<byte> mListStats;
     
     [TdfMember("SUB")] 
-    public short mCardSubTypeId;
+    public CardType mCardTypeId;
     
     [TdfMember("TIME")] 
     public uint mDateIssued;

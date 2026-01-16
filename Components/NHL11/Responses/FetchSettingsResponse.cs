@@ -12,6 +12,6 @@ public struct FetchSettingsResponse
     public List<SettingInteger> mIntegerSettingList;
 
     [TdfMember("LSST")] 
-    public List<SettingsString> mStringSettingList;
+    public List<SettingString> mStringSettingList;
     
 }

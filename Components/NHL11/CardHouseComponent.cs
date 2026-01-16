@@ -97,7 +97,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             mTeamRating = 3,
             mUnassignedCardDataList = new List<CardData> //TODO These are the cards shown to the user.
             {
-                GetCard(29), GetCard(30), GetCard(35), GetCard(37), GetCard(76), GetCard(99), GetCard(158), GetArenaCard(1)
+                GetCard(29), GetCard(30), GetCard(35), GetCard(37), GetCard(76), GetCard(99), GetCard(158), GetStadiumCard(1)
             },
             mUserId = 0,
             mVersionInfo = HutManager.GetHutPlayerInstance(context.BlazeConnection).GetVersionInfo()
@@ -283,6 +283,20 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
                     mTypeId = 6,
                     mValue = 6
                 },
+                new StickerBookStatResult
+                {
+                    mContextTypeId = 6,
+                    mContextValue = 6,
+                    mTypeId = 6,
+                    mValue = 6
+                },
+                new StickerBookStatResult
+                {
+                    mContextTypeId = 2,
+                    mContextValue = 2,
+                    mTypeId = 2,
+                    mValue = 2
+                },
             }
         });
     }
@@ -294,35 +308,35 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         {
             mSearchResults = new List<CardData>
             {
-                GetCard(29), GetCard(30), GetCard(35), GetCard(37), GetCard(76), GetCard(99), GetCard(158), GetArenaCard(1)
+                GetCard(29), GetCard(30), GetCard(35), GetCard(37), GetCard(76), GetCard(99), GetCard(158), GetStadiumCard(1)
             }
         });
     }
 
     //
-    public override Task<SquadLoadActiveResponse> SquadLoadActiveAsync(SquadLoadActiveRequest request, BlazeRpcContext context)
-    {
-        return Task.FromResult(new SquadLoadActiveResponse
-        {
-            mActiveCards = new List<CardData>
-            {
-                GetCard(29), GetCard(30), GetCard(35), GetCard(37), GetCard(76), GetCard(99), GetCard(158), GetArenaCard(1)
-            },
-            mSquadInfo = new SquadInfo
-            {
-                mChemistry = 10,
-                mCHNG = 0,
-                mFormationId = 10,
-                mLines = null,
-                mManager = default,
-                mSquadName = null,
-                mPlayers = null,
-                mStarRating = 0,
-                mSquadId = 0
-            },
-            mTargetUserId = 0
-        });
-    }
+    // public override Task<SquadLoadActiveResponse> SquadLoadActiveAsync(SquadLoadActiveRequest request, BlazeRpcContext context)
+    // {
+    //     return Task.FromResult(new SquadLoadActiveResponse
+    //     {
+    //         mActiveCards = new List<CardData>
+    //         {
+    //             GetCard(29), GetCard(30), GetCard(35), GetCard(37), GetCard(76), GetCard(99), GetCard(158), GetArenaCard(1)
+    //         },
+    //         mSquadInfo = new SquadInfo
+    //         {
+    //             mChemistry = 10,
+    //             mCHNG = 0,
+    //             mFormationId = 10,
+    //             mLines = null,
+    //             mManager = default,
+    //             mSquadName = null,
+    //             mPlayers = null,
+    //             mStarRating = 0,
+    //             mSquadId = 0
+    //         },
+    //         mTargetUserId = 0
+    //     });
+    // }
     //
     //
 
@@ -395,7 +409,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
                 69,
                 70
             },
-            mCardSubTypeId = 1,
+            mCardTypeId = CardType.PLAYER,
             mDateIssued = 1767011983,
             mTeamId = 0,
             mListTrainingCards = new List<byte>
@@ -406,41 +420,41 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         };
     }
 
-    public static CardData GetArenaCard(uint val)
+    public static CardData GetStadiumCard(uint val)
     {
         return new CardData
         {
             mAttributes = new List<byte>
             {
-                1
+                1,2,3,4,5,6,7,8,9,10
             },
-            mCardStateId = 3,
-            mCardId = 123,
-            mDatabaseId = 21,
-            mFormationId = 3,
-            mFREE = 3,
-            mFitness = 3,
-            // mInjuryGames = 1,
-            // mInjuryType = 1,
-            mMoral = 3,
-            mNumberOfOwners = 2,
-            mPreferredPositionId = 3,
-            mDiscardPrice = 3,
-            mRareFlag = 3,
-            mRating = 3,
-            mSalaryCap = 3,
+            mCardStateId = 0,
+            mCardId = 100,
+            mDatabaseId = 10,
+            mFormationId = 1,
+            mFREE = 1,
+            mFitness = 1,
+            mInjuryGames = 1,
+            mInjuryType = 1,
+            mMoral = 1,
+            mNumberOfOwners = 1,
+            mPreferredPositionId = 1,
+            mDiscardPrice = 1,
+            mRareFlag = 1,
+            mRating = 1,
+            mSalaryCap = 1,
             mListStats = new List<byte>
             {
-                3
+                1,2,3,4,5,6,7,8,9,10
             },
-            mCardSubTypeId = 3,
-            mDateIssued = 3,
-            mTeamId = 3,
+            mCardTypeId = CardType.HEAD_MANAGER,
+            mDateIssued = 1,
+            mTeamId = 1,
             mListTrainingCards = new List<byte>
             {
-                3
+                1,2,3,4,5,6,7,8,9,10
             },
-            mUsesRemaining = 3
+            mUsesRemaining = 1
         };
     }
 }
