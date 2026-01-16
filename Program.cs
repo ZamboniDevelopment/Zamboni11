@@ -19,7 +19,7 @@ namespace Zamboni11;
 
 internal class Program
 {
-    public const string Name = "Zamboni11 2.0.1";
+    public const string Name = "NHL 11";
     public const int RedirectorPort = 42127;
 
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
