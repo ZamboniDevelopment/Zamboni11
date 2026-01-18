@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blaze3SDK;
-using Blaze3SDK.Blaze.Example;
 using BlazeCommon;
 using Zamboni11.Components.NHL11.Bases;
 using Zamboni11.Components.NHL11.Requests;
@@ -312,7 +311,21 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             }
         });
     }
-
+    // public override Task<ISWatchListResponse> ISWatchListAsync(ISWatchListRequest request, BlazeRpcContext context)
+    // {
+    //     throw new BlazeRpcException(Blaze3RpcError.CARDHOUSE_ERR_UNKNOWN);
+    // }
+    //
+    // public override Task<ISViewTradeResponse> ISViewTradeAsync(ISViewTradeRequest request, BlazeRpcContext context)
+    // {
+    //     throw new BlazeRpcException(Blaze3RpcError.CARDHOUSE_ERR_UNKNOWN);
+    // }
+    
+    public override Task<ISRemoveWatchResponse> ISRemoveWatchAsync(ISRemoveWatchRequest request, BlazeRpcContext context)
+    {
+        throw new BlazeRpcException(Blaze3RpcError.CARDHOUSE_ERR_UNKNOWN);
+    }
+    
     //
     // public override Task<SquadLoadActiveResponse> SquadLoadActiveAsync(SquadLoadActiveRequest request, BlazeRpcContext context)
     // {
@@ -337,14 +350,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     //         mTargetUserId = 0
     //     });
     // }
-    //
-    //
 
-    //
-
-    //
-
-    //
     public override Task<CreatePackResponse> CreatePackAsync(CreatePackRequest request, BlazeRpcContext context)
     {
         return Task.FromResult(new CreatePackResponse
@@ -426,11 +432,11 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         {
             mAttributes = new List<byte>
             {
-                1,2,3,4,5,6,7,8,9,10
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10
             },
-            mCardStateId = 0,
-            mCardId = 100,
-            mDatabaseId = 10,
+            mCardStateId = 1,
+            mCardId = 1001,
+            mDatabaseId = 1011,
             mFormationId = 1,
             mFREE = 1,
             mFitness = 1,
@@ -445,14 +451,14 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             mSalaryCap = 1,
             mListStats = new List<byte>
             {
-                1,2,3,4,5,6,7,8,9,10
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10
             },
-            mCardTypeId = CardType.HEAD_MANAGER,
+            mCardTypeId = (CardType)13,
             mDateIssued = 1,
             mTeamId = 1,
             mListTrainingCards = new List<byte>
             {
-                1,2,3,4,5,6,7,8,9,10
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10
             },
             mUsesRemaining = 1
         };

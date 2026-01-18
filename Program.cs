@@ -123,10 +123,7 @@ internal class Program
 
 
         //2250 NHL SPECIFIC COMPONENT
-        // core.AddComponent<OsdkDynamicMessagingComponent>(); 
-        //We are intentionally not creating this component. I haven't yet found a MessageResponse
-        //that doesn't crash the client. The TDF Tags and Types should be all correct.
-        //The client can live without this
+        core.AddComponent<OsdkDynamicMessagingComponent>(); 
 
         //2249 NHL SPECIFIC COMPONENT
         core.AddComponent<OSDKSettingsComponent>();

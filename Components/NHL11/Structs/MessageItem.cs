@@ -4,29 +4,29 @@ using Tdf;
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct MSGS
+public struct MessageItem
 {
     [TdfMember("DATA")] 
-    public string mData;
+    public string mLinkData;
 
     [TdfMember("FMAT")]
     public DynamicMessageFormat mFormat;
 
     [TdfMember("HINT")] 
-    public string mHint;
+    public string mLinkHint;
 
     [TdfMember("IMGS")] 
-    public List<DATADURN> mImages;
+    public List<MessagePart> mImages;
 
     [TdfMember("MUID")]
-    public int mMessageUid;
+    public int mMessageId;
 
     [TdfMember("TEXT")] 
-    public List<DATADURN> mText;
+    public List<MessagePart> mText;
 
     [TdfMember("TITL")]
     public string mTitle;
 
     [TdfMember("TYPE")] 
-    public DynamicMessageType MDynamicMessageType;
+    public DynamicMessageType mLinkType;
 }

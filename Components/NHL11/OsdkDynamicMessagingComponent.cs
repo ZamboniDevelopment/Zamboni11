@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Blaze3SDK.Blaze.Example;
 using BlazeCommon;
 using Zamboni11.Components.NHL11.Bases;
 using Zamboni11.Components.NHL11.Requests;
@@ -11,43 +10,40 @@ namespace Zamboni11.Components.NHL11;
 
 internal class OsdkDynamicMessagingComponent : OsdkDynamicMessagingComponentBase.Server
 {
-    public override Task<ExampleResponse> GetConfigAsync(NullStruct request, BlazeRpcContext context)
+    public override Task<DynamicConfigResponse> GetConfigAsync(NullStruct request, BlazeRpcContext context)
     {
-        return Task.FromResult(new ExampleResponse
+        return Task.FromResult(new DynamicConfigResponse
         {
-            //    CDRD = 0 (0x0000)
-            // CERD = 0 (0x0000)
-            // CMDI = 0 (0x0000)
-            // CMMC = 0 (0x0000)
-            //JNE
-            mMessage = "null"
+            mDataRequestDelay = 10,
+            mErrorRetryDelay = 10,
+            mMessageDelayInterval = 10,
+            mMaximumMessageCount = 10
         });
     }
 
     public override Task<MessageResponse> GetMessagesAsync(MessageRequest request, BlazeRpcContext context)
     {
-        // throw new Exception();
         return Task.FromResult(new MessageResponse
         {
             mDynamicMessageEnum = DynamicMessageEnum.DYNAMICMESSAGE_ENUM_SUCCESS,
-            mMessagesList = new List<MSGS>
+            mMessagesList = new List<MessageItem>
             {
-                new()
+                new MessageItem
                 {
-                    mData = "This might be some proprietary ea format. Strings just crash",
+                    mLinkData = "Sampletext A",
                     mFormat = DynamicMessageFormat.DYNAMICMESSAGE_FORMAT_PLAINTEXT,
-                    mHint = "loadingScreen",
-                    mMessageUid = 0,
-                    mText = new List<DATADURN>
+                    mLinkHint = "Sampletext B",
+                    mMessageId = 1,
+                    mText = new List<MessagePart>
                     {
-                        new()
+                        new MessagePart
                         {
-                            mData = "This might be some proprietary ea format. Strings just crash",
-                            mDurn = 10
+                            mData = "Sampletext C",
+                            mDuration = 100
                         }
                     },
-                    mTitle = "NHL11",
-                    MDynamicMessageType = DynamicMessageType.DYNAMICMESSAGE_TYPE_MATCHMAKING
+                    mTitle = "Sampletext D",
+                    mLinkType = DynamicMessageType.DYNAMICMESSAGE_TYPE_MARKETPLACE
                 }
             }
         });

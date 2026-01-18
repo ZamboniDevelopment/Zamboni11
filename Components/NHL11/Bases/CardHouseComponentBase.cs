@@ -26,11 +26,14 @@ public static class CardHouseComponentBase
         viewCards = 402,
         discardCard = 403,
         getStaffBonus = 408,
+        ISViewTrade = 703,
         squadSave = 708,
         getSquadList = 709,
         squadLoadActive = 711,
         stickerBookStats2 = 800,
         stickerBookSearch = 802,
+        ISWatchList = 804,
+        ISRemoveWatch = 806,
         getUserReliabilityInfo = 1002
     }
 
@@ -63,6 +66,9 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.squadLoadActive => typeof(SquadLoadActiveRequest),
             CardHouseComponentCommand.stickerBookStats2 => typeof(StickerBookStats2Request),
             CardHouseComponentCommand.stickerBookSearch => typeof(StickerBookSearchRequest),
+            CardHouseComponentCommand.ISWatchList => typeof(ISWatchListRequest),
+            CardHouseComponentCommand.ISViewTrade => typeof(ISViewTradeRequest),
+            CardHouseComponentCommand.ISRemoveWatch => typeof(ISRemoveWatchRequest),
             CardHouseComponentCommand.getUserReliabilityInfo => typeof(ProvidedUID),
             _ => typeof(NullStruct)
         };
@@ -89,6 +95,9 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.squadLoadActive => typeof(SquadLoadActiveResponse),
             CardHouseComponentCommand.stickerBookStats2 => typeof(StickerBookStats2Response),
             CardHouseComponentCommand.stickerBookSearch => typeof(StickerBookSearchResponse),
+            CardHouseComponentCommand.ISWatchList => typeof(ISWatchListResponse),
+            CardHouseComponentCommand.ISViewTrade => typeof(ISViewTradeResponse),
+            CardHouseComponentCommand.ISRemoveWatch => typeof(ISRemoveWatchResponse),
             CardHouseComponentCommand.getUserReliabilityInfo => typeof(UserReliabilityInfoResponse),
             _ => typeof(NullStruct)
         };
@@ -232,6 +241,26 @@ public static class CardHouseComponentBase
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.ISWatchList)]
+        public virtual Task<ISWatchListResponse> ISWatchListAsync(ISWatchListRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+                
+        [BlazeCommand((ushort)CardHouseComponentCommand.ISViewTrade)]
+        public virtual Task<ISViewTradeResponse> ISViewTradeAsync(ISViewTradeRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.ISRemoveWatch)]
+        public virtual Task<ISRemoveWatchResponse> ISRemoveWatchAsync(ISRemoveWatchRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+
 
         public override Type GetCommandRequestType(CardHouseComponentCommand componentCommand)
         {
@@ -457,6 +486,36 @@ public static class CardHouseComponentBase
         public Task<UserReliabilityInfoResponse> GetUserReliabilityRequestAsync(ProvidedUID request)
         {
             return Connection.SendRequestAsync<ProvidedUID, UserReliabilityInfoResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.getUserReliabilityInfo, request);
+        }
+        
+        public ISWatchListResponse ISWatchListRequest(ISWatchListRequest request)
+        {
+            return Connection.SendRequest<ISWatchListRequest, ISWatchListResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISWatchList, request);
+        }
+
+        public Task<ISWatchListResponse> ISWatchListRequestAsync(ISWatchListRequest request)
+        {
+            return Connection.SendRequestAsync<ISWatchListRequest, ISWatchListResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISWatchList, request);
+        }
+        
+        public ISViewTradeResponse ISViewTradeRequest(ISViewTradeRequest request)
+        {
+            return Connection.SendRequest<ISViewTradeRequest, ISViewTradeResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISViewTrade, request);
+        }
+
+        public Task<ISViewTradeResponse> ISViewTradeRequestAsync(ISViewTradeRequest request)
+        {
+            return Connection.SendRequestAsync<ISViewTradeRequest, ISViewTradeResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISViewTrade, request);
+        }
+            
+        public ISRemoveWatchResponse ISRemoveWatchRequest(ISRemoveWatchRequest request)
+        {
+            return Connection.SendRequest<ISRemoveWatchRequest, ISRemoveWatchResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISRemoveWatch, request);
+        }
+
+        public Task<ISRemoveWatchResponse> ISRemoveWatchAsync(ISRemoveWatchRequest request)
+        {
+            return Connection.SendRequestAsync<ISRemoveWatchRequest, ISRemoveWatchResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISRemoveWatch, request);
         }
 
         public override Type GetCommandRequestType(CardHouseComponentCommand componentCommand)

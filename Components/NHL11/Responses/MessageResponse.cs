@@ -11,5 +11,5 @@ public struct MessageResponse
     public DynamicMessageEnum mDynamicMessageEnum;
 
     [TdfMember("MSGS")] 
-    public List<MSGS> mMessagesList;
+    public List<MessageItem> mMessagesList;
 }

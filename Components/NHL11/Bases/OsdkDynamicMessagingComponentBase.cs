@@ -39,7 +39,7 @@ public static class OsdkDynamicMessagingComponentBase
         return componentCommand switch
         {
             OsdkDynamicMessagingComponentCommand.getMessages => typeof(MessageResponse),
-            OsdkDynamicMessagingComponentCommand.getConfig => typeof(ExampleResponse),
+            OsdkDynamicMessagingComponentCommand.getConfig => typeof(DynamicConfigResponse),
             _ => typeof(NullStruct)
         };
     }
@@ -69,7 +69,7 @@ public static class OsdkDynamicMessagingComponentBase
         }
 
         [BlazeCommand((ushort)OsdkDynamicMessagingComponentCommand.getConfig)]
-        public virtual Task<ExampleResponse> GetConfigAsync(NullStruct request, BlazeRpcContext context)
+        public virtual Task<DynamicConfigResponse> GetConfigAsync(NullStruct request, BlazeRpcContext context)
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
@@ -114,14 +114,14 @@ public static class OsdkDynamicMessagingComponentBase
 
         private BlazeClientConnection Connection { get; }
 
-        public ExampleResponse GetConfig(NullStruct request)
+        public DynamicConfigResponse GetConfig(NullStruct request)
         {
-            return Connection.SendRequest<NullStruct, ExampleResponse, NullStruct>(this, (ushort)OsdkDynamicMessagingComponentCommand.getConfig, request);
+            return Connection.SendRequest<NullStruct, DynamicConfigResponse, NullStruct>(this, (ushort)OsdkDynamicMessagingComponentCommand.getConfig, request);
         }
 
-        public Task<ExampleResponse> GetConfigAsync(NullStruct request)
+        public Task<DynamicConfigResponse> GetConfigAsync(NullStruct request)
         {
-            return Connection.SendRequestAsync<NullStruct, ExampleResponse, NullStruct>(this, (ushort)OsdkDynamicMessagingComponentCommand.getConfig, request);
+            return Connection.SendRequestAsync<NullStruct, DynamicConfigResponse, NullStruct>(this, (ushort)OsdkDynamicMessagingComponentCommand.getConfig, request);
         }
 
         public MessageResponse GetMessages(MessageRequest request)
