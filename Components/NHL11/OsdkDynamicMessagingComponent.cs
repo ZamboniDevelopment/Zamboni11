@@ -14,9 +14,9 @@ internal class OsdkDynamicMessagingComponent : OsdkDynamicMessagingComponentBase
     {
         return Task.FromResult(new DynamicConfigResponse
         {
-            mDataRequestDelay = 10,
-            mErrorRetryDelay = 10,
-            mMessageDelayInterval = 10,
+            mDataRequestDelaySeconds = 100,
+            mErrorRetryDelaySeconds = 100,
+            mMessageDelayIntervalSeconds = 10,
             mMaximumMessageCount = 10
         });
     }

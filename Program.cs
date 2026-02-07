@@ -134,9 +134,12 @@ internal class Program
         core.AddComponent<CardHouseComponent>();
 
         //2257 NHL SPECIFIC COMPONENT
-        //"EAHockeyLeague" Component, not official name
+        //"OSDKSeasonalPlay" (EASHL)
         //Work in progress
         core.AddComponent<EAHockeyLeagueComponent>();
+        
+        //2262
+        core.AddComponent<OsdkTicker2Component>();
         await core.Start(-1).ConfigureAwait(false);
     }
 

@@ -4,22 +4,22 @@ using Zamboni11.Components.NHL11.Structs;
 namespace Zamboni11.Components.NHL11.Responses;
 
 [TdfStruct]
-public struct SeasonDetailsResponse
+public struct SeasonDetails
 {
     [TdfMember("NRST")] 
-    public long mNRST;
+    public long mNextRegularSeasonStart;
 
     [TdfMember("PET")] 
-    public long mPET;
+    public long mPlayOffEnd;
     
     [TdfMember("PST")] 
-    public long mPST;
+    public long mPlayOffStart;
 
     [TdfMember("RET")] 
-    public long mRET;
+    public long mRegularSeasonEnd;
     
     [TdfMember("RST")] 
-    public long mRST;
+    public long mRegularSeasonStart;
 
     [TdfMember("SID")] 
     public uint mSeasonID;

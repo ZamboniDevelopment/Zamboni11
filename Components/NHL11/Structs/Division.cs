@@ -1,17 +1,15 @@
-using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct DIVL
+public struct Division
 {
     [TdfMember("NUM")] 
-    public uint mNUM;
+    public uint mNumber;
 
     [TdfMember("SIZE")] 
-    public byte mSTAT;
+    public byte mSize;
     
     [TdfMember("TRUL")] 
     public TournamentRule mTournamentRule;

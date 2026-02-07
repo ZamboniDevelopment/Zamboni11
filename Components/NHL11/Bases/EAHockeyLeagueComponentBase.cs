@@ -1,8 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Blaze3SDK;
-using Blaze3SDK.Blaze.Authentication;
-using Blaze3SDK.Blaze.Example;
 using BlazeCommon;
 using NLog;
 using Zamboni11.Components.NHL11.Requests;
@@ -40,7 +38,7 @@ public static class EAHockeyLeagueComponentBase
         return componentCommand switch
         {
             EAHockeyLeagueComponentCommand.getSeasonConfiguration => typeof(GetSeasonConfigurationResponse),
-            EAHockeyLeagueComponentCommand.getSeasonDetails => typeof(SeasonDetailsResponse),
+            EAHockeyLeagueComponentCommand.getSeasonDetails => typeof(SeasonDetails),
             _ => typeof(NullStruct)
         };
     }
@@ -75,7 +73,7 @@ public static class EAHockeyLeagueComponentBase
         }
         
         [BlazeCommand((ushort)EAHockeyLeagueComponentCommand.getSeasonDetails)]
-        public virtual Task<SeasonDetailsResponse> SeasonDetailsRequestAsync(SeasonDetailsRequest request, BlazeRpcContext context)
+        public virtual Task<SeasonDetails> SeasonDetailsRequestAsync(SeasonDetailsRequest request, BlazeRpcContext context)
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
@@ -125,53 +123,14 @@ public static class EAHockeyLeagueComponentBase
             return Connection.SendRequestAsync<NullStruct, GetSeasonConfigurationResponse, NullStruct>(this, (ushort)EAHockeyLeagueComponentCommand.getSeasonConfiguration, request);
         }
         
-        public SeasonDetailsResponse SeasonDetailsRequest(SeasonDetailsRequest request)
+        public SeasonDetails SeasonDetailsRequest(SeasonDetailsRequest request)
         {
-            return Connection.SendRequest<SeasonDetailsRequest, SeasonDetailsResponse, NullStruct>(this, (ushort)EAHockeyLeagueComponentCommand.getSeasonDetails, request);
+            return Connection.SendRequest<SeasonDetailsRequest, SeasonDetails, NullStruct>(this, (ushort)EAHockeyLeagueComponentCommand.getSeasonDetails, request);
         }
 
-        public Task<SeasonDetailsResponse> SeasonDetailsRequestAsync(SeasonDetailsRequest request)
+        public Task<SeasonDetails> SeasonDetailsRequestAsync(SeasonDetailsRequest request)
         {
-            return Connection.SendRequestAsync<SeasonDetailsRequest, SeasonDetailsResponse, NullStruct>(this, (ushort)EAHockeyLeagueComponentCommand.getSeasonDetails, request);
-        }
-
-        public override Type GetCommandRequestType(EAHockeyLeagueComponentCommand componentCommand)
-        {
-            return EAHockeyLeagueComponentBase.GetCommandRequestType(componentCommand);
-        }
-
-        public override Type GetCommandResponseType(EAHockeyLeagueComponentCommand componentCommand)
-        {
-            return EAHockeyLeagueComponentBase.GetCommandResponseType(componentCommand);
-        }
-
-        public override Type GetCommandErrorResponseType(EAHockeyLeagueComponentCommand componentCommand)
-        {
-            return EAHockeyLeagueComponentBase.GetCommandErrorResponseType(componentCommand);
-        }
-
-        public override Type GetNotificationType(EAHockeyLeagueComponentNotification notification)
-        {
-            return EAHockeyLeagueComponentBase.GetNotificationType(notification);
-        }
-    }
-
-    public class Proxy : BlazeProxyComponent<EAHockeyLeagueComponentCommand, EAHockeyLeagueComponentNotification, Blaze3RpcError>
-    {
-        public Proxy() : base(EAHockeyLeagueComponentBase.Id, EAHockeyLeagueComponentBase.Name)
-        {
-        }
-
-        [BlazeCommand((ushort)EAHockeyLeagueComponentCommand.getSeasonConfiguration)]
-        public virtual Task<GetSeasonConfigurationResponse> SeasonConfigurationRequest(NullStruct request, BlazeProxyContext context)
-        {
-            return context.ClientConnection.SendRequestAsync<NullStruct, GetSeasonConfigurationResponse, NullStruct>(this, (ushort)EAHockeyLeagueComponentCommand.getSeasonConfiguration, request);
-        }
-        
-        [BlazeCommand((ushort)EAHockeyLeagueComponentCommand.getSeasonConfiguration)]
-        public virtual Task<SeasonDetailsResponse> ThreeAsync(SeasonDetailsRequest request, BlazeProxyContext context)
-        {
-            return context.ClientConnection.SendRequestAsync<SeasonDetailsRequest, SeasonDetailsResponse, NullStruct>(this, (ushort)EAHockeyLeagueComponentCommand.getSeasonDetails, request);
+            return Connection.SendRequestAsync<SeasonDetailsRequest, SeasonDetails, NullStruct>(this, (ushort)EAHockeyLeagueComponentCommand.getSeasonDetails, request);
         }
 
         public override Type GetCommandRequestType(EAHockeyLeagueComponentCommand componentCommand)

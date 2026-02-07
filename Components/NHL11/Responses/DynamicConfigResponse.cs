@@ -6,13 +6,13 @@ namespace Zamboni11.Components.NHL11.Responses
     public struct DynamicConfigResponse
     {
         [TdfMember("CDRD")]
-        public ushort mDataRequestDelay;
+        public ushort mDataRequestDelaySeconds;
         
         [TdfMember("CERD")]
-        public ushort mErrorRetryDelay;
+        public ushort mErrorRetryDelaySeconds;
         
         [TdfMember("CMDI")]
-        public ushort mMessageDelayInterval;
+        public ushort mMessageDelayIntervalSeconds;
         
         [TdfMember("CMMC")]
         public ushort mMaximumMessageCount;

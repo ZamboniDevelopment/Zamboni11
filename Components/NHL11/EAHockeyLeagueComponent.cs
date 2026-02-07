@@ -19,18 +19,18 @@ internal class EAHockeyLeagueComponent : EAHockeyLeagueComponentBase.Server
                 {
                     new SeasonConfiguration
                     {
-                        mDIVL = new List<DIVL>
+                        mDivisionList = new List<Division>
                         {
-                            new DIVL
+                            new Division
                             {
-                                mNUM = 1,
-                                mSTAT = 21,
+                                mNumber = 1,
+                                mSize = 21,
                                 mTournamentRule = TournamentRule.SEASONALPLAY_TOURNAMENTRULE_UNLIMITED
                             },
-                            new DIVL
+                            new Division
                             {
-                                mNUM = 2,
-                                mSTAT = 21,
+                                mNumber = 2,
+                                mSize = 21,
                                 mTournamentRule = TournamentRule.SEASONALPLAY_TOURNAMENTRULE_ONE_ATTEMPT
                             }
                         },
@@ -46,18 +46,18 @@ internal class EAHockeyLeagueComponent : EAHockeyLeagueComponentBase.Server
                 },
                 new SeasonConfiguration
                 {
-                    mDIVL = new List<DIVL>
+                    mDivisionList = new List<Division>
                     {
-                        new DIVL
+                        new Division
                         {
-                            mNUM = 2,
-                            mSTAT = 22,
+                            mNumber = 2,
+                            mSize = 22,
                             mTournamentRule = TournamentRule.SEASONALPLAY_TOURNAMENTRULE_UNLIMITED
                         },
-                        new DIVL
+                        new Division
                         {
-                            mNUM = 3,
-                            mSTAT = 21,
+                            mNumber = 3,
+                            mSize = 21,
                             mTournamentRule = TournamentRule.SEASONALPLAY_TOURNAMENTRULE_ONE_ATTEMPT
                         }
                     },
@@ -74,15 +74,15 @@ internal class EAHockeyLeagueComponent : EAHockeyLeagueComponentBase.Server
         });
     }
 
-    public override Task<SeasonDetailsResponse> SeasonDetailsRequestAsync(SeasonDetailsRequest request, BlazeRpcContext context)
+    public override Task<SeasonDetails> SeasonDetailsRequestAsync(SeasonDetailsRequest request, BlazeRpcContext context)
     {
-        return Task.FromResult(new SeasonDetailsResponse
+        return Task.FromResult(new SeasonDetails
         {
-            mNRST = 10,
-            mPET = 110,
-            mPST = 1230,
-            mRET = 12320,
-            mRST = 4210,
+            mNextRegularSeasonStart = 10,
+            mPlayOffEnd = 110,
+            mPlayOffStart = 1230,
+            mRegularSeasonEnd = 12320,
+            mRegularSeasonStart = 4210,
             mSeasonID = request.mSeasonId,
             mSeasonNumber = request.mSeasonId,
             mSeasonState = SeasonState.SEASONALPLAY_SEASON_STATE_PLAYOFF

@@ -21,7 +21,7 @@ internal class UtilComponent : UtilComponentBase.Server
             mAuthenticationSource = "",
             mComponentIds = new List<ushort>
             {
-                1, 4, 5, 7, 9, 10, 11, 12, 13, 15, 21, 2148, 2249, 2250, 2257, 30722
+                1, 4, 5, 7, 9, 10, 11, 12, 13, 15, 21, 2148, 2249, 2250, 2257, 2262, 30722
             },
             mConfig = new FetchConfigResponse
             {
@@ -131,14 +131,15 @@ internal class UtilComponent : UtilComponentBase.Server
 
     public override Task<LocalizeStringsResponse> LocalizeStringsAsync(LocalizeStringsRequest request, BlazeRpcContext context)
     {
+        var retList = new SortedDictionary<string, string>();
+        foreach (var variable in request.mStringIds)
+        {
+            retList.Add(variable, variable);
+        }
+
         return Task.FromResult(new LocalizeStringsResponse
         {
-            mLocalizedStrings = new SortedDictionary<string, string>
-            {
-                {
-                    "A", "B"
-                }
-            }
+            mLocalizedStrings = retList
         });
     }
 
@@ -174,6 +175,26 @@ internal class UtilComponent : UtilComponentBase.Server
 
     public override Task<FetchConfigResponse> FetchClientConfigAsync(FetchClientConfigRequest request, BlazeRpcContext context)
     {
+        if (request.mConfigSection.Equals("OSDK_ROSTER"))
+        {
+            return Task.FromResult(new FetchConfigResponse
+            {
+
+                mConfig = new SortedDictionary<string, string>()
+                {
+                    {
+                        "ROSTER_URL", ""
+                    },
+                    {
+                        "ROSTER_VER", ""
+                    },
+                    {
+                        "ROSTER_CSUM", ""
+                    },
+                }
+
+            });
+        }
         return Task.FromResult(new FetchConfigResponse
         {
             mConfig = new SortedDictionary<string, string>()

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 
 namespace Zamboni11.Components.NHL11.Structs;
@@ -8,7 +7,7 @@ namespace Zamboni11.Components.NHL11.Structs;
 public struct SeasonConfiguration
 {
     [TdfMember("DIVL")] 
-    public List<DIVL> mDIVL;
+    public List<Division> mDivisionList;
 
     [TdfMember("LGID")] 
     public uint mLeagueID;
