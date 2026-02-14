@@ -183,14 +183,11 @@ internal class UtilComponent : UtilComponentBase.Server
                 mConfig = new SortedDictionary<string, string>()
                 {
                     {
-                        "ROSTER_URL", ""
+                        "CRC", "1LuRFj2NPptX3Cn22f1PWbzP4d084U1dzeTg4HOr3l1FcL9G2dB05"
                     },
-                    {
-                        "ROSTER_VER", ""
-                    },
-                    {
-                        "ROSTER_CSUM", ""
-                    },
+                    // {
+                        // "URL", ""
+                    // },
                 }
 
             });

@@ -2,8 +2,9 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,6 +19,7 @@
     <ItemGroup>
         <ProjectReference Include="..\BlazeSDK\Blaze3SDK\Blaze3SDK.csproj"/>
         <ProjectReference Include="..\BlazeSDK\XI5\XI5.csproj"/>
+        <ProjectReference Include="..\PSN\SceNetNp\SceNetNp.csproj" />
     </ItemGroup>
 
 </Project>
