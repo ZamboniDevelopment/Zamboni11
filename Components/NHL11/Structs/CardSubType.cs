@@ -1,6 +1,6 @@
 namespace Zamboni11.Components.NHL11.Structs;
 
-public enum CardType : short
+public enum CardSubType : short
 {
     //TODO ID'S Are not all confirmed
     CARDHOUSE_CARD_TYPE_PLAYER_C = 0,

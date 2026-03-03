@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Blaze3SDK.Blaze.GameReportingLegacy;
 using NLog;
 using Npgsql;
+using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11;
 
@@ -452,6 +455,99 @@ public class Database
                 cmd1.Parameters.AddWithValue("value", playerAttributeMap[key]);
             cmd1.ExecuteNonQuery();
         }
+    }
+
+    public async Task<List<uint>> GetListDbIds(CardSubType cardSubType)
+    {
+        var ids = new List<uint>();
+        if (cardSubType > CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK) return ids;
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync();
+
+        string sql = "SELECT carddbid FROM fcc_playercards WHERE preferredposition = @pos";
+
+        await using (var cmd = new NpgsqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("pos", (short)cardSubType);
+
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    ids.Add((uint)reader.GetInt32(0));
+                }
+            }
+        }
+
+        return ids;
+    }
+
+    private static int bugGcounter = 0;
+
+    public async Task<CardData?> GetCardDataByDbId(uint cardDbId)
+    {
+        const string sql = "SELECT * FROM fcc_playercards WHERE carddbid = @dbid LIMIT 1";
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync();
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("dbid", (int)cardDbId);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return new CardData
+            {
+                mAttributes = new List<byte>
+                {
+                    reader.GetByte(reader.GetOrdinal("attribute1")),
+                    reader.GetByte(reader.GetOrdinal("attribute2")),
+                    reader.GetByte(reader.GetOrdinal("attribute3")),
+                    reader.GetByte(reader.GetOrdinal("attribute4")),
+                    reader.GetByte(reader.GetOrdinal("attribute5")),
+                    reader.GetByte(reader.GetOrdinal("attribute6")),
+                    reader.GetByte(reader.GetOrdinal("attribute7")),
+                    reader.GetByte(reader.GetOrdinal("attribute8")),
+                },
+                mCardStateId = 1,
+                mCardId = HutCardFactory.CardIdCounter++,
+                mCardDbId = cardDbId,
+                mFormationId = reader.GetByte(reader.GetOrdinal("formationid")),
+                // mFREE = 40, //
+                mCareerRemaining = 50, //
+                mInjuryGames = reader.GetByte(reader.GetOrdinal("injuryduration")),
+                mInjuryType = reader.GetByte(reader.GetOrdinal("injury")),
+                mMaxTrainingCardsCanApply = 10, //
+                // mNumberOfOwners = 86, //
+                mPreferredPositionId = reader.GetByte(reader.GetOrdinal("preferredposition")),
+                mDiscardPrice = 85, //
+                mRareFlag = reader.GetByte(reader.GetOrdinal("rare")),
+                mRating = reader.GetByte(reader.GetOrdinal("rating")),
+                mSalaryCap = 84, //
+                mListStats = new List<int>
+                {
+                    reader.GetByte(reader.GetOrdinal("stat1")), //Games Played
+                    reader.GetByte(reader.GetOrdinal("stat2")), //Goals 
+                    reader.GetByte(reader.GetOrdinal("stat3")), //Assists 
+                    reader.GetByte(reader.GetOrdinal("stat4")), //Plus/Minus
+                    reader.GetByte(reader.GetOrdinal("stat5")), //Penalty Minutes
+                },
+                mCardSubTypeId = (CardSubType)reader.GetInt16(reader.GetOrdinal("fieldpos")),
+                mDateIssued = Util.TimeNow(),
+                mTeamId = (uint)reader.GetInt32(reader.GetOrdinal("teamid")),
+                mListTrainingCards = new List<int>
+                {
+                    //TODO Figure this out
+                    0,0,0,0,0,0,0,0,0,0
+                },
+                mUsesRemaining = 10
+            };
+        }
+
+        return null;
     }
 
     public uint GetNextGameId()

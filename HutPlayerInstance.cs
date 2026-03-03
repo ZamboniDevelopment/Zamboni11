@@ -5,9 +5,8 @@ namespace Zamboni11;
 
 public class HutPlayerInstance
 {
-    public ServerPlayer ServerPlayer { get; set; }
     public GamerInfo GamerInfo { get; set; }
-    public List<CardData> ActiveCards { get; set; }
+    public List<CardData> ActiveCards { get; set; } = new();
     public SquadInfo SquadInfo { get; set; }
     public uint SyncVersion { get; set; } = 1;
 
@@ -21,9 +20,8 @@ public class HutPlayerInstance
             mVersionUnassigned = SyncVersion
         };
     }
-    public HutPlayerInstance(ServerPlayer serverPlayer, GamerInfo gamerInfo)
+    public HutPlayerInstance(GamerInfo gamerInfo)
     {
-        ServerPlayer = serverPlayer;
         GamerInfo = gamerInfo;
     }
 }

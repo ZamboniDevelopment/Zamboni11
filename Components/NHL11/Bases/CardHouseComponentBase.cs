@@ -21,19 +21,26 @@ public static class CardHouseComponentBase
         resetUser = 108,
         getDeckInfo = 301,
         moveCard = 304,
+        playGame = 305,
         assignCards = 307,
         createPack = 401,
         viewCards = 402,
         discardCard = 403,
+        applyCard = 405,
+        changePlayers = 406,
         getStaffBonus = 408,
+        applySalaryCap = 409,
         ISViewTrade = 703,
         squadSave = 708,
         getSquadList = 709,
         squadLoadActive = 711,
         stickerBookStats2 = 800,
         stickerBookSearch = 802,
+        activateCard = 803,
         ISWatchList = 804,
         ISRemoveWatch = 806,
+        matchRegisterStart = 1000,
+        matchRegisterFinish = 1001,
         getUserReliabilityInfo = 1002
     }
 
@@ -56,19 +63,26 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.resetUser => typeof(ProvidedUID),
             CardHouseComponentCommand.getDeckInfo => typeof(DeckInfoRequest),
             CardHouseComponentCommand.moveCard => typeof(MoveCardRequest),
+            CardHouseComponentCommand.playGame => typeof(PlayGameRequest),
             CardHouseComponentCommand.assignCards => typeof(AssignCardsRequest),
             CardHouseComponentCommand.createPack => typeof(CreatePackRequest),
             CardHouseComponentCommand.viewCards => typeof(ViewCardsRequest),
             CardHouseComponentCommand.discardCard => typeof(DiscardCardRequest),
+            CardHouseComponentCommand.changePlayers => typeof(ChangePlayersRequest),
+            CardHouseComponentCommand.applyCard => typeof(ApplyCardRequest),
             CardHouseComponentCommand.getStaffBonus => typeof(ProvidedUID),
+            CardHouseComponentCommand.applySalaryCap => typeof(ApplySalaryCapRequest),
             CardHouseComponentCommand.squadSave => typeof(SquadSaveRequest),
             CardHouseComponentCommand.getSquadList => typeof(ProvidedUID),
             CardHouseComponentCommand.squadLoadActive => typeof(SquadLoadActiveRequest),
             CardHouseComponentCommand.stickerBookStats2 => typeof(StickerBookStats2Request),
             CardHouseComponentCommand.stickerBookSearch => typeof(StickerBookSearchRequest),
+            CardHouseComponentCommand.activateCard => typeof(ActivateCardRequest),
             CardHouseComponentCommand.ISWatchList => typeof(ISWatchListRequest),
             CardHouseComponentCommand.ISViewTrade => typeof(ISViewTradeRequest),
             CardHouseComponentCommand.ISRemoveWatch => typeof(ISRemoveWatchRequest),
+            CardHouseComponentCommand.matchRegisterStart => typeof(MatchRegisterStartRequest),
+            CardHouseComponentCommand.matchRegisterFinish => typeof(MatchRegisterFinishRequest),
             CardHouseComponentCommand.getUserReliabilityInfo => typeof(ProvidedUID),
             _ => typeof(NullStruct)
         };
@@ -85,19 +99,26 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.getConfig => typeof(GetConfigResponse),
             CardHouseComponentCommand.getDeckInfo => typeof(DeckInfoResponse),
             CardHouseComponentCommand.moveCard => typeof(MoveCardResponse),
+            CardHouseComponentCommand.playGame => typeof(PlayGameResponse),
             CardHouseComponentCommand.assignCards => typeof(AssignCardsResponse),
             CardHouseComponentCommand.createPack => typeof(CreatePackResponse),
             CardHouseComponentCommand.viewCards => typeof(ViewCardsResponse),
             CardHouseComponentCommand.discardCard => typeof(DiscardCardResponse),
+            CardHouseComponentCommand.changePlayers => typeof(ChangePlayersResponse),
             CardHouseComponentCommand.getStaffBonus => typeof(StaffBonusResponse),
+            CardHouseComponentCommand.applySalaryCap => typeof(ApplySalaryCapResponse),
+            CardHouseComponentCommand.applyCard => typeof(ApplyCardResponse),
             CardHouseComponentCommand.squadSave => typeof(SquadSaveResponse),
             CardHouseComponentCommand.getSquadList => typeof(SquadListResponse),
             CardHouseComponentCommand.squadLoadActive => typeof(SquadLoadActiveResponse),
             CardHouseComponentCommand.stickerBookStats2 => typeof(StickerBookStats2Response),
             CardHouseComponentCommand.stickerBookSearch => typeof(StickerBookSearchResponse),
+            CardHouseComponentCommand.activateCard => typeof(ActivateCardResponse),
             CardHouseComponentCommand.ISWatchList => typeof(ISWatchListResponse),
             CardHouseComponentCommand.ISViewTrade => typeof(ISViewTradeResponse),
             CardHouseComponentCommand.ISRemoveWatch => typeof(ISRemoveWatchResponse),
+            CardHouseComponentCommand.matchRegisterStart => typeof(MatchRegisterStartResponse),
+            CardHouseComponentCommand.matchRegisterFinish => typeof(NumericResponse),
             CardHouseComponentCommand.getUserReliabilityInfo => typeof(UserReliabilityInfoResponse),
             _ => typeof(NullStruct)
         };
@@ -167,6 +188,18 @@ public static class CardHouseComponentBase
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.applyCard)]
+        public virtual Task<ApplyCardResponse> ApplyCardAsync(ApplyCardRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.applySalaryCap)]
+        public virtual Task<ApplySalaryCapResponse> ApplySalaryCapAsync(ApplySalaryCapRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
 
         [BlazeCommand((ushort)CardHouseComponentCommand.createPack)]
         public virtual Task<CreatePackResponse> CreatePackAsync(CreatePackRequest request, BlazeRpcContext context)
@@ -199,6 +232,12 @@ public static class CardHouseComponentBase
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.changePlayers)]
+        public virtual Task<ChangePlayersResponse> ChangePlayersAsync(ChangePlayersRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
 
         [BlazeCommand((ushort)CardHouseComponentCommand.getStaffBonus)]
         public virtual Task<StaffBonusResponse> GetStaffBonusAsync(ProvidedUID request, BlazeRpcContext context)
@@ -223,6 +262,11 @@ public static class CardHouseComponentBase
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
+        [BlazeCommand((ushort)CardHouseComponentCommand.activateCard)]
+        public virtual Task<ActivateCardResponse> ActivateCardAsync(ActivateCardRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
 
         [BlazeCommand((ushort)CardHouseComponentCommand.stickerBookSearch)]
         public virtual Task<StickerBookSearchResponse> StickerBookSearchAsync(StickerBookSearchRequest request, BlazeRpcContext context)
@@ -242,6 +286,24 @@ public static class CardHouseComponentBase
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
         
+        [BlazeCommand((ushort)CardHouseComponentCommand.matchRegisterStart)]
+        public virtual Task<MatchRegisterStartResponse> MatchRegisterStartAsync(MatchRegisterStartRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.matchRegisterFinish)]
+        public virtual Task<NumericResponse> MatchRegisterFinishAsync(MatchRegisterFinishRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+
+        [BlazeCommand((ushort)CardHouseComponentCommand.playGame)]
+        public virtual Task<PlayGameResponse> PlayGameAsync(PlayGameRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+
         [BlazeCommand((ushort)CardHouseComponentCommand.ISWatchList)]
         public virtual Task<ISWatchListResponse> ISWatchListAsync(ISWatchListRequest request, BlazeRpcContext context)
         {
@@ -335,6 +397,16 @@ public static class CardHouseComponentBase
         {
             return Connection.SendRequestAsync<GamerGetInfoRequest, GamerGetInfoResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.gamerGetInfo, request);
         }
+        
+        public ApplySalaryCapResponse ApplySalaryCapRequest(ApplySalaryCapRequest request)
+        {
+            return Connection.SendRequest<ApplySalaryCapRequest, ApplySalaryCapResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.applySalaryCap, request);
+        }
+
+        public Task<ApplySalaryCapResponse> ApplySalaryCapRequestAsync(ApplySalaryCapRequest request)
+        {
+            return Connection.SendRequestAsync<ApplySalaryCapRequest, ApplySalaryCapResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.applySalaryCap, request);
+        }
 
         public NumericResponse ResetUserRequest(ProvidedUID request)
         {
@@ -354,6 +426,36 @@ public static class CardHouseComponentBase
         public Task<MoveCardResponse> MoveCardRequestAsync(MoveCardRequest request)
         {
             return Connection.SendRequestAsync<MoveCardRequest, MoveCardResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.moveCard, request);
+        }
+        
+        public ApplyCardResponse ApplyCardRequest(ApplyCardRequest request)
+        {
+            return Connection.SendRequest<ApplyCardRequest, ApplyCardResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.applyCard, request);
+        }
+
+        public Task<ApplyCardResponse> ApplyCardRequestAsync(ApplyCardRequest request)
+        {
+            return Connection.SendRequestAsync<ApplyCardRequest, ApplyCardResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.applyCard, request);
+        }
+        
+        public ActivateCardResponse ActivateCardRequest(ActivateCardRequest request)
+        {
+            return Connection.SendRequest<ActivateCardRequest, ActivateCardResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.activateCard, request);
+        }
+
+        public Task<ActivateCardResponse> ActivateCardRequestAsync(ActivateCardRequest request)
+        {
+            return Connection.SendRequestAsync<ActivateCardRequest, ActivateCardResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.activateCard, request);
+        }
+        
+        public ChangePlayersResponse ChangePlayersRequest(ChangePlayersRequest request)
+        {
+            return Connection.SendRequest<ChangePlayersRequest, ChangePlayersResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.changePlayers, request);
+        }
+
+        public Task<ChangePlayersResponse> ChangePlayersRequestAsync(ChangePlayersRequest request)
+        {
+            return Connection.SendRequestAsync<ChangePlayersRequest, ChangePlayersResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.changePlayers, request);
         }
         
         public GetConfigResponse GetConfigRequest(ProvidedUID request)
@@ -405,6 +507,36 @@ public static class CardHouseComponentBase
         public Task<ViewCardsResponse> ViewCardsAsync(ViewCardsRequest request)
         {
             return Connection.SendRequestAsync<ViewCardsRequest, ViewCardsResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.viewCards, request);
+        }
+        
+        public MatchRegisterStartResponse MatchRegisterStart(MatchRegisterStartRequest request)
+        {
+            return Connection.SendRequest<MatchRegisterStartRequest, MatchRegisterStartResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.matchRegisterStart, request);
+        }
+
+        public Task<MatchRegisterStartResponse> MatchRegisterStartAsync(MatchRegisterStartRequest request)
+        {
+            return Connection.SendRequestAsync<MatchRegisterStartRequest, MatchRegisterStartResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.matchRegisterStart, request);
+        }
+        
+        public NumericResponse MatchRegisterFinish(MatchRegisterFinishRequest request)
+        {
+            return Connection.SendRequest<MatchRegisterFinishRequest, NumericResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.matchRegisterFinish, request);
+        }
+
+        public Task<NumericResponse> MatchRegisterFinishAsync(MatchRegisterFinishRequest request)
+        {
+            return Connection.SendRequestAsync<MatchRegisterFinishRequest, NumericResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.matchRegisterFinish, request);
+        }
+        
+        public PlayGameResponse PlayGame(PlayGameRequest request)
+        {
+            return Connection.SendRequest<PlayGameRequest, PlayGameResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.playGame, request);
+        }
+
+        public Task<PlayGameResponse> PlayGameAsync(PlayGameRequest request)
+        {
+            return Connection.SendRequestAsync<PlayGameRequest, PlayGameResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.playGame, request);
         }
 
         public DiscardCardResponse DiscardCard(DiscardCardRequest request)

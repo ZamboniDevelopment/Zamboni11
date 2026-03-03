@@ -41,11 +41,10 @@ internal class GameManager : GameManagerBase.Server
                     });
             }
 
-        var time = (uint)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
         foreach (var serverPlayer in ServerManager.GetServerPlayers()) // How to not fix bugs pt2
         {
             if (serverPlayer.LastPingedTime == 0) continue;
-            if (serverPlayer.LastPingedTime + 3600 >= time) continue;
+            if (serverPlayer.LastPingedTime + 3600 >= Util.TimeNow()) continue;
             if (serverPlayer.BlazeServerConnection != null)
                 UserSessionsBase.Server.NotifyUserSessionDisconnectedAsync(serverPlayer.BlazeServerConnection, new UserSessionDisconnectReason
                 {

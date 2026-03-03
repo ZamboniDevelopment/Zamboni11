@@ -25,7 +25,7 @@ public struct CardData
     public byte mFREE;
     
     [TdfMember("FTNS")] 
-    public byte mFitness;
+    public byte mCareerRemaining;
 
     [TdfMember("INJG")] 
     public byte mInjuryGames;
@@ -34,7 +34,7 @@ public struct CardData
     public byte mInjuryType;
     
     [TdfMember("MORL")] 
-    public byte mMoral;
+    public byte mMaxTrainingCardsCanApply;
     
     [TdfMember("OWNR")] 
     public byte mNumberOfOwners;
@@ -55,10 +55,10 @@ public struct CardData
     public short mSalaryCap;
     
     [TdfMember("STAT")] 
-    public List<byte> mListStats;
+    public List<int> mListStats;
     
     [TdfMember("SUB")] 
-    public CardType mCardTypeId;
+    public CardSubType mCardSubTypeId;
     
     [TdfMember("TIME")] 
     public uint mDateIssued;
@@ -67,7 +67,7 @@ public struct CardData
     public uint mTeamId;
     
     [TdfMember("TRNG")] 
-    public List<byte> mListTrainingCards;
+    public List<int> mListTrainingCards;
     
     [TdfMember("USRE")] 
     public byte mUsesRemaining;
