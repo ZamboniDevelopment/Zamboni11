@@ -14,7 +14,7 @@ public struct ISTradeInfo
     public CardData mCardData;
 
     [TdfMember("CID")] 
-    public ulong mCardId;
+    public long mCardId;
     
     [TdfMember("CRED")] 
     public uint mCredits;
@@ -53,7 +53,7 @@ public struct ISTradeInfo
     public uint mTradeState;
     
     [TdfMember("TID")] 
-    public ulong mTradeId;
+    public long mTradeId;
     
     [TdfMember("UID")] 
     public ulong mUserId;

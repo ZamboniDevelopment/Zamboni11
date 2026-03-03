@@ -13,10 +13,10 @@ public struct CardData
     public byte mCardStateId;
     
     [TdfMember("CID")] 
-    public ulong mCardId;
+    public long mCardId;
     
     [TdfMember("DBID")] 
-    public uint mDatabaseId; //The players databaseId, (Refer nhlng.db file and nhlviewng program)
+    public uint mCardDbId; //The players databaseId, (Refer nhlng.db file and nhlviewng program)
     
     [TdfMember("FORM")] 
     public byte mFormationId;

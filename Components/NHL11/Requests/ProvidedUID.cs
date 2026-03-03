@@ -7,6 +7,6 @@ public struct ProvidedUID
 {
     
     [TdfMember("UID")] 
-    public long mUID;
+    public long mUserId;
     
 }

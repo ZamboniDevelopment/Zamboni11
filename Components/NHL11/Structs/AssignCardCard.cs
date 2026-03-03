@@ -9,7 +9,7 @@ public struct AssignCardCard
     public long mCardId;
 
     [TdfMember("CSTT")] 
-    public byte mCardState;
+    public byte mCardStateId;
     
     [TdfMember("DPOS")] 
     public uint mDeckPos;

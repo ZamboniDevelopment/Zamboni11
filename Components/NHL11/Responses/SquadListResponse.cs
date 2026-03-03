@@ -11,6 +11,6 @@ public struct SquadListResponse
     public uint mActiveSquad;
     
     [TdfMember("SQDS")] 
-    public List<SquadInfo> mSquads;
+    public List<SquadSmall> mSquads;
 
 }

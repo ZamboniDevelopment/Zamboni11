@@ -13,14 +13,20 @@ public struct CreatePackResponse
     [TdfMember("DUPL")] 
     public List<CardIdPair> mDuplicateCardIdPairList;
     
+    //TODO THESE THREE MIGHT BE NAMED WRONG
+    //TODO \/
+    
     [TdfMember("NUM")] 
     public uint mNumCards;
     
     [TdfMember("PCNT")] 
-    public long mPCNT;
+    public long mNumPackPurchased;
     
     [TdfMember("PKTY")] 
-    public uint mPKTY;
+    public uint mRandPackType;
+    
+    //TODO /\
+    //TODO THESE THREE MIGHT BE NAMED WRONG
     
     [TdfMember("VER")] 
     public VersionInfo mVersionInfo;

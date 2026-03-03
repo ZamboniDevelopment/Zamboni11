@@ -10,7 +10,7 @@ public struct DeckInfoRequest
     public string mPersona;
 
     [TdfMember("UID")] 
-    public long mUserId;
+    public ulong mUserId;
     
     [TdfMember("VER")] 
     public VersionInfo mVersionInfo;

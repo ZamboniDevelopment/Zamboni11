@@ -14,6 +14,7 @@ internal class LeagueComponent : LeagueComponentBase.Server
     {
         return Task.FromResult(new FindLeaguesResponse
         {
+            mLeagues = new List<League>(LeagueManager.Leagues.Values)
         });
     }
     
@@ -72,7 +73,7 @@ internal class LeagueComponent : LeagueComponentBase.Server
         {
             mGamesRemaining = 0,
             mIsDraftProfileSubmitted = 0,
-            mIsGM = 0,
+            mIsGM = 1,
             mIsOnline = 1,
             mIsStringMetadata = request.mIsStringMetadata,
             mLeagueId = id,
@@ -110,12 +111,12 @@ internal class LeagueComponent : LeagueComponentBase.Server
             mCurrSeason = 1,
             mDescription = request.mDescription,
             mGameTeamRoster = request.mGameTeamRoster,
-            mIsGM = 0,
+            mIsGM = 1,
             mIsStringMetadata = request.mIsStringMetadata,
             mLastActiveTime = (uint)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds,
             mLeagueFlags = request.mLeagueFlags,
             mLeagueId = id,
-            mLeagueState = LeagueState.LEAGUE_STATE_DRAFT,
+            mLeagueState = LeagueState.LEAGUE_STATE_REGULAR_SEASON,
             mLogo = request.mLogo,
             mMaxDNF = (short)request.mMaxDNF,
             mMaxMembers = request.mMaxMembers,

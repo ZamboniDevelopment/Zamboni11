@@ -8,7 +8,7 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct MoveCardResponse
 {
     [TdfMember("CID")] 
-    public ulong mDisplacedCardId;
+    public long mDisplacedCardId;
 
     [TdfMember("DECK")] 
     public uint mDisplacedDeckType;

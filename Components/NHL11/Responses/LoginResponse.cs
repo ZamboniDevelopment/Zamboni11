@@ -21,5 +21,5 @@ public struct LoginResponse
     public uint mRewardValue;
     
     [TdfMember("UID")] 
-    public long mUserId;
+    public ulong mUserId;
 }

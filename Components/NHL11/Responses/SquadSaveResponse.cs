@@ -9,6 +9,6 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct SquadSaveResponse
 {
     [TdfMember("SQID")] 
-    public uint mSQID;
+    public uint mSquadId;
 
 }

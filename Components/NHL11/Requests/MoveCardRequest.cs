@@ -7,13 +7,13 @@ public struct MoveCardRequest
 {
     
     [TdfMember("CID")] 
-    public ulong mCardId;
+    public long mCardId;
     
     [TdfMember("DECK")] 
     public uint mDeckType;
     
     [TdfMember("SWAP")] 
-    public ulong mSwapCardId;
+    public long mSwapCardId;
     
     [TdfMember("UID")] 
     public ulong mUserId;

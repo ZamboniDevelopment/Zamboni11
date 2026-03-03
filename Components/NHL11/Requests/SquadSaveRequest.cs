@@ -17,13 +17,13 @@ public struct SquadSaveRequest
     public List<uint> mLines;
     
     [TdfMember("MNGR")] 
-    public ulong mManager;
+    public long mManager;
     
     [TdfMember("NAME")] 
     public string mSquadName;
     
     [TdfMember("PLRS")] 
-    public List<ulong> mPlayers;
+    public List<long> mPlayers;
     
     [TdfMember("RTNG")] 
     public uint mStarRating;

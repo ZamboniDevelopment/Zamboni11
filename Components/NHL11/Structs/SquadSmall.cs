@@ -1,25 +1,23 @@
-using System.Collections.Generic;
-using Blaze3SDK.Blaze.Example;
 using Tdf;
 
 namespace Zamboni11.Components.NHL11.Structs;
 
 [TdfStruct]
-public struct SQDS
+public struct SquadSmall
 {
     [TdfMember("CHEM")] 
-    public uint mCHEM;
+    public uint mChemistry;
     
     [TdfMember("FORM")] 
-    public uint mFORM;
+    public uint mFormation;
     
     [TdfMember("RTNG")] 
-    public uint mRTNG;
+    public uint mRating;
     
     [TdfMember("SQID")] 
-    public uint mSQID;
+    public uint mSquadId;
     
     [TdfMember("SQNM")] 
-    public string mSQNM;
+    public string mSquadName;
 
 }

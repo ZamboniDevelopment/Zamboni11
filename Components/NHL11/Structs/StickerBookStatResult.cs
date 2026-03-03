@@ -6,7 +6,7 @@ namespace Zamboni11.Components.NHL11.Structs;
 public struct StickerBookStatResult
 {
     [TdfMember("CTTP")] 
-    public byte mContextTypeId;
+    public byte mContextId;
     
     [TdfMember("CTVL")] 
     public uint mContextValue;

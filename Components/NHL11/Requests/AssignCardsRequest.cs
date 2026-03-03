@@ -11,6 +11,6 @@ public struct AssignCardsRequest
     public List<AssignCardCard> mList;
     
     [TdfMember("UID")] 
-    public long mUID;
+    public long mUserId;
 
 }

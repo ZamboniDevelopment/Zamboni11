@@ -1,4 +1,5 @@
 using Tdf;
+using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11.Components.NHL11.Requests;
 
@@ -9,7 +10,7 @@ public struct CreatePackRequest
     public uint mCardDbId;
 
     [TdfMember("PTYP")] 
-    public uint mPackType;
+    public PackType mPackType;
     
     [TdfMember("UID")] 
     public uint mUserId;
