@@ -7,7 +7,7 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct ActivateCardRequest
 {
     [TdfMember("ATYP")] 
-    public ActiveState mActiveState;
+    public CardState mActiveState;
     
     [TdfMember("CID")] 
     public long mCardId;

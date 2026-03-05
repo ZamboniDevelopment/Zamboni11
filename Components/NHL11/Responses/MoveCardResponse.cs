@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Tdf;
 using Zamboni11.Components.NHL11.Structs;
 
@@ -11,7 +10,7 @@ public struct MoveCardResponse
     public long mDisplacedCardId;
 
     [TdfMember("DECK")] 
-    public uint mDisplacedDeckType;
+    public DeckType mDisplacedDeckType;
     
     [TdfMember("POS")] 
     public uint mDisplacedCardPosition;
