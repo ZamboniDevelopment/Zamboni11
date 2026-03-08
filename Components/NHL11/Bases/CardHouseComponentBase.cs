@@ -31,8 +31,12 @@ public static class CardHouseComponentBase
         stickerBookCard = 407,
         getStaffBonus = 408,
         applySalaryCap = 409,
+        ISStart = 701,
         ISSearch = 702,
         ISViewTrade = 703,
+        ISOfferTrade = 704,
+        ISGetOffers = 705,
+        ISAdminOffer = 706,
         squadSave = 708,
         getSquadList = 709,
         squadLoadActive = 711,
@@ -40,6 +44,7 @@ public static class CardHouseComponentBase
         stickerBookSearch = 802,
         activateCard = 803,
         ISWatchList = 804,
+        ISWatchTrade = 805,
         ISRemoveWatch = 806,
         matchRegisterStart = 1000,
         matchRegisterFinish = 1001,
@@ -81,9 +86,14 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.stickerBookStats2 => typeof(StickerBookStats2Request),
             CardHouseComponentCommand.stickerBookSearch => typeof(StickerBookSearchRequest),
             CardHouseComponentCommand.activateCard => typeof(ActivateCardRequest),
+            CardHouseComponentCommand.ISStart => typeof(ISStartRequest),
             CardHouseComponentCommand.ISSearch => typeof(ISSearchRequest),
             CardHouseComponentCommand.ISWatchList => typeof(ISWatchListRequest),
+            CardHouseComponentCommand.ISWatchTrade => typeof(ISWatchTradeRequest),
             CardHouseComponentCommand.ISViewTrade => typeof(ISViewTradeRequest),
+            CardHouseComponentCommand.ISOfferTrade => typeof(ISOfferTradeRequest),
+            CardHouseComponentCommand.ISGetOffers => typeof(ISGetOffersRequest),
+            CardHouseComponentCommand.ISAdminOffer => typeof(ISAdminOfferRequest),
             CardHouseComponentCommand.ISRemoveWatch => typeof(ISRemoveWatchRequest),
             CardHouseComponentCommand.matchRegisterStart => typeof(MatchRegisterStartRequest),
             CardHouseComponentCommand.matchRegisterFinish => typeof(MatchRegisterFinishRequest),
@@ -119,10 +129,15 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.stickerBookStats2 => typeof(StickerBookStats2Response),
             CardHouseComponentCommand.stickerBookSearch => typeof(StickerBookSearchResponse),
             CardHouseComponentCommand.activateCard => typeof(ActivateCardResponse),
+            CardHouseComponentCommand.ISStart => typeof(ISStartResponse),
             CardHouseComponentCommand.ISSearch => typeof(ISSearchResponse),
             CardHouseComponentCommand.ISWatchList => typeof(ISWatchListResponse),
+            CardHouseComponentCommand.ISWatchTrade => typeof(ISWatchTradeResponse),
             CardHouseComponentCommand.ISViewTrade => typeof(ISViewTradeResponse),
+            CardHouseComponentCommand.ISOfferTrade => typeof(ISOfferTradeResponse),
             CardHouseComponentCommand.ISRemoveWatch => typeof(ISRemoveWatchResponse),
+            CardHouseComponentCommand.ISGetOffers => typeof(ISGetOffersResponse),
+            CardHouseComponentCommand.ISAdminOffer => typeof(ISAdminOfferResponse),
             CardHouseComponentCommand.matchRegisterStart => typeof(MatchRegisterStartResponse),
             CardHouseComponentCommand.matchRegisterFinish => typeof(NumericResponse),
             CardHouseComponentCommand.getUserReliabilityInfo => typeof(UserReliabilityInfoResponse),
@@ -316,6 +331,18 @@ public static class CardHouseComponentBase
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
 
+        [BlazeCommand((ushort)CardHouseComponentCommand.ISStart)]
+        public virtual Task<ISStartResponse> ISStartAsync(ISStartRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.ISGetOffers)]
+        public virtual Task<ISGetOffersResponse> ISGetOffersAsync(ISGetOffersRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
         [BlazeCommand((ushort)CardHouseComponentCommand.ISWatchList)]
         public virtual Task<ISWatchListResponse> ISWatchListAsync(ISWatchListRequest request, BlazeRpcContext context)
         {
@@ -327,9 +354,27 @@ public static class CardHouseComponentBase
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.ISAdminOffer)]
+        public virtual Task<ISAdminOfferResponse> ISAdminOfferAsync(ISAdminOfferRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.ISWatchTrade)]
+        public virtual Task<ISWatchTradeResponse> ISWatchTradeAsync(ISWatchTradeRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
                 
         [BlazeCommand((ushort)CardHouseComponentCommand.ISViewTrade)]
         public virtual Task<ISViewTradeResponse> ISViewTradeAsync(ISViewTradeRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.ISOfferTrade)]
+        public virtual Task<ISOfferTradeResponse> ISOfferTradeAsync(ISOfferTradeRequest request, BlazeRpcContext context)
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
@@ -495,7 +540,6 @@ public static class CardHouseComponentBase
             return Connection.SendRequestAsync<AssignCardsRequest, AssignCardsResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.assignCards, request);
         }
 
-
         public DeckInfoResponse GetDeckInfo(DeckInfoRequest request)
         {
             return Connection.SendRequest<DeckInfoRequest, DeckInfoResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.getDeckInfo, request);
@@ -637,6 +681,36 @@ public static class CardHouseComponentBase
             return Connection.SendRequestAsync<ProvidedUID, UserReliabilityInfoResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.getUserReliabilityInfo, request);
         }
         
+        public ISStartResponse ISStartRequest(ISStartRequest request)
+        {
+            return Connection.SendRequest<ISStartRequest, ISStartResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISStart, request);
+        }
+
+        public Task<ISStartResponse> ISStartRequestAsync(ISStartRequest request)
+        {
+            return Connection.SendRequestAsync<ISStartRequest, ISStartResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISStart, request);
+        }
+        
+        public ISWatchTradeResponse ISWatchTradeRequest(ISWatchTradeRequest request)
+        {
+            return Connection.SendRequest<ISWatchTradeRequest, ISWatchTradeResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISWatchTrade, request);
+        }
+
+        public Task<ISWatchTradeResponse> ISWatchTradeRequestAsync(ISWatchTradeRequest request)
+        {
+            return Connection.SendRequestAsync<ISWatchTradeRequest, ISWatchTradeResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISWatchTrade, request);
+        }
+        
+        public ISAdminOfferResponse ISAdminOfferRequest(ISAdminOfferRequest request)
+        {
+            return Connection.SendRequest<ISAdminOfferRequest, ISAdminOfferResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISAdminOffer, request);
+        }
+
+        public Task<ISAdminOfferResponse> ISAdminOfferRequestAsync(ISAdminOfferRequest request)
+        {
+            return Connection.SendRequestAsync<ISAdminOfferRequest, ISAdminOfferResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISAdminOffer, request);
+        }
+        
         public ISWatchListResponse ISWatchListRequest(ISWatchListRequest request)
         {
             return Connection.SendRequest<ISWatchListRequest, ISWatchListResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISWatchList, request);
@@ -645,6 +719,26 @@ public static class CardHouseComponentBase
         public Task<ISWatchListResponse> ISWatchListRequestAsync(ISWatchListRequest request)
         {
             return Connection.SendRequestAsync<ISWatchListRequest, ISWatchListResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISWatchList, request);
+        }
+        
+        public ISOfferTradeResponse ISOfferTradeRequest(ISOfferTradeRequest request)
+        {
+            return Connection.SendRequest<ISOfferTradeRequest, ISOfferTradeResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISOfferTrade, request);
+        }
+
+        public Task<ISOfferTradeResponse> ISOfferTradeRequestAsync(ISOfferTradeRequest request)
+        {
+            return Connection.SendRequestAsync<ISOfferTradeRequest, ISOfferTradeResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISOfferTrade, request);
+        }
+        
+        public ISGetOffersResponse ISGetOffersRequest(ISGetOffersRequest request)
+        {
+            return Connection.SendRequest<ISGetOffersRequest, ISGetOffersResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISGetOffers, request);
+        }
+
+        public Task<ISGetOffersResponse> ISGetOffersRequestAsync(ISGetOffersRequest request)
+        {
+            return Connection.SendRequestAsync<ISGetOffersRequest, ISGetOffersResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISGetOffers, request);
         }
         
         public ISSearchResponse ISSearchRequest(ISSearchRequest request)

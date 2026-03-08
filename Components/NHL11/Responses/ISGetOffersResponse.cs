@@ -1,15 +1,16 @@
 using System.Collections.Generic;
+using Blaze3SDK.Blaze.Example;
 using Tdf;
 using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11.Components.NHL11.Responses;
 
 [TdfStruct]
-public struct ISWatchListResponse
+public struct ISGetOffersResponse
 {
     
-    [TdfMember("SRES")] 
-    public List<ISTradeInfo> mTradeResults;
+    [TdfMember("LIST")] 
+    public List<ISOfferInfo> mOfferList;
     
     [TdfMember("TOTC")] 
     public int mTotalCount;

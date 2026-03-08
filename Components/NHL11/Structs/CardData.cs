@@ -10,7 +10,7 @@ public struct CardData
     public List<byte> mAttributes;
 
     [TdfMember("CDST")] 
-    public byte mCardStateId;
+    public CardState mCardStateId;
     
     [TdfMember("CID")] 
     public long mCardId;

@@ -5,13 +5,10 @@ using Zamboni11.Components.NHL11.Structs;
 namespace Zamboni11.Components.NHL11.Responses;
 
 [TdfStruct]
-public struct ISWatchListResponse
+public struct ISWatchTradeResponse
 {
     
-    [TdfMember("SRES")] 
-    public List<ISTradeInfo> mTradeResults;
-    
-    [TdfMember("TOTC")] 
-    public int mTotalCount;
+    [TdfMember("VAL")] 
+    public byte mValue;
     
 }

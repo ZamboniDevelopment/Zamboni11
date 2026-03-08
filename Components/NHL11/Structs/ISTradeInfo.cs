@@ -8,7 +8,7 @@ public struct ISTradeInfo
 {
     
     [TdfMember("BUID")] 
-    public ulong mBlazeUserId;
+    public long mBlazeUserId;
     
     [TdfMember("CDAT")] 
     public CardData mCardData;
@@ -26,7 +26,7 @@ public struct ISTradeInfo
     public uint mSellerEstDate;
 
     [TdfMember("EXTM")] 
-    public uint mExpireTime;
+    public int mExpireTime;
     
     [TdfMember("GLOW")] 
     public byte mGlow;
@@ -44,22 +44,21 @@ public struct ISTradeInfo
     public uint mOfferPendingCount;
     
     [TdfMember("RESV")] 
-    public uint mReserve;
+    public uint mBuyOutPrice;
     
     [TdfMember("SELN")] 
     public string mSellerName;
     
     [TdfMember("STAT")] 
-    public uint mTradeState;
+    public TradeState mTradeState;
     
     [TdfMember("TID")] 
     public long mTradeId;
     
     [TdfMember("UID")] 
-    public ulong mUserId;
+    public long mUserId;
     
     [TdfMember("YBID")] 
-    public uint mYourBidState;
-
+    public YourBid mYourBidState;
 
 }

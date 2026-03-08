@@ -19,7 +19,7 @@ public struct SquadInfo
     public List<uint> mLines;
     
     [TdfMember("MNGR")] 
-    public CardData mManager; //Coach of the team?
+    public CardData mManager;
     
     [TdfMember("NAME")] 
     public string mSquadName;
