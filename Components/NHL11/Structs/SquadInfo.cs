@@ -16,7 +16,7 @@ public struct SquadInfo
     public uint mFormationId;
     
     [TdfMember("LINE")] 
-    public List<uint> mLines;
+    public List<int> mLines;
     
     [TdfMember("MNGR")] 
     public CardData mManager;

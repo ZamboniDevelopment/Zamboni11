@@ -16,7 +16,7 @@ public struct CardData
     public long mCardId;
     
     [TdfMember("DBID")] 
-    public uint mCardDbId; //The players databaseId, (Refer nhlng.db file and nhlviewng program)
+    public uint mCardDbId; //The players databaseId, (Refer nhlng.db file and nhlviewng/tdbview program)
     
     [TdfMember("FORM")] 
     public byte mFormationId;

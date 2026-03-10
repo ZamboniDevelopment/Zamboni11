@@ -14,7 +14,7 @@ public struct SquadSaveRequest
     public uint mFormation;
     
     [TdfMember("LINE")] 
-    public List<uint> mLines;
+    public List<int> mLines;
     
     [TdfMember("MNGR")] 
     public long mManager;

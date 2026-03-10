@@ -1,6 +1,6 @@
 namespace Zamboni11.Components.NHL11.Structs;
 
-public enum TradeState : uint
+public enum TradeState : int
 {
     CARDHOUSE_TRADESTATE_INVALID = 0,
     CARDHOUSE_TRADESTATE_ACTIVE = 1,

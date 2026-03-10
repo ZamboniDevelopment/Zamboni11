@@ -24,7 +24,7 @@ public struct GamerInfo
     public string mTeamName;
 
     [TdfMember("PLYQ")] 
-    public uint mPlayOffsQualified;
+    public uint mPlayoffsQualified;
 
     [TdfMember("PLYW")] 
     public uint mPlayoffWon;

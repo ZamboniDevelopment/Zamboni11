@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Tdf;
-using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11.Components.NHL11.Requests;
 
@@ -11,7 +10,7 @@ public struct ISOfferTradeRequest
     public List<long> mCardList;
     
     [TdfMember("CRED")] 
-    public uint mCredits;
+    public int mCredits;
     
     [TdfMember("TID")] 
     public long mTradeId;

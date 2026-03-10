@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Npgsql;
 using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11;
 
 public class HutCardFactory
 {
-    public static long CardIdCounter = 1;
-
+    
     private static readonly Dictionary<CardSubType, Range> TrainingCardDbIdRanges = new();
+    private static readonly Dictionary<CardSubType, List<uint>> PlayerCardDbIdsByCardSubType = new();
+    public static readonly Dictionary<uint, Range> LeagueTeamsMapping = new();
 
     static HutCardFactory()
     {
@@ -26,53 +28,94 @@ public class HutCardFactory
         TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_PLAYER_ATTRIBUTE_CHECKING, new Range(5003044, 5003048));
         TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_PLAYER_ATTRIBUTE_DEFENSE, new Range(5003049, 5003053));
         TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_PLAYER_ALL, new Range(5003054, 5003056));
+
+        PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C));
+        PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW));
+        PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW));
+        PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D));
+        PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK));
+
+        LeagueTeamsMapping.Add(0, new Range(0, 32)); //NHL //31 and 32 All stars
+        LeagueTeamsMapping.Add(1, new Range(33, 62)); //AHL
+        LeagueTeamsMapping.Add(2, new Range(63, 74)); //Elitserien
+        LeagueTeamsMapping.Add(3, new Range(75, 88)); //Sm-Liiga
+        LeagueTeamsMapping.Add(4, new Range(89, 103)); //DEL
+        LeagueTeamsMapping.Add(5, new Range(104, 117)); //O2 Extraliga
+        LeagueTeamsMapping.Add(6, new Range(118, 129)); //National League
+        LeagueTeamsMapping.Add(7, new Range(130, 150)); //National
+        LeagueTeamsMapping.Add(8, new Range(151, 170)); //OHL
+        LeagueTeamsMapping.Add(9, new Range(171, 188)); //QMJHL
+        LeagueTeamsMapping.Add(10, new Range(189, 210)); //WHL
+        LeagueTeamsMapping.Add(11, new Range(211, 212)); //Prospects
     }
 
-    public static CardData CreateRandomHeadCoachCard(long owner)
+    public static async Task<CardData> CreateRandomHeadCoachCard(long owner)
     {
-        return CreateNonPlayerCard(owner, (uint)new Random().Next(2000000, 2000025), CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH);
+        return await CreateNonPlayerCard(owner, (uint)new Random().Next(2000000, 2000025 + 1), CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH);
     }
 
 
-
-    public static CardData CreateRandomContractCard(long owner)
+    public static async Task<CardData> CreateRandomContractCard(long owner)
     {
-        return CreateNonPlayerCard(owner, (uint)new Random().Next(5001001, 5001011), CardSubType.CARDHOUSE_CARD_TYPE_CONTRACT_PLAYER);
+        return await CreateNonPlayerCard(owner, (uint)new Random().Next(5001001, 5001011 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CONTRACT_PLAYER);
     }
 
-    public static CardData CreateRandomTrainingCard(long owner)
+    public static async Task<CardData> CreateRandomTrainingCard(long owner)
     {
         var random = new Random().Next(TrainingCardDbIdRanges.Count);
         var cardType = TrainingCardDbIdRanges.ElementAt(random).Key;
-        return CreateNonPlayerCard(owner, (uint)new Random().Next(TrainingCardDbIdRanges[cardType].Start.Value, TrainingCardDbIdRanges[cardType].End.Value), cardType);
+        return await CreateNonPlayerCard(owner, (uint)new Random().Next(TrainingCardDbIdRanges[cardType].Start.Value, TrainingCardDbIdRanges[cardType].End.Value + 1), cardType);
     }
 
-    public static CardData CreateRandomLogoCard(long owner)
+    public static async Task<CardData> CreateRandomLogoCard(long owner)
     {
-        return CreateNonPlayerCard(owner, (uint)new Random().Next(6000000, 6000211), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_BADGE);
+        return await CreateNonPlayerCard(owner, (uint)new Random().Next(6000000, 6000211 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_BADGE, CardState.CARDHOUSE_CARDSTATE_ACTIVE_BADGE);
     }
 
-    public static CardData CreateRandomStadiumCard(long owner)
+    public static async Task<CardData> CreateRandomStadiumCard(long owner)
     {
-        return CreateNonPlayerCard(owner, (uint)new Random().Next(6200000, 6200005), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_STADIUM,104);
+        return await CreateNonPlayerCard(owner, (uint)new Random().Next(6200000, 6200005 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_STADIUM, CardState.CARDHOUSE_CARDSTATE_ACTIVE_STADIUM);
     }
 
-    public static CardData CreateRandomJerseyCard(long owner, bool isHome, bool isRare)
+    public static async Task<CardData> CreateRandomJerseyCard(long owner, bool isHome, bool isRare)
     {
-        if (isRare) return CreateNonPlayerCard(owner, (uint)new Random().Next(6500001 - 1, 6500196 - 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
-        if (isHome) return CreateNonPlayerCard(owner, (uint)new Random().Next(6300001 - 1, 6300212 - 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT,101);
-        if (!isHome) return CreateNonPlayerCard(owner, (uint)new Random().Next(6400001 - 1, 6400212 - 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT,102);
-        return CreateNonPlayerCard(owner, (uint)new Random().Next(6300001 - 1, 6300212 - 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
+        if (isRare) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6500001 - 1, 6500196 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
+        if (isHome) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6300001 - 1, 6300212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT, CardState.CARDHOUSE_CARDSTATE_ACTIVE_HOME_KIT);
+        if (!isHome) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6400001 - 1, 6400212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT, CardState.CARDHOUSE_CARDSTATE_ACTIVE_AWAY_KIT);
+        return await CreateNonPlayerCard(owner, (uint)new Random().Next(6300001 - 1, 6300212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
     }
 
-    public static CardData CreateNonPlayerCard(long owner, uint dbId, CardSubType cardSubType, byte cardStateId = 1)
+    public static async Task<int> TeamIdFromDbId(uint dbId)
     {
-        long cardId = CardIdCounter++;
-        CardData cardData = new CardData()
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = @"
+        SELECT teamid FROM fcc_badges WHERE carddbid = @carddbid
+        UNION ALL
+        SELECT teamid FROM fcc_kits WHERE carddbid = @carddbid
+        LIMIT 1;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("carddbid", (int)dbId);
+
+        var result = await cmd.ExecuteScalarAsync();
+
+        if (result != null && result != DBNull.Value)
         {
-            mAttributes = null,
+            return Convert.ToInt32(result);
+        }
+
+        return 0;
+    }
+
+    public static async Task<CardData> CreateNonPlayerCard(long owner, uint dbId, CardSubType cardSubType, CardState cardStateId = CardState.CARDHOUSE_CARDSTATE_FREE)
+    {
+        var cardData = new CardData()
+        {
+            mAttributes = new List<byte>(),
             mCardStateId = cardStateId,
-            mCardId = cardId,
+            mCardId = 0,
             mCardDbId = dbId,
             mFormationId = 0,
             mFREE = 0,
@@ -86,39 +129,126 @@ public class HutCardFactory
             mRareFlag = 0,
             mRating = 0,
             mSalaryCap = 0,
-            mListStats = null,
+            mListStats = new List<int>(),
             mCardSubTypeId = cardSubType,
             mDateIssued = 0,
-            mTeamId = 0,
-            mListTrainingCards = null,
+            mTeamId = (uint)await TeamIdFromDbId(dbId),
+            mListTrainingCards = new List<int>(),
             mUsesRemaining = 0
         };
-        return CreateCard(owner, cardId, cardData);
+        switch (cardSubType)
+        {
+            case CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH:
+                return await CreateOrUpdateCard(cardData, owner, CardLocation.STICKERBOOK);
+            default:
+                return await CreateOrUpdateCard(cardData, owner, CardLocation.ACTIVE_UTILITY);
+        }
     }
-    
+
     public static async Task<CardData> CreateRandomPlayerCard(long owner, CardSubType position)
     {
         if (position > CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK) throw new Exception("Position must be 0-4");
-        List<uint> dbIds = await Program.Database.GetListDbIds(position);
+        List<uint> dbIds = PlayerCardDbIdsByCardSubType[position];
         uint cardDbId = dbIds[new Random().Next(dbIds.Count)];
         return await CreatePlayerCard(owner, cardDbId);
     }
-    
-    public static async Task <CardData> CreatePlayerCard(long owner, uint dbId)
+
+    public static async Task<CardData> CreatePlayerCard(long owner, uint dbId)
     {
-        var cardData = Program.Database.GetCardDataByDbId(dbId);
-        CreateCard(owner, cardData.Result.Value.mCardId, cardData.Result.Value);
-        return (CardData)cardData.Result;
+        var staticCardData = await Program.Database.GetPlayerCardDataByDbId(dbId);
+        var cardData = await CreateOrUpdateCard(staticCardData, owner, CardLocation.LINEUP);
+        return cardData;
     }
 
-    public static CardData CreateCard(long ownerUserId, long cardId, CardData cardData)
-    {
-        if (!HutManager.UserInventories.ContainsKey(ownerUserId))
-        {
-            HutManager.UserInventories[ownerUserId] = new Dictionary<long, CardData>();
-        }
+    // public static CardData CreateCard(long ownerUserId, long cardId, CardData cardData)
+    // {
+    //     if (!HutManager.UserInventories.ContainsKey(ownerUserId))
+    //     {
+    //         HutManager.UserInventories[ownerUserId] = new Dictionary<long, CardData>();
+    //     }
+    //
+    //     HutManager.UserInventories[ownerUserId][cardId] = cardData;
+    //     return cardData;
+    // }
 
-        HutManager.UserInventories[ownerUserId][cardId] = cardData;
+    public static async Task<CardData> CreateOrUpdateCard(CardData cardData, long ownerUserId, CardLocation cardLocation)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        string cardIdValue = cardData.mCardId == 0 ? "DEFAULT" : "@card_id";
+
+        string sql = $@"
+    INSERT INTO hut_cards (
+        card_id, user_id, attributes, state_id, db_id, formation_id, 
+        free, career_remaining, injury_games, injury_type, 
+        morale, preferred_position_id, discard_price, 
+        rare_flag, rating, salary_cap,
+        list_stats, sub_type, date_issued,
+        team_id, list_training_cards, uses_remaining,
+        card_location
+    ) 
+    VALUES (
+        {cardIdValue}, @user_id, @attributes, @state_id, @db_id, @formation_id, 
+        @free, @career_remaining, @injury_games, @injury_type, 
+        @morale, @preferred_position_id, @discard_price, 
+        @rare_flag, @rating, @salary_cap,
+        @list_stats, @sub_type, @date_issued, @team_id, @list_training_cards, 
+        @uses_remaining, @card_location
+    )
+    ON CONFLICT (card_id) DO UPDATE SET
+        user_id = EXCLUDED.user_id,
+        attributes = EXCLUDED.attributes,
+        state_id = EXCLUDED.state_id,
+        db_id = EXCLUDED.db_id,
+        formation_id = EXCLUDED.formation_id,
+        free = EXCLUDED.free,
+        career_remaining = EXCLUDED.career_remaining,
+        injury_games = EXCLUDED.injury_games,
+        injury_type = EXCLUDED.injury_type,
+        morale = EXCLUDED.morale,
+        preferred_position_id = EXCLUDED.preferred_position_id,
+        discard_price = EXCLUDED.discard_price,
+        rare_flag = EXCLUDED.rare_flag,
+        rating = EXCLUDED.rating,
+        salary_cap = EXCLUDED.salary_cap,
+        list_stats = EXCLUDED.list_stats,
+        sub_type = EXCLUDED.sub_type,
+        team_id = EXCLUDED.team_id,
+        list_training_cards = EXCLUDED.list_training_cards,
+        uses_remaining = EXCLUDED.uses_remaining,
+        card_location = EXCLUDED.card_location
+    RETURNING card_id;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+
+        if (cardData.mCardId != 0) cmd.Parameters.AddWithValue("card_id", cardData.mCardId);
+
+        cmd.Parameters.AddWithValue("user_id", ownerUserId);
+        cmd.Parameters.AddWithValue("attributes", cardData.mAttributes.Select(b => (short)b).ToArray());
+        cmd.Parameters.AddWithValue("state_id", (int)cardData.mCardStateId);
+        cmd.Parameters.AddWithValue("db_id", (long)cardData.mCardDbId); // Use long for BIGINT
+        cmd.Parameters.AddWithValue("formation_id", (int)cardData.mFormationId);
+        cmd.Parameters.AddWithValue("free", (int)cardData.mFREE);
+        cmd.Parameters.AddWithValue("career_remaining", (int)cardData.mCareerRemaining);
+        cmd.Parameters.AddWithValue("injury_games", (int)cardData.mInjuryGames);
+        cmd.Parameters.AddWithValue("injury_type", (int)cardData.mInjuryType);
+        cmd.Parameters.AddWithValue("morale", (int)cardData.mMaxTrainingCardsCanApply);
+        cmd.Parameters.AddWithValue("preferred_position_id", (int)cardData.mPreferredPositionId);
+        cmd.Parameters.AddWithValue("discard_price", (int)cardData.mDiscardPrice);
+        cmd.Parameters.AddWithValue("rare_flag", (int)cardData.mRareFlag);
+        cmd.Parameters.AddWithValue("rating", (int)cardData.mRating);
+        cmd.Parameters.AddWithValue("salary_cap", (int)cardData.mSalaryCap);
+        cmd.Parameters.AddWithValue("list_stats", cardData.mListStats.ToArray());
+        cmd.Parameters.AddWithValue("list_training_cards", cardData.mListTrainingCards.ToArray());
+        cmd.Parameters.AddWithValue("sub_type", (int)cardData.mCardSubTypeId);
+        cmd.Parameters.AddWithValue("date_issued", (long)Util.TimeNow());
+        cmd.Parameters.AddWithValue("team_id", (int)cardData.mTeamId);
+        cmd.Parameters.AddWithValue("uses_remaining", (int)cardData.mUsesRemaining);
+        cmd.Parameters.AddWithValue("card_location", (int)cardLocation);
+
+        cardData.mCardId = (long)await cmd.ExecuteScalarAsync();
+
         return cardData;
     }
 }

@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using BlazeCommon;
 
@@ -6,89 +7,90 @@ namespace Zamboni11;
 
 public static class ServerManager
 {
-    private static readonly List<ServerPlayer> ServerPlayers = new();
-    private static readonly List<QueuedPlayer> QueuedPlayers = new();
-    private static readonly List<ServerGame> ServerGames = new();
+    private static readonly ConcurrentDictionary<ulong, ServerPlayer> ServerPlayers = new();
+    private static readonly ConcurrentDictionary<ulong, QueuedPlayer> QueuedPlayers = new();
+    private static readonly ConcurrentDictionary<uint, ServerGame> ServerGames = new();
 
-    public static void AddServerPlayer(ServerPlayer serverPlayer)
+    public static void AddServerPlayer(ulong id, ServerPlayer serverPlayer)
     {
         var existing = GetServerPlayer(serverPlayer.UserIdentification.mName);
-        if (existing != null) RemoveServerPlayer(existing);
-        ServerPlayers.Add(serverPlayer);
+        if (existing != null) RemoveServerPlayer(existing.UserIdentification.mExternalId);
+        ServerPlayers.TryAdd(id, serverPlayer);
     }
 
-    public static void AddQueuedPlayer(QueuedPlayer queuedPlayer)
+    public static void AddQueuedPlayer(ulong id, QueuedPlayer queuedPlayer)
     {
-        QueuedPlayers.Add(queuedPlayer);
+        QueuedPlayers.TryAdd(id, queuedPlayer);
     }
 
-    public static void AddServerGame(ServerGame serverGame)
+    public static void AddServerGame(uint id, ServerGame serverGame)
     {
-        ServerGames.Add(serverGame);
+        ServerGames.TryAdd(id, serverGame);
     }
 
-    public static bool RemoveServerPlayer(ServerPlayer serverPlayer)
+    public static bool RemoveServerPlayer(ulong id)
     {
-        return ServerPlayers.Remove(serverPlayer);
+        return ServerPlayers.TryRemove(id, out _);
     }
 
-    public static bool RemoveQueuedPlayer(QueuedPlayer queuedPlayer)
+    public static bool RemoveQueuedPlayer(ulong id)
     {
-        return QueuedPlayers.Remove(queuedPlayer);
+        return QueuedPlayers.TryRemove(id, out _);
     }
 
-    public static bool RemoveServerGame(ServerGame serverGame)
+    public static bool RemoveServerGame(uint id)
     {
-        return ServerGames.Remove(serverGame);
+        return ServerGames.TryRemove(id, out _);
     }
 
-    public static List<ServerPlayer> GetServerPlayers()
+    public static ConcurrentDictionary<ulong, ServerPlayer> GetServerPlayers()
     {
         return ServerPlayers;
     }
 
-    public static List<QueuedPlayer> GetQueuedPlayers()
+    public static ConcurrentDictionary<ulong, QueuedPlayer> GetQueuedPlayers()
     {
         return QueuedPlayers;
     }
 
-    public static List<ServerGame> GetServerGames()
+    public static ConcurrentDictionary<uint, ServerGame> GetServerGames()
     {
         return ServerGames;
     }
 
     public static ServerPlayer? GetServerPlayer(BlazeServerConnection blazeServerConnection)
     {
-        return ServerPlayers.FirstOrDefault(serverPlayer => serverPlayer.BlazeServerConnection.Equals(blazeServerConnection));
+        return ServerPlayers.Values.FirstOrDefault(serverPlayer => serverPlayer.BlazeServerConnection.Equals(blazeServerConnection));
     }
 
     public static ServerPlayer? GetServerPlayer(ProtoFireConnection protoFireConnection)
     {
-        return ServerPlayers.FirstOrDefault(serverPlayer => serverPlayer.BlazeServerConnection.ProtoFireConnection.Equals(protoFireConnection));
+        return ServerPlayers.Values.FirstOrDefault(serverPlayer => serverPlayer.BlazeServerConnection.ProtoFireConnection.Equals(protoFireConnection));
     }
 
     public static ServerPlayer? GetServerPlayer(uint userId)
     {
-        return ServerPlayers.FirstOrDefault(serverPlayer => serverPlayer.UserIdentification.mBlazeId.Equals(userId));
+        var asUlong = (ulong)userId;
+        return ServerPlayers[asUlong];
     }
 
     public static ServerPlayer? GetServerPlayer(string name)
     {
-        return ServerPlayers.FirstOrDefault(serverPlayer => serverPlayer.UserIdentification.mName.Equals(name));
+        return ServerPlayers.Values.FirstOrDefault(p => p.UserIdentification.mName.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 
     public static ServerGame? GetServerGame(uint id)
     {
-        return ServerGames.FirstOrDefault(serverGame => serverGame.ReplicatedGameData.mGameId.Equals(id));
+        return ServerGames[id];
     }
 
     public static ServerGame? GetServerGame(ServerPlayer serverPlayer)
     {
-        return ServerGames.FirstOrDefault(serverGame => serverGame.ServerPlayers.Contains(serverPlayer));
+        return ServerGames.Values.FirstOrDefault(serverGame => serverGame.ServerPlayers.Contains(serverPlayer));
     }
 
     public static QueuedPlayer? GetQueuedPlayer(ServerPlayer serverPlayer)
     {
-        return QueuedPlayers.FirstOrDefault(queuedPlayer => queuedPlayer.ServerPlayer.Equals(serverPlayer));
+        return QueuedPlayers.Values.FirstOrDefault(queuedPlayer => queuedPlayer.ServerPlayer.Equals(serverPlayer));
     }
 }

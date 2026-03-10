@@ -6,13 +6,13 @@ namespace Zamboni11.Components.NHL11.Structs;
 public struct StickerBookStatResult
 {
     [TdfMember("CTTP")] 
-    public byte mContextId;
+    public ResultContext mContextId;
     
     [TdfMember("CTVL")] 
     public uint mContextValue;
     
     [TdfMember("TYPE")] 
-    public byte mTypeId;
+    public ResultType mTypeId;
     
     [TdfMember("VALU")] 
     public uint mValue;

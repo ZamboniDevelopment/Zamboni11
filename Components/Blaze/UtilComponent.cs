@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blaze3SDK.Blaze;
@@ -189,7 +188,6 @@ internal class UtilComponent : UtilComponentBase.Server
                         // "URL", ""
                     // },
                 }
-
             });
         }
         return Task.FromResult(new FetchConfigResponse

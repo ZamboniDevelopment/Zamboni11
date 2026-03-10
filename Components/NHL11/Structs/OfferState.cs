@@ -1,6 +1,6 @@
 namespace Zamboni11.Components.NHL11.Structs;
 
-public enum OfferState : uint
+public enum OfferState : int
 {
     CARDHOUSE_OFFERSTATE_INVALID = 0,
     CARDHOUSE_OFFERSTATE_ACTIVE = 1,

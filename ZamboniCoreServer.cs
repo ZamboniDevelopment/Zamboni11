@@ -14,10 +14,10 @@ public class ZamboniCoreServer : BlazeServer
     {
         var serverPlayer = ServerManager.GetServerPlayer(connection);
         if (serverPlayer == null) return base.OnProtoFireDisconnectAsync(connection);
-        ServerManager.RemoveServerPlayer(serverPlayer);
+        ServerManager.RemoveServerPlayer(serverPlayer.UserIdentification.mExternalId);
 
         var queuedPlayer = ServerManager.GetQueuedPlayer(serverPlayer);
-        if (queuedPlayer != null) ServerManager.RemoveQueuedPlayer(queuedPlayer);
+        if (queuedPlayer != null) ServerManager.RemoveQueuedPlayer(queuedPlayer.ServerPlayer.UserIdentification.mExternalId);
 
         var serverGame = ServerManager.GetServerGame(serverPlayer);
         if (serverGame != null) serverGame.RemoveGameParticipant(serverPlayer, PlayerRemovedReason.PLAYER_CONN_LOST);

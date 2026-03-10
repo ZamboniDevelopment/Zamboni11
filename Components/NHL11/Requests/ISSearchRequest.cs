@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Tdf;
 
 namespace Zamboni11.Components.NHL11.Requests;
@@ -58,25 +57,3 @@ public struct ISSearchRequest
     public int mFieldZone;
     
 }
-
-
-// ISSearchRequest = {
-//     CAT = -1 (0xFFFFFFFF)
-//     CTYP = -1 (0xFFFFFFFF)
-//     FORM = -1 (0xFFFFFFFF)
-//     LEAG = -1 (0xFFFFFFFF)
-//     LEV = -1 (0xFFFFFFFF)
-//     MACR = -1 (0xFFFFFFFF)
-//     MAXB = -1 (0xFFFFFFFF)
-//     MICR = -1 (0xFFFFFFFF)
-//     MINB = -1 (0xFFFFFFFF)
-//     MYTR = 2 (0x00000002)
-//     NAT = -1 (0xFFFFFFFF)
-//     NOAC = 1 (0x00000001)
-//     NUMR = 50 (0x00000032)
-//     POS = -1 (0xFFFFFFFF)
-//     STRT = 0 (0x00000000)
-//     TEAM = -1 (0xFFFFFFFF)
-//     UID = 0 (0x0000000000000000)
-//     ZONE = -1 (0xFFFFFFFF)
-// }

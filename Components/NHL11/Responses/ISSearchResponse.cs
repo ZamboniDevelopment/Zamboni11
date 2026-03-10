@@ -12,6 +12,6 @@ public struct ISSearchResponse
     public List<ISTradeInfo> mSearchResults;
     
     [TdfMember("TOTC")] 
-    public uint mTotalCount;
+    public int mTotalCount;
     
 }

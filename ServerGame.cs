@@ -11,73 +11,87 @@ public class ServerGame
 {
     private readonly object _lockReplicatedPlayers = new();
 
-    // public ServerGame(ServerPlayer host, StartMatchmakingRequest request, string gameMode)
-    // {
-    //     var gameId = Program.Database.GetNextGameId();
-    //
-    //     ReplicatedGameData = new ReplicatedGameData
-    //     {
-    //         mAdminPlayerList = new List<long>
-    //         {
-    //             host.UserIdentification.mAccountId
-    //         },
-    //         mGameAttribs = VsGameAttribs(),
-    //         mSlotCapacities = Capacities(gameMode),
-    //         mEntryCriteriaMap = request.mEntryCriteriaMap,
-    //         mGameId = gameId,
-    //         mGameName = "game" + gameId,
-    //         mGameSettings = request.mGameSettings,
-    //         mGameReportingId = gameId,
-    //         mGameState = GameState.INITIALIZING,
-    //         mHostNetworkAddressList = new List<NetworkAddress>
-    //         {
-    //             host.ExtendedData.mAddress
-    //         },
-    //         mTopologyHostSessionId = (uint)host.UserIdentification.mAccountId,
-    //         mIgnoreEntryCriteriaWithInvite = true,
-    //         mMeshAttribs = new SortedDictionary<string, string>(),
-    //         mMaxPlayerCapacity = Capacities(gameMode)[1],
-    //         mNetworkQosData = host.ExtendedData.mQosData,
-    //         mNetworkTopology = request.mNetworkTopology,
-    //         mPlatformHostInfo = new HostInfo
-    //         {
-    //             mPlayerId = host.UserIdentification.mAccountId,
-    //             mSlotId = 0
-    //         },
-    //         mPingSiteAlias = "qos",
-    //         mQueueCapacity = 0,
-    //         mTopologyHostInfo = new HostInfo
-    //         {
-    //             mPlayerId = host.UserIdentification.mAccountId,
-    //             mSlotId = 0
-    //         },
-    //         mTeamCapacity = new List<TeamCapacity>
-    //         {
-    //             new()
-    //             {
-    //                 mTeamCapacity = 2,
-    //                 mTeamId = 1,
-    //                 mTeamIndex = 0
-    //             },
-    //             new()
-    //             {
-    //                 mTeamCapacity = 2,
-    //                 mTeamId = 2,
-    //                 mTeamIndex = 1
-    //             }
-    //         },
-    //         mUUID = "game" + gameId,
-    //         mVoipNetwork = VoipTopology.VOIP_DISABLED,
-    //         mGameProtocolVersionString = request.mGameProtocolVersionString,
-    //         mXnetNonce = new byte[]
-    //         {
-    //         },
-    //         mXnetSession = new byte[]
-    //         {
-    //         }
-    //     };
-    //     ServerManager.AddServerGame(this);
-    // }
+    private SortedDictionary<string, string> toStringDictionary(MatchmakingCriteriaData matchmakingCriteriaData)
+    {
+        SortedDictionary<string, string> retList = new();
+        foreach (var VARIABLE in matchmakingCriteriaData.mGenericRulePrefsList)
+        {
+            retList.Add(VARIABLE.mRuleName, VARIABLE.mDesiredValues[0]);
+        }
+
+        return retList;
+    }
+
+    public ServerGame(ServerPlayer host, StartMatchmakingRequest request)
+    {
+        var gameId = Program.Database.GetNextGameId();
+
+        ReplicatedGameData = new ReplicatedGameData
+        {
+            mAdminPlayerList = new List<long>
+            {
+                host.UserIdentification.mAccountId
+            },
+            mGameAttribs = toStringDictionary(request.mCriteriaData),
+            mSlotCapacities = new List<ushort>
+            {
+                0, request.mCriteriaData.mGameSizeRulePrefs.mMaxPlayerCapacity
+            },
+            mEntryCriteriaMap = request.mEntryCriteriaMap,
+            mGameId = gameId,
+            mGameName = "game" + gameId,
+            mGameSettings = request.mGameSettings,
+            mGameReportingId = gameId,
+            mGameState = GameState.INITIALIZING,
+            mHostNetworkAddressList = new List<NetworkAddress>
+            {
+                host.ExtendedData.mAddress
+            },
+            mTopologyHostSessionId = (uint)host.UserIdentification.mAccountId,
+            mIgnoreEntryCriteriaWithInvite = true,
+            mMeshAttribs = new SortedDictionary<string, string>(),
+            mMaxPlayerCapacity = request.mCriteriaData.mGameSizeRulePrefs.mMaxPlayerCapacity,
+            mNetworkQosData = host.ExtendedData.mQosData,
+            mNetworkTopology = request.mNetworkTopology,
+            mPlatformHostInfo = new HostInfo
+            {
+                mPlayerId = host.UserIdentification.mAccountId,
+                mSlotId = 0
+            },
+            mPingSiteAlias = "qos",
+            mQueueCapacity = 0,
+            mTopologyHostInfo = new HostInfo
+            {
+                mPlayerId = host.UserIdentification.mAccountId,
+                mSlotId = 0
+            },
+            mTeamCapacity = new List<TeamCapacity>
+            {
+                new()
+                {
+                    mTeamCapacity = 2,
+                    mTeamId = 1,
+                    mTeamIndex = 0
+                },
+                new()
+                {
+                    mTeamCapacity = 2,
+                    mTeamId = 2,
+                    mTeamIndex = 1
+                }
+            },
+            mUUID = "game" + gameId,
+            mVoipNetwork = VoipTopology.VOIP_DISABLED,
+            mGameProtocolVersionString = request.mGameProtocolVersionString,
+            mXnetNonce = new byte[]
+            {
+            },
+            mXnetSession = new byte[]
+            {
+            }
+        };
+        ServerManager.AddServerGame(gameId,this);
+    }
 
     public ServerGame(ServerPlayer host, CreateGameRequest request)
     {
@@ -152,7 +166,7 @@ public class ServerGame
             {
             }
         };
-        ServerManager.AddServerGame(this);
+        ServerManager.AddServerGame(gameId,this);
     }
 
     public List<ServerPlayer> ServerPlayers { get; } = new();
@@ -185,12 +199,21 @@ public class ServerGame
         var replicatedGamePlayer = serverPlayer.ToReplicatedGamePlayer((byte)(ServerPlayers.Count - 1), ReplicatedGameData.mGameId);
         ReplicatedGamePlayers.Add(replicatedGamePlayer);
         ReplicatedGameData.mHostNetworkAddressList.Add(serverPlayer.ExtendedData.mAddress);
-
         GameManagerBase.Server.NotifyGameSetupAsync(serverPlayer.BlazeServerConnection, new NotifyGameSetup
         {
             mGameData = ReplicatedGameData,
-            mGameRoster = ReplicatedGamePlayers
-            // mGameSetupReason = gameSetupReason
+            mGameRoster = ReplicatedGamePlayers,
+            mGameSetupReason = new GameSetupReason
+            {
+                MatchmakingSetupContext = new MatchmakingSetupContext
+                {
+                    mFitScore = 10,
+                    mMatchmakingResult = MatchmakingResult.SUCCESS_CREATED_GAME,
+                    mMaxPossibleFitScore = 10,
+                    mSessionId = matchmakingSessionId,
+                    mUserSessionId = matchmakingSessionId
+                },
+            }
         });
 
         NotifyParticipants(new NotifyPlayerJoining
@@ -207,8 +230,7 @@ public class ServerGame
         {
             ServerPlayers.Remove(serverPlayer);
 
-            var replicatedPlayerToRemove = ReplicatedGamePlayers.Find(replicatedPlayer => replicatedPlayer.mPlayerName.Equals(serverPlayer.UserIdentification.mName)
-            );
+            var replicatedPlayerToRemove = ReplicatedGamePlayers.Find(replicatedPlayer => replicatedPlayer.mPlayerName.Equals(serverPlayer.UserIdentification.mName));
 
             ReplicatedGamePlayers.Remove(replicatedPlayerToRemove);
         }

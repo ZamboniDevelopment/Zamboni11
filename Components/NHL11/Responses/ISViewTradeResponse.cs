@@ -8,7 +8,7 @@ public struct ISViewTradeResponse
 {
     
     [TdfMember("CRED")] 
-    public uint mCredits;
+    public int mCredits;
     
     [TdfMember("INFO")] 
     public ISTradeInfo mISTradeInfo;

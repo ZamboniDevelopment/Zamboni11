@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Tdf;
 
 namespace Zamboni11.Components.NHL11.Structs;
@@ -17,7 +16,7 @@ public struct ISTradeInfo
     public long mCardId;
     
     [TdfMember("CRED")] 
-    public uint mCredits;
+    public int mBuyOutPrice;
 
     [TdfMember("DBID")] 
     public uint mCardDbId;
@@ -26,13 +25,13 @@ public struct ISTradeInfo
     public uint mSellerEstDate;
 
     [TdfMember("EXTM")] 
-    public int mExpireTime;
+    public int mSecondsLeft;
     
     [TdfMember("GLOW")] 
     public byte mGlow;
 
     [TdfMember("HBID")] 
-    public uint mHighestBid;
+    public int mHighestBid;
     
     [TdfMember("INBX")] 
     public byte mInbox;
@@ -41,10 +40,10 @@ public struct ISTradeInfo
     public byte mIsWatched;
     
     [TdfMember("OFPE")] 
-    public uint mOfferPendingCount;
+    public int mOfferPendingCount;
     
     [TdfMember("RESV")] 
-    public uint mBuyOutPrice;
+    public int mStartingPrice;
     
     [TdfMember("SELN")] 
     public string mSellerName;

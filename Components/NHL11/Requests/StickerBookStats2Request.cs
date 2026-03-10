@@ -1,4 +1,5 @@
 using Tdf;
+using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11.Components.NHL11.Requests;
 
@@ -6,7 +7,7 @@ namespace Zamboni11.Components.NHL11.Requests;
 public struct StickerBookStats2Request
 {
     [TdfMember("CONT")] 
-    public byte mContextId;
+    public RequestContext mContextId;
 
     [TdfMember("UID")] 
     public long mUserId;

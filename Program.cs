@@ -165,9 +165,9 @@ internal class Program
                     Logger.Info("GameServerPort port: " + ZamboniConfig.GameServerPort);
                     Logger.Info("Redirector port: " + RedirectorPort);
                     Logger.Info("Online Players: " + ServerManager.GetServerPlayers().Count);
-                    foreach (var serverPlayer in ServerManager.GetServerPlayers()) Logger.Info(serverPlayer.UserIdentification.mName);
+                    foreach (var serverPlayer in ServerManager.GetServerPlayers().Values) Logger.Info(serverPlayer.UserIdentification.mName);
                     Logger.Info("Queued Total Players: " + ServerManager.GetQueuedPlayers().Count);
-                    foreach (var queuedPlayer in ServerManager.GetQueuedPlayers()) Logger.Info(queuedPlayer.ServerPlayer.UserIdentification.mName);
+                    foreach (var queuedPlayer in ServerManager.GetQueuedPlayers().Values) Logger.Info(queuedPlayer.ServerPlayer.UserIdentification.mName);
                     Logger.Info("Server Games: " + ServerManager.GetServerGames().Count);
                     foreach (var serverGame in ServerManager.GetServerGames()) Logger.Info(serverGame);
                     break;

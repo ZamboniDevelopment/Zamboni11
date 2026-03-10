@@ -9,16 +9,14 @@ namespace Zamboni11;
 
 public class ServerPlayer
 {
-    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     public ServerPlayer(BlazeServerConnection blazeServerConnection, UserIdentification userIdentification, UserSessionExtendedData extendedData, SessionInfo sessionInfo)
     {
-        Logger.Debug($"Constructor in {userIdentification.mName}");
         BlazeServerConnection = blazeServerConnection;
         UserIdentification = userIdentification;
         ExtendedData = extendedData;
         SessionInfo = sessionInfo;
-        ServerManager.AddServerPlayer(this);
+        ServerManager.AddServerPlayer(userIdentification.mExternalId, this);
     }
 
     public BlazeServerConnection BlazeServerConnection { get; }

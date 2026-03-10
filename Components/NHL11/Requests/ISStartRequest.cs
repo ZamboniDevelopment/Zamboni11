@@ -1,5 +1,4 @@
 using Tdf;
-using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11.Components.NHL11.Requests;
 
@@ -10,16 +9,16 @@ public struct ISStartRequest
     public long mCardId;
 
     [TdfMember("CRED")] 
-    public uint mCredits;
+    public int mCredits;
     
     [TdfMember("OFTX")] 
     public string mOfferText;
     
     [TdfMember("PRD")] 
-    public int mPeriod;
+    public int mPeriod; //Duration seconds
 
     [TdfMember("RESV")] 
-    public uint mReserve;
+    public int mReserve;
     
     [TdfMember("UID")] 
     public ulong mUserId;
