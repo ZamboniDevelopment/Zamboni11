@@ -46,6 +46,8 @@ public static class CardHouseComponentBase
         ISWatchList = 804,
         ISWatchTrade = 805,
         ISRemoveWatch = 806,
+        storeGetPackTypes = 808,
+        storePackQuantities = 810,
         matchRegisterStart = 1000,
         matchRegisterFinish = 1001,
         getUserReliabilityInfo = 1002
@@ -95,6 +97,8 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.ISGetOffers => typeof(ISGetOffersRequest),
             CardHouseComponentCommand.ISAdminOffer => typeof(ISAdminOfferRequest),
             CardHouseComponentCommand.ISRemoveWatch => typeof(ISRemoveWatchRequest),
+            CardHouseComponentCommand.storeGetPackTypes => typeof(StoreGetPackTypesRequest),
+            CardHouseComponentCommand.storePackQuantities => typeof(StorePackQuantitiesRequest),
             CardHouseComponentCommand.matchRegisterStart => typeof(MatchRegisterStartRequest),
             CardHouseComponentCommand.matchRegisterFinish => typeof(MatchRegisterFinishRequest),
             CardHouseComponentCommand.getUserReliabilityInfo => typeof(ProvidedUID),
@@ -138,6 +142,8 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.ISRemoveWatch => typeof(ISRemoveWatchResponse),
             CardHouseComponentCommand.ISGetOffers => typeof(ISGetOffersResponse),
             CardHouseComponentCommand.ISAdminOffer => typeof(ISAdminOfferResponse),
+            CardHouseComponentCommand.storeGetPackTypes => typeof(StoreGetPackTypesResponse),
+            CardHouseComponentCommand.storePackQuantities => typeof(StorePackQuantitiesResponse),
             CardHouseComponentCommand.matchRegisterStart => typeof(MatchRegisterStartResponse),
             CardHouseComponentCommand.matchRegisterFinish => typeof(NumericResponse),
             CardHouseComponentCommand.getUserReliabilityInfo => typeof(UserReliabilityInfoResponse),
@@ -289,8 +295,21 @@ public static class CardHouseComponentBase
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
+        
         [BlazeCommand((ushort)CardHouseComponentCommand.activateCard)]
         public virtual Task<ActivateCardResponse> ActivateCardAsync(ActivateCardRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.storeGetPackTypes)]
+        public virtual Task<StoreGetPackTypesResponse> StoreGetPackTypesAsync(StoreGetPackTypesRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.storePackQuantities)]
+        public virtual Task<StorePackQuantitiesResponse> StorePackQuantitiesAsync(StorePackQuantitiesRequest request, BlazeRpcContext context)
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
@@ -498,6 +517,26 @@ public static class CardHouseComponentBase
         public Task<ApplyCardResponse> ApplyCardRequestAsync(ApplyCardRequest request)
         {
             return Connection.SendRequestAsync<ApplyCardRequest, ApplyCardResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.applyCard, request);
+        }
+        
+        public StoreGetPackTypesResponse StoreGetPackTypesRequest(StoreGetPackTypesRequest request)
+        {
+            return Connection.SendRequest<StoreGetPackTypesRequest, StoreGetPackTypesResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.storeGetPackTypes, request);
+        }
+
+        public Task<StoreGetPackTypesResponse> StoreGetPackTypesRequestAsync(StoreGetPackTypesRequest request)
+        {
+            return Connection.SendRequestAsync<StoreGetPackTypesRequest, StoreGetPackTypesResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.storeGetPackTypes, request);
+        }
+        
+        public StorePackQuantitiesResponse StoreGetPackTypesRequest(StorePackQuantitiesRequest request)
+        {
+            return Connection.SendRequest<StorePackQuantitiesRequest, StorePackQuantitiesResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.storePackQuantities, request);
+        }
+
+        public Task<StorePackQuantitiesResponse> StoreGetPackTypesRequestAsync(StorePackQuantitiesRequest request)
+        {
+            return Connection.SendRequestAsync<StorePackQuantitiesRequest, StorePackQuantitiesResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.storePackQuantities, request);
         }
         
         public ActivateCardResponse ActivateCardRequest(ActivateCardRequest request)

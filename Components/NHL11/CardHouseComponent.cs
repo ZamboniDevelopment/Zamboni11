@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blaze3SDK;
+using Blaze3SDK.Blaze.Example;
 using BlazeCommon;
 using Npgsql;
 using Zamboni11.Components.NHL11.Bases;
@@ -98,6 +99,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
                 mStats = reader.GetFieldValue<short[]>(reader.GetOrdinal("stats")).Select(s => (byte)s).ToList()
             };
         }
+
         throw new Exception();
     }
 
@@ -134,7 +136,8 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
                 mSquadId = (uint)reader.GetInt32(reader.GetOrdinal("squad_id"))
             };
         }
-        throw new Exception();
+
+        return null;
     }
 
     private async Task<VersionInfo> GetOrCreateVersionInfo(long userId)
@@ -359,7 +362,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         switch (request.mDeckType)
         {
             case DeckType.CARDHOUSE_DECK_ESCROW:
-                await HutCardFactory.CreateOrUpdateCard(cardData, userId, CardLocation.ESCROW);
+                await HutCardFactory.CreateOrUpdateCard(cardData, userId, DeckType.CARDHOUSE_DECK_ESCROW);
                 versionInfo = await IncrementVersionInfo(userId, VersionType.Escrow);
                 break;
             default:
@@ -397,16 +400,16 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         };
     }
 
-    public async Task<List<CardData>> GetCardList(long userId, CardLocation cardLocation)
+    public async Task<List<CardData>> GetCardList(long userId, DeckType deckType)
     {
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
         await conn.OpenAsync();
 
-        const string sql = "SELECT * FROM hut_cards WHERE user_id = @user_id AND card_location = @card_location;";
+        const string sql = "SELECT * FROM hut_cards WHERE user_id = @user_id AND deck_type = @deck_type;";
 
         await using var cmd = new NpgsqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("user_id", userId);
-        cmd.Parameters.AddWithValue("card_location", (int)cardLocation);
+        cmd.Parameters.AddWithValue("deck_type", (int)deckType);
 
         await using var reader = await cmd.ExecuteReaderAsync();
 
@@ -430,7 +433,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
               FROM hut_cards
         WHERE user_id = @user_id");
 
-        sql.Append(" AND card_location IN (0, 1, 3, 4)");
+        sql.Append(" AND deck_type IN (0, 1, 3, 4)");
         switch (request.mCollectionSearchCardType)
         {
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_ALL:
@@ -566,8 +569,8 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         if (squadInfo != null) teamRating = squadInfo.Value.mStarRating;
         var versionInfo = await GetOrCreateVersionInfo(userId);
 
-        var escrowList = await GetCardList(userId, CardLocation.ESCROW);
-        var unassignedList = await GetCardList(userId, CardLocation.UNASSIGNED);
+        var escrowList = await GetCardList(userId, DeckType.CARDHOUSE_DECK_ESCROW);
+        var unassignedList = await GetCardList(userId, DeckType.CARDHOUSE_DECK_UNASSIGNED);
 
         return new DeckInfoResponse
         {
@@ -639,13 +642,49 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         });
     }
 
+    public override Task<StoreGetPackTypesResponse> StoreGetPackTypesAsync(StoreGetPackTypesRequest request, BlazeRpcContext context)
+    {
+        return Task.FromResult(new StoreGetPackTypesResponse
+        {
+            mFreePack = 0,
+            mPremiumPacksHidden = 0,
+            mPackTypeList = new List<StorePackTypeData>()
+            {
+                new StorePackTypeData
+                {
+                    mAttributes = StorePackAttribute.CARDHOUSE_STOREPACKATTRIBUTES_SAVINGS_COINS,
+                    mAvailability = StorePackAvailability.CARDHOUSE_STOREPACKAVAILABILITY_COINS,
+                    mCoinCost = 1,
+                    mEndDate = 0,
+                    mId = StorePackId.CARDHOUSE_CARD_PACK_TYPE_PEEWEE,
+                    mQuantity = 0,
+                    mSaleType = StoreSaleType.CARDHOUSE_STORESALETYPE_NONE,
+                    mStartDate = 0,
+                    mState = StorePackState.CARDHOUSE_STOREPACKSTATE_ACTIVE
+                }
+            },
+            mServerTime = 0
+        });
+    }
+
+    public override Task<StorePackQuantitiesResponse> StorePackQuantitiesAsync(StorePackQuantitiesRequest request, BlazeRpcContext context)
+    {
+        return Task.FromResult(new StorePackQuantitiesResponse
+        {
+            mPackQuantitiesList = new List<int>
+            {
+                10, 20
+            }
+        });
+    }
+
     //
     public override async Task<DiscardCardResponse> DiscardCardAsync(DiscardCardRequest request, BlazeRpcContext context)
     {
         //TODO Maybe checks
         long userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
         CardData cardData = await GetCard(request.mCardId);
-        await HutCardFactory.CreateOrUpdateCard(cardData, userId, CardLocation.DISCARDED);
+        await HutCardFactory.CreateOrUpdateCard(cardData, userId, DeckType.CARDHOUSE_DECK_INVALID);
         var generalInfo = await GetOrCreateGeneralInfo(userId);
         await SetGeneralInfo(new GeneralInfo
         {
@@ -702,6 +741,12 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     public override async Task<AssignCardsResponse> AssignCardsAsync(AssignCardsRequest request, BlazeRpcContext context)
     {
         long userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        foreach (var VARIABLE in request.mList)
+        {
+            CardData cardData = await GetCard(VARIABLE.mCardId);
+            cardData.mCardStateId = VARIABLE.mCardStateId;
+            await HutCardFactory.CreateOrUpdateCard(cardData, userId, VARIABLE.mDeckType);
+        }
         await IncrementVersionInfo(userId, VersionType.Unassigned);
         return new AssignCardsResponse
         {
@@ -924,7 +969,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             FROM hut_cards 
             WHERE user_id = @user_id 
             AND team_id >= @startId AND team_id <= @endId 
-            AND card_location IN (0, 1, 3, 4)";
+            AND deck_type IN (0, 1, 3, 4)";
 
         if (subTypes != null && subTypes.Length > 0)
         {
@@ -965,7 +1010,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             sql += " AND sub_type = ANY(@sub_types)";
         }
 
-        sql += " AND card_location IN (0, 1, 3, 4)";
+        sql += " AND deck_type IN (0, 1, 3, 4)";
         await using var cmd = new NpgsqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("user_id", userId);
 
@@ -983,7 +1028,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         long userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
 
         List<CardData> cardDatas = await GetCardList(userId, request);
-        
+
         return new StickerBookSearchResponse
         {
             mSearchResults = cardDatas
@@ -1164,7 +1209,6 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     public override Task<ISWatchTradeResponse> ISWatchTradeAsync(ISWatchTradeRequest request, BlazeRpcContext context)
     {
         throw new NotImplementedException();
-        
     }
 
     public override async Task<ISStartResponse> ISStartAsync(ISStartRequest request, BlazeRpcContext context)
@@ -1204,7 +1248,6 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     public override Task<ISAdminOfferResponse> ISAdminOfferAsync(ISAdminOfferRequest request, BlazeRpcContext context)
     {
         throw new NotImplementedException();
-        
     }
 
     public override Task<ISGetOffersResponse> ISGetOffersAsync(ISGetOffersRequest request, BlazeRpcContext context)
@@ -1342,7 +1385,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
         return new SquadLoadActiveResponse
         {
-            mActiveCards = await GetCardList(userId, CardLocation.ACTIVE_UTILITY),
+            mActiveCards = await GetCardList(userId, DeckType.CARDHOUSE_DECK_ACTIVE),
             mSquadInfo = squadInfo.Value,
             mTargetUserId = 0
         };
@@ -1353,38 +1396,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         long userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
         var versionInfo = await GetOrCreateVersionInfo(userId);
 
-        List<CardData> cardDataList = new List<CardData>();
-
-        cardDataList.Add(await HutCardFactory.CreateRandomJerseyCard(userId, true, false));
-        cardDataList.Add(await HutCardFactory.CreateRandomJerseyCard(userId, false, false));
-        cardDataList.Add(await HutCardFactory.CreateRandomLogoCard(userId));
-        cardDataList.Add(await HutCardFactory.CreateRandomStadiumCard(userId));
-        cardDataList.Add(await HutCardFactory.CreateRandomHeadCoachCard(userId));
-        cardDataList.Add(await HutCardFactory.CreateRandomTrainingCard(userId));
-        cardDataList.Add(await HutCardFactory.CreateRandomContractCard(userId));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C));
-        cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C));
+        List<CardData> cardDataList = await HutPackFactory.CreatePack(userId, request.mPackType);
 
         return new CreatePackResponse
         {

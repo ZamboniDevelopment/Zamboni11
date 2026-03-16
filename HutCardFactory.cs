@@ -69,19 +69,19 @@ public class HutCardFactory
 
     public static async Task<CardData> CreateRandomLogoCard(long owner)
     {
-        return await CreateNonPlayerCard(owner, (uint)new Random().Next(6000000, 6000211 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_BADGE, CardState.CARDHOUSE_CARDSTATE_ACTIVE_BADGE);
+        return await CreateNonPlayerCard(owner, (uint)new Random().Next(6000000, 6000211 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_BADGE);
     }
 
     public static async Task<CardData> CreateRandomStadiumCard(long owner)
     {
-        return await CreateNonPlayerCard(owner, (uint)new Random().Next(6200000, 6200005 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_STADIUM, CardState.CARDHOUSE_CARDSTATE_ACTIVE_STADIUM);
+        return await CreateNonPlayerCard(owner, (uint)new Random().Next(6200000, 6200005 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_STADIUM);
     }
 
     public static async Task<CardData> CreateRandomJerseyCard(long owner, bool isHome, bool isRare)
     {
         if (isRare) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6500001 - 1, 6500196 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
-        if (isHome) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6300001 - 1, 6300212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT, CardState.CARDHOUSE_CARDSTATE_ACTIVE_HOME_KIT);
-        if (!isHome) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6400001 - 1, 6400212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT, CardState.CARDHOUSE_CARDSTATE_ACTIVE_AWAY_KIT);
+        if (isHome) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6300001 - 1, 6300212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
+        if (!isHome) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6400001 - 1, 6400212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
         return await CreateNonPlayerCard(owner, (uint)new Random().Next(6300001 - 1, 6300212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
     }
 
@@ -109,12 +109,12 @@ public class HutCardFactory
         return 0;
     }
 
-    public static async Task<CardData> CreateNonPlayerCard(long owner, uint dbId, CardSubType cardSubType, CardState cardStateId = CardState.CARDHOUSE_CARDSTATE_FREE)
+    public static async Task<CardData> CreateNonPlayerCard(long owner, uint dbId, CardSubType cardSubType)
     {
         var cardData = new CardData()
         {
             mAttributes = new List<byte>(),
-            mCardStateId = cardStateId,
+            mCardStateId = 0,
             mCardId = 0,
             mCardDbId = dbId,
             mFormationId = 0,
@@ -136,13 +136,8 @@ public class HutCardFactory
             mListTrainingCards = new List<int>(),
             mUsesRemaining = 0
         };
-        switch (cardSubType)
-        {
-            case CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH:
-                return await CreateOrUpdateCard(cardData, owner, CardLocation.STICKERBOOK);
-            default:
-                return await CreateOrUpdateCard(cardData, owner, CardLocation.ACTIVE_UTILITY);
-        }
+        return await CreateOrUpdateCard(cardData, owner, DeckType.CARDHOUSE_DECK_UNASSIGNED);
+
     }
 
     public static async Task<CardData> CreateRandomPlayerCard(long owner, CardSubType position)
@@ -156,7 +151,7 @@ public class HutCardFactory
     public static async Task<CardData> CreatePlayerCard(long owner, uint dbId)
     {
         var staticCardData = await Program.Database.GetPlayerCardDataByDbId(dbId);
-        var cardData = await CreateOrUpdateCard(staticCardData, owner, CardLocation.LINEUP);
+        var cardData = await CreateOrUpdateCard(staticCardData, owner, DeckType.CARDHOUSE_DECK_UNASSIGNED);
         return cardData;
     }
 
@@ -171,7 +166,7 @@ public class HutCardFactory
     //     return cardData;
     // }
 
-    public static async Task<CardData> CreateOrUpdateCard(CardData cardData, long ownerUserId, CardLocation cardLocation)
+    public static async Task<CardData> CreateOrUpdateCard(CardData cardData, long ownerUserId, DeckType deckType)
     {
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
         await conn.OpenAsync();
@@ -186,7 +181,7 @@ public class HutCardFactory
         rare_flag, rating, salary_cap,
         list_stats, sub_type, date_issued,
         team_id, list_training_cards, uses_remaining,
-        card_location
+        deck_type
     ) 
     VALUES (
         {cardIdValue}, @user_id, @attributes, @state_id, @db_id, @formation_id, 
@@ -194,7 +189,7 @@ public class HutCardFactory
         @morale, @preferred_position_id, @discard_price, 
         @rare_flag, @rating, @salary_cap,
         @list_stats, @sub_type, @date_issued, @team_id, @list_training_cards, 
-        @uses_remaining, @card_location
+        @uses_remaining, @deck_type
     )
     ON CONFLICT (card_id) DO UPDATE SET
         user_id = EXCLUDED.user_id,
@@ -217,7 +212,7 @@ public class HutCardFactory
         team_id = EXCLUDED.team_id,
         list_training_cards = EXCLUDED.list_training_cards,
         uses_remaining = EXCLUDED.uses_remaining,
-        card_location = EXCLUDED.card_location
+        deck_type = EXCLUDED.deck_type
     RETURNING card_id;";
 
         await using var cmd = new NpgsqlCommand(sql, conn);
@@ -245,7 +240,7 @@ public class HutCardFactory
         cmd.Parameters.AddWithValue("date_issued", (long)Util.TimeNow());
         cmd.Parameters.AddWithValue("team_id", (int)cardData.mTeamId);
         cmd.Parameters.AddWithValue("uses_remaining", (int)cardData.mUsesRemaining);
-        cmd.Parameters.AddWithValue("card_location", (int)cardLocation);
+        cmd.Parameters.AddWithValue("deck_type", (int)deckType);
 
         cardData.mCardId = (long)await cmd.ExecuteScalarAsync();
 

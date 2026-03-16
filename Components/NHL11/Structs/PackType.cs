@@ -2,7 +2,6 @@ namespace Zamboni11.Components.NHL11.Structs;
 
 public enum PackType : uint
 {
-    //TODO ID'S Are not confirmed other than 0 and 1 Are obvious
     CARDHOUSE_CARD_PACK_TYPE_INVALID = 0,
     CARDHOUSE_CARD_PACK_TYPE_STARTER = 1,
     CARDHOUSE_CARD_PACK_TYPE_PEEWEE = 2,

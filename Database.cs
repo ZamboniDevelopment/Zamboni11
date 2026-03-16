@@ -190,7 +190,7 @@ public class Database
                     team_id INTEGER,
                     list_training_cards INTEGER[] DEFAULT '{}',
                     uses_remaining SMALLINT,
-                    card_location INTEGER DEFAULT 1
+                    deck_type INTEGER DEFAULT 1
                 );";
 
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
