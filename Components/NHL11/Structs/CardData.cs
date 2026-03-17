@@ -70,6 +70,6 @@ public struct CardData
     public List<int> mListTrainingCards;
     
     [TdfMember("USRE")] 
-    public byte mUsesRemaining;
+    public byte mUsesRemaining; //Contract
 
 }

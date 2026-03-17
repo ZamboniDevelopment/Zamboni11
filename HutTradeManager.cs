@@ -273,7 +273,7 @@ public class HutTradeManager
     private static async Task<ISTradeInfo> ReadTrade(NpgsqlDataReader reader, long readerUserId)
     {
         YourBid yourBid = await DetermineMyBidState(reader.GetInt64(reader.GetOrdinal("trade_id")), readerUserId);
-        CardData cardData = await CardHouseComponent.GetCard(reader.GetInt64(reader.GetOrdinal("card_id")));
+        CardData cardData = await HutManager.GetCard(reader.GetInt64(reader.GetOrdinal("card_id")));
         return new ISTradeInfo
         {
             mBlazeUserId = reader.GetInt64(reader.GetOrdinal("user_id")),

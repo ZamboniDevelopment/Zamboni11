@@ -13,7 +13,7 @@ public struct StickerBookStats2Request
     public long mUserId;
     
     [TdfMember("VALU")] 
-    public uint mValue;
+    public int mValue;
     
     [TdfMember("YEAR")] 
     public byte mYearId;

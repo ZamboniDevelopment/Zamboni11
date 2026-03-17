@@ -101,9 +101,9 @@ public class Database
         const string createTableQuery = @"
                 CREATE TABLE IF NOT EXISTS hut_version_info (
                     user_id BIGINT PRIMARY KEY,
-                    escrow_version INTEGER DEFAULT 1,
-                    general_version INTEGER DEFAULT 1,
-                    unassigned_version INTEGER DEFAULT 1
+                    escrow_version INTEGER,
+                    general_version INTEGER,
+                    unassigned_version INTEGER
                 );";
 
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
@@ -817,7 +817,7 @@ public class Database
                     //TODO Figure this out
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                 },
-                mUsesRemaining = 10
+                mUsesRemaining = 20
             };
         }
 

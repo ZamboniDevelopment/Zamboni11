@@ -10,28 +10,28 @@ public struct StickerBookSearchRequest
     public byte mCollectionYearId;
 
     [TdfMember("COUN")] 
-    public uint mCountryId;
+    public int mCountryId;
     
     [TdfMember("CTYP")] 
     public CollectionSearchType mCollectionSearchCardType;
     
     [TdfMember("FORM")] 
-    public uint mFormation;
+    public int mFormation;
     
     [TdfMember("LEAG")] 
-    public uint mLeagueId;
+    public int mLeagueId;
     
     [TdfMember("LEV")] 
     public CardLevel mCardLevel;
     
     [TdfMember("NAT")] 
-    public uint mNation;
+    public int mNation;
     
     [TdfMember("NUMR")] 
     public int mNumRetreive;
     
     [TdfMember("POS")] 
-    public uint mPosition;
+    public int mPosition;
     
     [TdfMember("STAT")] 
     public CardState mCardState;
@@ -40,7 +40,7 @@ public struct StickerBookSearchRequest
     public int mStart;
     
     [TdfMember("TEAM")] 
-    public uint mTeamId;
+    public int mTeamId;
     
     [TdfMember("UID")] 
     public long mUserId;

@@ -1,57 +1,378 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using BlazeCommon;
+using Npgsql;
+using Zamboni11.Components.NHL11;
+using Zamboni11.Components.NHL11.Requests;
 using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11;
 
 public class HutManager
 {
-    //TODO: OF COURSE SAVE TO DISK
-    // public static ConcurrentDictionary<long, HutPlayerInstance> HutPlayerInstances = new();
-    // public static ConcurrentDictionary<long, Dictionary<long, CardData>> UserInventories = new();
-    // public static ConcurrentDictionary<long, Dictionary<long, CardData>> UserUnAssigned = new();
-    // public static ConcurrentDictionary<long, Dictionary<long, CardData>> Escrow = new();
+    public static async Task<GamerInfo?> GetGamerInfo(long userId)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
 
-    // public static HutPlayerInstance? GetHutPlayerInstance(BlazeServerConnection blazeServerConnection)
-    // {
-    //     var player = ServerManager.GetServerPlayer(blazeServerConnection);
-    //     if (player == null) return null;
-    //     var userId = player.UserIdentification.mAccountId;
-    //     return HutPlayerInstances.TryGetValue(userId, out var instance) ? instance : null;
-    // }
-    // public static void AddHutPlayerInstance(long userId, HutPlayerInstance hutPlayerInstance)
-    // {
-    //     HutPlayerInstances.TryAdd(userId, hutPlayerInstance);
-    // }
-    //
-    // public static CardData GetCard(long owner, long cardId)
-    // {
-    //     return cardId == 0 ? new CardData() : UserInventories[owner][cardId];
-    // }
-    // public static CardData GetCard(long cardId)
-    // {
-    //     foreach (var owner in UserInventories)
-    //     {
-    //         foreach (var VARIABLE in owner.Value.Keys)
-    //         {
-    //             if (VARIABLE.Equals(cardId))
-    //             {
-    //                 return UserInventories[owner.Key][VARIABLE];
-    //             }
-    //         }
-    //     }
-    //     foreach (var owner in Escrow)
-    //     {
-    //         foreach (var VARIABLE in owner.Value.Keys)
-    //         {
-    //             if (VARIABLE.Equals(cardId))
-    //             {
-    //                 return Escrow[owner.Key][VARIABLE];
-    //             }
-    //         }
-    //     }
-    //
-    //     return new CardData();
-    // }
+        const string sql = "SELECT * FROM hut_gamer_info WHERE user_id = @uid;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("uid", userId);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return new GamerInfo
+            {
+                mCustomTactics = reader.GetString(reader.GetOrdinal("custom_tactics")),
+                mTeamFormation = (uint)reader.GetInt32(reader.GetOrdinal("team_formation")),
+                mKickTakers = reader.GetString(reader.GetOrdinal("kick_takers")),
+                mLineup = reader.GetString(reader.GetOrdinal("lineup")),
+                mLogoUrl = reader.GetString(reader.GetOrdinal("logo_url")),
+                mTeamName = reader.GetString(reader.GetOrdinal("team_name")),
+                mPlayoffsQualified = (uint)reader.GetInt32(reader.GetOrdinal("playoffs_qualified")),
+                mPlayoffWon = (uint)reader.GetInt32(reader.GetOrdinal("playoff_won")),
+                mQuickTactics = reader.GetString(reader.GetOrdinal("quick_tactics")),
+                mSpecialPacksBought = (uint)reader.GetInt32(reader.GetOrdinal("special_packs_bought")),
+                mTeamAbbreviation = reader.GetString(reader.GetOrdinal("team_abbreviation")),
+                mTournaments = reader.GetString(reader.GetOrdinal("tournaments")),
+                mTPPL = (uint)reader.GetInt32(reader.GetOrdinal("tppl")),
+                mTrophies = reader.GetString(reader.GetOrdinal("trophies"))
+            };
+        }
+
+        return null;
+    }
+
+    public static async Task SetGamerInfo(GamerInfo gamerInfo, long userId)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = @"
+        INSERT INTO hut_gamer_info (
+            user_id, custom_tactics, team_formation, kick_takers, lineup, 
+            logo_url, team_name, playoffs_qualified, playoff_won, 
+            quick_tactics, special_packs_bought, team_abbreviation, 
+            tournaments, tppl, trophies
+        ) 
+        VALUES (
+            @user_id, @custom_tactics, @team_formation, @kick_takers, @lineup, 
+            @logo_url, @team_name, @playoffs_qualified, @playoff_won, 
+            @quick_tactics, @special_packs_bought, @team_abbreviation, 
+            @tournaments, @tppl, @trophies
+        )
+        ON CONFLICT (user_id) DO UPDATE SET
+            custom_tactics = EXCLUDED.custom_tactics,
+            team_formation = EXCLUDED.team_formation,
+            kick_takers = EXCLUDED.kick_takers,
+            lineup = EXCLUDED.lineup,
+            logo_url = EXCLUDED.logo_url,
+            team_name = EXCLUDED.team_name,
+            playoffs_qualified = EXCLUDED.playoffs_qualified,
+            playoff_won = EXCLUDED.playoff_won,
+            quick_tactics = EXCLUDED.quick_tactics,
+            special_packs_bought = EXCLUDED.special_packs_bought,
+            team_abbreviation = EXCLUDED.team_abbreviation,
+            tournaments = EXCLUDED.tournaments,
+            tppl = EXCLUDED.tppl,
+            trophies = EXCLUDED.trophies;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("user_id", userId);
+        cmd.Parameters.AddWithValue("custom_tactics", gamerInfo.mCustomTactics);
+        cmd.Parameters.AddWithValue("team_formation", (int)gamerInfo.mTeamFormation);
+        cmd.Parameters.AddWithValue("kick_takers", gamerInfo.mKickTakers);
+        cmd.Parameters.AddWithValue("lineup", gamerInfo.mLineup);
+        cmd.Parameters.AddWithValue("logo_url", gamerInfo.mLogoUrl);
+        cmd.Parameters.AddWithValue("team_name", gamerInfo.mTeamName ?? "");
+        cmd.Parameters.AddWithValue("playoffs_qualified", (int)gamerInfo.mPlayoffsQualified);
+        cmd.Parameters.AddWithValue("playoff_won", (int)gamerInfo.mPlayoffWon);
+        cmd.Parameters.AddWithValue("quick_tactics", gamerInfo.mQuickTactics);
+        cmd.Parameters.AddWithValue("special_packs_bought", (int)gamerInfo.mSpecialPacksBought);
+        cmd.Parameters.AddWithValue("team_abbreviation", gamerInfo.mTeamAbbreviation);
+        cmd.Parameters.AddWithValue("tournaments", gamerInfo.mTournaments);
+        cmd.Parameters.AddWithValue("tppl", (int)gamerInfo.mTPPL);
+        cmd.Parameters.AddWithValue("trophies", gamerInfo.mTrophies);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    public static async Task<GeneralInfo?> GetGeneralInfo(long userId)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = "SELECT * FROM hut_general_info WHERE user_id = @uid;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("uid", userId);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return new GeneralInfo
+            {
+                mCredits = (uint)reader.GetInt32(reader.GetOrdinal("pucks")),
+                mStats = reader.GetFieldValue<byte[]>(reader.GetOrdinal("stats")).ToList(),
+            };
+        }
+
+        return null;
+    }
+
+    public static async Task<GeneralInfo> SetGeneralInfo(GeneralInfo generalInfo, long userId)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = @"
+        INSERT INTO hut_general_info (
+            user_id, pucks, stats
+        ) 
+        VALUES (
+            @user_id, @pucks, @stats
+        )
+        ON CONFLICT (user_id) DO UPDATE SET
+            pucks = EXCLUDED.pucks,
+            stats = EXCLUDED.stats;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("user_id", userId);
+        cmd.Parameters.AddWithValue("pucks", (int)generalInfo.mCredits);
+        cmd.Parameters.AddWithValue("stats", generalInfo.mStats.Select(b => (short)b).ToArray());
+
+        await cmd.ExecuteNonQueryAsync();
+        return generalInfo;
+    }
+
+    public static async Task<SquadInfo?> GetSquadInfo(long userId)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = "SELECT * FROM hut_squad_info WHERE user_id = @user_id;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("user_id", userId);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            List<CardData> playersOrdered = new List<CardData>();
+            foreach (var cardId in reader.GetFieldValue<List<long>>(reader.GetOrdinal("players")))
+            {
+                playersOrdered.Add(await GetCard(cardId, userId));
+            }
+
+            return new SquadInfo
+            {
+                mChemistry = (uint)reader.GetInt32(reader.GetOrdinal("chemistry")),
+                // mCHNG = ,
+                mFormationId = (uint)reader.GetInt32(reader.GetOrdinal("formation_id")),
+                mLines = reader.GetFieldValue<int[]>(reader.GetOrdinal("lines")).ToList(),
+                mManager = await GetCard(reader.GetInt64(reader.GetOrdinal("manager"))),
+                mSquadName = reader.GetString(reader.GetOrdinal("squad_name")),
+                mPlayers = playersOrdered,
+                mStarRating = (uint)reader.GetInt32(reader.GetOrdinal("star_rating")),
+                mSquadId = (uint)reader.GetInt32(reader.GetOrdinal("squad_id"))
+            };
+        }
+
+        return null;
+    }
+
+    public static async Task<VersionInfo?> GetVersionInfo(long userId)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = "SELECT * FROM hut_version_info WHERE user_id = @user_id;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("user_id", userId);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return new VersionInfo
+            {
+                mVersionEscrow = (uint)reader.GetInt32(reader.GetOrdinal("escrow_version")),
+                mVersionGeneral = (uint)reader.GetInt32(reader.GetOrdinal("general_version")),
+                mVersionUnassigned = (uint)reader.GetInt32(reader.GetOrdinal("unassigned_version")),
+            };
+        }
+
+        return null;
+    }
+
+    public static async Task<VersionInfo> CreateVersionInfo(VersionInfo versionInfo, long userId)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = @"
+        INSERT INTO hut_version_info (
+            user_id, escrow_version, general_version, unassigned_version
+        ) 
+        VALUES (
+            @user_id, @escrow_version, @general_version, @unassigned_version
+        );";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("user_id", userId);
+        cmd.Parameters.AddWithValue("escrow_version", (int)versionInfo.mVersionEscrow);
+        cmd.Parameters.AddWithValue("general_version", (int)versionInfo.mVersionGeneral);
+        cmd.Parameters.AddWithValue("unassigned_version", (int)versionInfo.mVersionUnassigned);
+
+        await cmd.ExecuteNonQueryAsync();
+        return versionInfo;
+    }
+
+    public enum VersionType
+    {
+        Escrow,
+        General,
+        Unassigned
+    }
+
+    public static async Task<VersionInfo> IncrementVersionInfo(long userId, VersionType type)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = @"
+        INSERT INTO hut_version_info (user_id, escrow_version, general_version, unassigned_version)
+        VALUES (@uid, 1, 1, 1)
+        ON CONFLICT (user_id) DO UPDATE SET
+            escrow_version = CASE WHEN @type = 'Escrow' THEN hut_version_info.escrow_version + 1 ELSE hut_version_info.escrow_version END,
+            general_version = CASE WHEN @type = 'General' THEN hut_version_info.general_version + 1 ELSE hut_version_info.general_version END,
+            unassigned_version = CASE WHEN @type = 'Unassigned' THEN hut_version_info.unassigned_version + 1 ELSE hut_version_info.unassigned_version END
+        RETURNING escrow_version, general_version, unassigned_version;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("uid", userId);
+        cmd.Parameters.AddWithValue("type", type.ToString());
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return new VersionInfo
+            {
+                mVersionEscrow = (uint)reader.GetInt32(reader.GetOrdinal("escrow_version")),
+                mVersionGeneral = (uint)reader.GetInt32(reader.GetOrdinal("general_version")),
+                mVersionUnassigned = (uint)reader.GetInt32(reader.GetOrdinal("unassigned_version"))
+            };
+        }
+
+        return new VersionInfo { mVersionEscrow = 1, mVersionGeneral = 1, mVersionUnassigned = 1 };
+    }
+
+    public static async Task<List<CardData>> GetCardList(long userId, DeckType deckType, CardState cardState)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = "SELECT * FROM hut_cards WHERE user_id = @user_id AND deck_type = @deck_type AND state_id = @state_id;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("user_id", userId);
+        cmd.Parameters.AddWithValue("deck_type", (int)deckType);
+        cmd.Parameters.AddWithValue("state_id", (short)cardState);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        List<CardData> cardDataList = new List<CardData>();
+
+        while (await reader.ReadAsync())
+        {
+            cardDataList.Add(HutHelper.ReadCardData(reader));
+        }
+
+        return cardDataList;
+    }
+
+
+    public static async Task<CardData> GetCard(long cardId, long userId = 0)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        var sql = new StringBuilder(@"
+        SELECT * 
+              FROM hut_cards
+        WHERE 1=1");
+
+        sql.Append(" AND card_id = @card_id");
+        if (userId != 0)
+        {
+            sql.Append(" AND user_id = @user_id");
+        }
+
+        await using var cmd = new NpgsqlCommand(sql.ToString(), conn);
+        cmd.Parameters.AddWithValue("card_id", cardId);
+        if (userId != 0) cmd.Parameters.AddWithValue("user_id", userId);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return HutHelper.ReadCardData(reader);
+        }
+
+        return new CardData();
+    }
+
+    public static async Task SetSquadInfo(SquadSaveRequest request, long userId)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = @"
+        INSERT INTO hut_squad_info (
+            user_id, chemistry, formation_id, lines, 
+            manager, squad_name, players, star_rating, squad_id
+        ) 
+        VALUES (
+            @user_id, @chemistry, @formation_id, @lines, 
+            @manager, @squad_name, @players, @star_rating, @squad_id
+        )
+        ON CONFLICT (user_id) DO UPDATE SET
+            user_id = EXCLUDED.user_id,
+            chemistry = EXCLUDED.chemistry,
+            formation_id = EXCLUDED.formation_id,
+            lines = EXCLUDED.lines,
+            manager = EXCLUDED.manager,
+            squad_name = EXCLUDED.squad_name,
+            players = EXCLUDED.players,
+            star_rating = EXCLUDED.star_rating,
+            squad_id = EXCLUDED.squad_id;";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("user_id", userId);
+        cmd.Parameters.AddWithValue("chemistry", (int)request.mChemistry);
+        cmd.Parameters.AddWithValue("formation_id", (int)request.mFormation);
+        cmd.Parameters.AddWithValue("lines", request.mLines);
+        cmd.Parameters.AddWithValue("manager", request.mManager);
+        cmd.Parameters.AddWithValue("squad_name", request.mSquadName);
+        cmd.Parameters.AddWithValue("players", request.mPlayers);
+        cmd.Parameters.AddWithValue("star_rating", (int)request.mStarRating);
+        cmd.Parameters.AddWithValue("squad_id", (int)request.mSquadId);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
 }

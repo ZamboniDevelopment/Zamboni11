@@ -12,7 +12,7 @@ public class HutCardFactory
     
     private static readonly Dictionary<CardSubType, Range> TrainingCardDbIdRanges = new();
     private static readonly Dictionary<CardSubType, List<uint>> PlayerCardDbIdsByCardSubType = new();
-    public static readonly Dictionary<uint, Range> LeagueTeamsMapping = new();
+    public static readonly Dictionary<int, Range> LeagueTeamsMapping = new();
 
     static HutCardFactory()
     {
@@ -155,65 +155,58 @@ public class HutCardFactory
         return cardData;
     }
 
-    // public static CardData CreateCard(long ownerUserId, long cardId, CardData cardData)
-    // {
-    //     if (!HutManager.UserInventories.ContainsKey(ownerUserId))
-    //     {
-    //         HutManager.UserInventories[ownerUserId] = new Dictionary<long, CardData>();
-    //     }
-    //
-    //     HutManager.UserInventories[ownerUserId][cardId] = cardData;
-    //     return cardData;
-    // }
 
-    public static async Task<CardData> CreateOrUpdateCard(CardData cardData, long ownerUserId, DeckType deckType)
+
+    public static async Task<CardData> CreateOrUpdateCard(CardData cardData, long ownerUserId, DeckType? deckType = null)
     {
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
         await conn.OpenAsync();
 
         string cardIdValue = cardData.mCardId == 0 ? "DEFAULT" : "@card_id";
-
+        bool updateDeck = deckType.HasValue;
+        
         string sql = $@"
-    INSERT INTO hut_cards (
-        card_id, user_id, attributes, state_id, db_id, formation_id, 
-        free, career_remaining, injury_games, injury_type, 
-        morale, preferred_position_id, discard_price, 
-        rare_flag, rating, salary_cap,
-        list_stats, sub_type, date_issued,
-        team_id, list_training_cards, uses_remaining,
-        deck_type
-    ) 
-    VALUES (
-        {cardIdValue}, @user_id, @attributes, @state_id, @db_id, @formation_id, 
-        @free, @career_remaining, @injury_games, @injury_type, 
-        @morale, @preferred_position_id, @discard_price, 
-        @rare_flag, @rating, @salary_cap,
-        @list_stats, @sub_type, @date_issued, @team_id, @list_training_cards, 
-        @uses_remaining, @deck_type
-    )
-    ON CONFLICT (card_id) DO UPDATE SET
-        user_id = EXCLUDED.user_id,
-        attributes = EXCLUDED.attributes,
-        state_id = EXCLUDED.state_id,
-        db_id = EXCLUDED.db_id,
-        formation_id = EXCLUDED.formation_id,
-        free = EXCLUDED.free,
-        career_remaining = EXCLUDED.career_remaining,
-        injury_games = EXCLUDED.injury_games,
-        injury_type = EXCLUDED.injury_type,
-        morale = EXCLUDED.morale,
-        preferred_position_id = EXCLUDED.preferred_position_id,
-        discard_price = EXCLUDED.discard_price,
-        rare_flag = EXCLUDED.rare_flag,
-        rating = EXCLUDED.rating,
-        salary_cap = EXCLUDED.salary_cap,
-        list_stats = EXCLUDED.list_stats,
-        sub_type = EXCLUDED.sub_type,
-        team_id = EXCLUDED.team_id,
-        list_training_cards = EXCLUDED.list_training_cards,
-        uses_remaining = EXCLUDED.uses_remaining,
-        deck_type = EXCLUDED.deck_type
-    RETURNING card_id;";
+        INSERT INTO hut_cards (
+            card_id, user_id, attributes, state_id, db_id, formation_id, 
+            free, career_remaining, injury_games, injury_type, 
+            morale, preferred_position_id, discard_price, 
+            rare_flag, rating, salary_cap,
+            list_stats, sub_type, date_issued,
+            team_id, list_training_cards, uses_remaining
+            {(updateDeck ? ", deck_type" : "")} 
+        ) 
+        VALUES (
+            {cardIdValue}, @user_id, @attributes, @state_id, @db_id, @formation_id, 
+            @free, @career_remaining, @injury_games, @injury_type, 
+            @morale, @preferred_position_id, @discard_price, 
+            @rare_flag, @rating, @salary_cap,
+            @list_stats, @sub_type, @date_issued, @team_id, @list_training_cards, 
+            @uses_remaining
+            {(updateDeck ? ", @deck_type" : "")}
+        )
+        ON CONFLICT (card_id) DO UPDATE SET
+            user_id = EXCLUDED.user_id,
+            attributes = EXCLUDED.attributes,
+            state_id = EXCLUDED.state_id,
+            db_id = EXCLUDED.db_id,
+            formation_id = EXCLUDED.formation_id,
+            free = EXCLUDED.free,
+            career_remaining = EXCLUDED.career_remaining,
+            injury_games = EXCLUDED.injury_games,
+            injury_type = EXCLUDED.injury_type,
+            morale = EXCLUDED.morale,
+            preferred_position_id = EXCLUDED.preferred_position_id,
+            discard_price = EXCLUDED.discard_price,
+            rare_flag = EXCLUDED.rare_flag,
+            rating = EXCLUDED.rating,
+            salary_cap = EXCLUDED.salary_cap,
+            list_stats = EXCLUDED.list_stats,
+            sub_type = EXCLUDED.sub_type,
+            team_id = EXCLUDED.team_id,
+            list_training_cards = EXCLUDED.list_training_cards,
+            uses_remaining = EXCLUDED.uses_remaining
+            {(updateDeck ? ", deck_type = EXCLUDED.deck_type" : "")}
+        RETURNING card_id;";
 
         await using var cmd = new NpgsqlCommand(sql, conn);
 
@@ -222,7 +215,7 @@ public class HutCardFactory
         cmd.Parameters.AddWithValue("user_id", ownerUserId);
         cmd.Parameters.AddWithValue("attributes", cardData.mAttributes.Select(b => (short)b).ToArray());
         cmd.Parameters.AddWithValue("state_id", (int)cardData.mCardStateId);
-        cmd.Parameters.AddWithValue("db_id", (long)cardData.mCardDbId); // Use long for BIGINT
+        cmd.Parameters.AddWithValue("db_id", (long)cardData.mCardDbId);
         cmd.Parameters.AddWithValue("formation_id", (int)cardData.mFormationId);
         cmd.Parameters.AddWithValue("free", (int)cardData.mFREE);
         cmd.Parameters.AddWithValue("career_remaining", (int)cardData.mCareerRemaining);
@@ -240,7 +233,10 @@ public class HutCardFactory
         cmd.Parameters.AddWithValue("date_issued", (long)Util.TimeNow());
         cmd.Parameters.AddWithValue("team_id", (int)cardData.mTeamId);
         cmd.Parameters.AddWithValue("uses_remaining", (int)cardData.mUsesRemaining);
-        cmd.Parameters.AddWithValue("deck_type", (int)deckType);
+        if (updateDeck)
+        {
+            cmd.Parameters.AddWithValue("deck_type", (int)deckType.Value);
+        }
 
         cardData.mCardId = (long)await cmd.ExecuteScalarAsync();
 
