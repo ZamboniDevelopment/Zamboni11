@@ -121,7 +121,7 @@ public class HutManager
         {
             return new GeneralInfo
             {
-                mCredits = (uint)reader.GetInt32(reader.GetOrdinal("pucks")),
+                mCredits = reader.GetInt32(reader.GetOrdinal("pucks")),
                 mStats = reader.GetFieldValue<byte[]>(reader.GetOrdinal("stats")).ToList(),
             };
         }
@@ -148,10 +148,13 @@ public class HutManager
         await using var cmd = new NpgsqlCommand(sql, conn);
 
         cmd.Parameters.AddWithValue("user_id", userId);
-        cmd.Parameters.AddWithValue("pucks", (int)generalInfo.mCredits);
+        cmd.Parameters.AddWithValue("pucks", generalInfo.mCredits);
         cmd.Parameters.AddWithValue("stats", generalInfo.mStats.Select(b => (short)b).ToArray());
 
         await cmd.ExecuteNonQueryAsync();
+        
+        await IncrementVersionInfo(userId, VersionType.General);
+        
         return generalInfo;
     }
 
@@ -172,7 +175,7 @@ public class HutManager
             List<CardData> playersOrdered = new List<CardData>();
             foreach (var cardId in reader.GetFieldValue<List<long>>(reader.GetOrdinal("players")))
             {
-                playersOrdered.Add(await GetCard(cardId, userId));
+                playersOrdered.Add((await GetCard(cardId, userId)).Card);
             }
 
             return new SquadInfo
@@ -181,7 +184,7 @@ public class HutManager
                 // mCHNG = ,
                 mFormationId = (uint)reader.GetInt32(reader.GetOrdinal("formation_id")),
                 mLines = reader.GetFieldValue<int[]>(reader.GetOrdinal("lines")).ToList(),
-                mManager = await GetCard(reader.GetInt64(reader.GetOrdinal("manager"))),
+                mManager = (await GetCard(reader.GetInt64(reader.GetOrdinal("manager")))).Card,
                 mSquadName = reader.GetString(reader.GetOrdinal("squad_name")),
                 mPlayers = playersOrdered,
                 mStarRating = (uint)reader.GetInt32(reader.GetOrdinal("star_rating")),
@@ -306,21 +309,17 @@ public class HutManager
     }
 
 
-    public static async Task<CardData> GetCard(long cardId, long userId = 0)
+    public static async Task<(CardData Card, DeckType DeckType)> GetCard(long cardId, long userId = 0)
     {
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
         await conn.OpenAsync();
 
         var sql = new StringBuilder(@"
-        SELECT * 
-              FROM hut_cards
-        WHERE 1=1");
+        SELECT *, deck_type 
+        FROM hut_cards
+        WHERE card_id = @card_id");
 
-        sql.Append(" AND card_id = @card_id");
-        if (userId != 0)
-        {
-            sql.Append(" AND user_id = @user_id");
-        }
+        if (userId != 0) sql.Append(" AND user_id = @user_id");
 
         await using var cmd = new NpgsqlCommand(sql.ToString(), conn);
         cmd.Parameters.AddWithValue("card_id", cardId);
@@ -330,10 +329,13 @@ public class HutManager
 
         if (await reader.ReadAsync())
         {
-            return HutHelper.ReadCardData(reader);
+            var card = HutHelper.ReadCardData(reader);
+            DeckType deckType = (DeckType)reader.GetInt32(reader.GetOrdinal("deck_type"));
+        
+            return (card, deckType);
         }
 
-        return new CardData();
+        return (new CardData(), DeckType.CARDHOUSE_DECK_GENERAL);
     }
 
     public static async Task SetSquadInfo(SquadSaveRequest request, long userId)
@@ -374,5 +376,178 @@ public class HutManager
         cmd.Parameters.AddWithValue("squad_id", (int)request.mSquadId);
 
         await cmd.ExecuteNonQueryAsync();
+    }
+
+    public static async Task<Dictionary<int, int>> GetTeamCardCountsAsync(long userId, int leagueId, DeckType deckType, params CardSubType[] subTypes)
+    {
+        var counts = new Dictionary<int, int>();
+
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        string sql = @"
+            SELECT team_id, COUNT(*) 
+            FROM hut_cards 
+            WHERE user_id = @user_id 
+            AND team_id >= @startId AND team_id <= @endId 
+            AND deck_type = @deck_type";
+
+        if (subTypes.Length > 0)
+        {
+            sql += " AND sub_type = ANY(@sub_types)";
+        }
+
+        sql += " GROUP BY team_id";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("user_id", userId);
+        cmd.Parameters.AddWithValue("startId", HutCardFactory.LeagueTeamsMapping[leagueId].Start.Value);
+        cmd.Parameters.AddWithValue("endId", HutCardFactory.LeagueTeamsMapping[leagueId].End.Value);
+        cmd.Parameters.AddWithValue("deck_type", (int)deckType);
+
+
+        if (subTypes.Length > 0)
+        {
+            cmd.Parameters.AddWithValue("sub_types", subTypes.Select(s => (short)s).ToArray());
+        }
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            counts[reader.GetInt32(0)] = (int)reader.GetInt64(1);
+        }
+
+        return counts;
+    }
+
+    public static async Task<int> GetCardCountAsync(long userId, DeckType deckType, params CardSubType[] subTypes)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        string sql = "SELECT COUNT(*) FROM hut_cards WHERE user_id = @user_id";
+
+        sql += " AND deck_type = @deck_type";
+
+        if (subTypes.Length > 0)
+        {
+            sql += " AND sub_type = ANY(@sub_types)";
+        }
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("user_id", userId);
+        cmd.Parameters.AddWithValue("deck_type", (int)deckType);
+
+        if (subTypes.Length > 0)
+        {
+            cmd.Parameters.AddWithValue("sub_types", subTypes.Select(s => (short)s).ToArray());
+        }
+
+        var result = await cmd.ExecuteScalarAsync();
+        return Convert.ToInt32(result);
+    }
+
+    public static async Task<List<CardData>> GetCardList(long userId, StickerBookSearchRequest request)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        var sql = new StringBuilder(@"
+        SELECT * 
+              FROM hut_cards
+        WHERE user_id = @user_id");
+
+        var deckType = DeckType.CARDHOUSE_DECK_STICKERBOOK;
+
+        sql.Append(" AND deck_type = @deck_type");
+        switch (request.mCollectionSearchCardType)
+        {
+            //Here we might have to filter based if its in players active roster (SquadInfo)
+            //but seems it's not needed because client has up to date info on his Squad all the time,
+            //and client doesnt mind sending him again his whole squad
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_ALL: break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_HEADCOACH: sql.Append(" AND sub_type = 6"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_BADGE: sql.Append(" AND sub_type = 12"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_STADIUM: sql.Append(" AND sub_type = 11"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER_C: sql.Append(" AND sub_type = 0"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER_LW: sql.Append(" AND sub_type = 1"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER_RW: sql.Append(" AND sub_type = 2"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER_DEFENDER: sql.Append(" AND sub_type = 3"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER_GK: sql.Append(" AND sub_type = 4"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER_ALL: sql.Append(" AND sub_type BETWEEN 0 AND 4"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER: sql.Append(" AND sub_type BETWEEN 0 AND 4"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_DEVELOPMENT: sql.Append(" AND sub_type BETWEEN 51 AND 62"); break;
+            default: throw new NotImplementedException();
+        }
+
+        if (request.mLeagueId >= 0)
+        {
+            var range = HutCardFactory.LeagueTeamsMapping[request.mLeagueId];
+            sql.Append(" AND team_id BETWEEN " + range.Start.Value + " AND " + range.End.Value + "");
+        }
+
+        if (request.mTeamId >= 0)
+        {
+            sql.Append(" AND team_id = " + request.mTeamId);
+        }
+
+        await using var cmd = new NpgsqlCommand(sql.ToString(), conn);
+        cmd.Parameters.AddWithValue("user_id", userId);
+        cmd.Parameters.AddWithValue("deck_type", (int)deckType);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        List<CardData> cardDataList = new List<CardData>();
+
+        while (await reader.ReadAsync())
+        {
+            cardDataList.Add(HutHelper.ReadCardData(reader));
+        }
+
+        return cardDataList;
+    }
+
+    public static async Task HardDelete(long userId, long? cardId = null)
+    {
+        await using var connection = new NpgsqlConnection(Database.ConnectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            string[] tables = cardId.HasValue
+                ? new[] { "hut_offer_info", "hut_trade_info", "hut_cards" }
+                : new[] { "hut_cards", "hut_gamer_info", "hut_general_info", "hut_squad_info", "hut_version_info", "hut_offer_info", "hut_trade_info" };
+
+            foreach (var table in tables)
+            {
+                if (cardId.HasValue && table == "hut_offer_info")
+                {
+                    var query = $"UPDATE {table} SET card_ids = array_remove(card_ids, @cardId) WHERE user_id = @userId"; //Todo where trade is not expired
+                    await using var cmd = new NpgsqlCommand(query, connection, transaction);
+                    cmd.Parameters.AddWithValue("userId", userId);
+                    cmd.Parameters.AddWithValue("cardId", cardId.Value);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                else
+                {
+                    bool useCardFilter = cardId.HasValue && (table == "hut_cards" || table == "hut_trade_info");
+                    string columnName = useCardFilter ? "card_id" : "user_id";
+                    long idValue = useCardFilter ? cardId.Value : userId;
+
+                    var query = $"DELETE FROM {table} WHERE {columnName} = @id";
+                    await using var cmd = new NpgsqlCommand(query, connection, transaction);
+                    cmd.Parameters.AddWithValue("id", idValue);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            await transaction.CommitAsync();
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }

@@ -10,7 +10,7 @@ public struct StickerBookCardRequest
     public long mCardId;
 
     [TdfMember("SWAP")] 
-    public long mSwarpCardId;
+    public long mSwapCardId;
     
     [TdfMember("UID")] 
     public ulong mUserId;

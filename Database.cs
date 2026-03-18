@@ -53,29 +53,7 @@ public class Database
         
         CreateHutCardsTable();
     }
-
-    private void CreateTradeInfoTable()
-    {
-        using var conn = new NpgsqlConnection(ConnectionString);
-        conn.Open();
-
-        const string createTableQuery = @"
-                CREATE TABLE IF NOT EXISTS hut_trade_info (
-                    trade_id BIGSERIAL PRIMARY KEY,
-                    user_id BIGINT,
-                    card_id BIGINT,
-                    starting_price INTEGER,
-                    highest_bid INTEGER DEFAULT 0,
-                    buy_out_price INTEGER,
-                    seller_name VARCHAR,
-                    trade_state INTEGER,
-                    duration_seconds INTEGER,
-                    created_at_seconds BIGINT
-                );";
-
-        using var cmd = new NpgsqlCommand(createTableQuery, conn);
-        cmd.ExecuteNonQuery();
-    }
+    
     
     private void CreateHutGeneralInfoTable()
     {
@@ -197,6 +175,29 @@ public class Database
         cmd.ExecuteNonQuery();
     }
     
+    private void CreateTradeInfoTable()
+    {
+        using var conn = new NpgsqlConnection(ConnectionString);
+        conn.Open();
+
+        const string createTableQuery = @"
+                CREATE TABLE IF NOT EXISTS hut_trade_info (
+                    trade_id BIGSERIAL PRIMARY KEY,
+                    user_id BIGINT,
+                    card_id BIGINT,
+                    starting_price INTEGER,
+                    highest_bid INTEGER DEFAULT 0,
+                    buy_out_price INTEGER,
+                    seller_name VARCHAR,
+                    trade_state INTEGER,
+                    duration_seconds INTEGER,
+                    created_at_seconds BIGINT
+                );";
+
+        using var cmd = new NpgsqlCommand(createTableQuery, conn);
+        cmd.ExecuteNonQuery();
+    }
+    
     private void CreateOfferInfoTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
@@ -216,7 +217,6 @@ public class Database
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();
     }
-
 
     private void CreateGameIdSequence()
     {

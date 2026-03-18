@@ -9,12 +9,12 @@ public struct StickerBookStatResult
     public ResultContext mContextId;
     
     [TdfMember("CTVL")] 
-    public uint mContextValue;
+    public int mContextValue;
     
     [TdfMember("TYPE")] 
     public ResultType mTypeId;
     
     [TdfMember("VALU")] 
-    public uint mValue;
+    public int mValue;
     
 }

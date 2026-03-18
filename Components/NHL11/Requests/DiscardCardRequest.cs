@@ -10,7 +10,7 @@ public struct DiscardCardRequest
     public long mCardId;
 
     [TdfMember("CRED")] 
-    public uint mCredits;
+    public int mCredits;
     
     [TdfMember("UID")] 
     public long mUserId;

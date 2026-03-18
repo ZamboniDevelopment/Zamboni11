@@ -19,7 +19,7 @@ public class HutPackFactory
                 cardDataList.Add(await HutCardFactory.CreateRandomJerseyCard(userId, false, false));
                 cardDataList.Add(await HutCardFactory.CreateRandomLogoCard(userId));
                 cardDataList.Add(await HutCardFactory.CreateRandomStadiumCard(userId));
-                // cardDataList.Add(await HutCardFactory.CreateRandomHeadCoachCard(userId));
+                cardDataList.Add(await HutCardFactory.CreateRandomHeadCoachCard(userId));
                 cardDataList.Add(await HutCardFactory.CreateRandomTrainingCard(userId));
                 cardDataList.Add(await HutCardFactory.CreateRandomContractCard(userId));
                 cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK));

@@ -1,4 +1,5 @@
 using Tdf;
+using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11.Components.NHL11.Requests;
 
@@ -9,7 +10,7 @@ public struct ISSearchRequest
     public int mCategory;
 
     [TdfMember("CTYP")] 
-    public int mCardType;
+    public CardSearchTypeParameter mCardType;
     
     [TdfMember("FORM")] 
     public int mFormation;

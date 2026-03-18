@@ -35,18 +35,18 @@ public class HutCardFactory
         PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D));
         PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK));
 
-        LeagueTeamsMapping.Add(0, new Range(0, 32)); //NHL //31 and 32 All stars
-        LeagueTeamsMapping.Add(1, new Range(33, 62)); //AHL
-        LeagueTeamsMapping.Add(2, new Range(63, 74)); //Elitserien
-        LeagueTeamsMapping.Add(3, new Range(75, 88)); //Sm-Liiga
-        LeagueTeamsMapping.Add(4, new Range(89, 103)); //DEL
-        LeagueTeamsMapping.Add(5, new Range(104, 117)); //O2 Extraliga
-        LeagueTeamsMapping.Add(6, new Range(118, 129)); //National League
-        LeagueTeamsMapping.Add(7, new Range(130, 150)); //National
-        LeagueTeamsMapping.Add(8, new Range(151, 170)); //OHL
-        LeagueTeamsMapping.Add(9, new Range(171, 188)); //QMJHL
-        LeagueTeamsMapping.Add(10, new Range(189, 210)); //WHL
-        LeagueTeamsMapping.Add(11, new Range(211, 212)); //Prospects
+        LeagueTeamsMapping.Add(0, new Range(0, 31)); //NHL
+        LeagueTeamsMapping.Add(1, new Range(32, 61)); //AHL
+        LeagueTeamsMapping.Add(2, new Range(62, 73)); //Elitserien
+        LeagueTeamsMapping.Add(3, new Range(74, 87)); //Sm-Liiga
+        LeagueTeamsMapping.Add(4, new Range(88, 102)); //DEL
+        LeagueTeamsMapping.Add(5, new Range(103, 116)); //O2 Extraliga
+        LeagueTeamsMapping.Add(6, new Range(117, 128)); //National League
+        LeagueTeamsMapping.Add(7, new Range(129, 149)); //National
+        LeagueTeamsMapping.Add(8, new Range(150, 169)); //OHL
+        LeagueTeamsMapping.Add(9, new Range(170, 187)); //QMJHL
+        LeagueTeamsMapping.Add(10, new Range(188, 209)); //WHL
+        LeagueTeamsMapping.Add(11, new Range(210, 211)); //Prospects
     }
 
     public static async Task<CardData> CreateRandomHeadCoachCard(long owner)
@@ -111,10 +111,17 @@ public class HutCardFactory
 
     public static async Task<CardData> CreateNonPlayerCard(long owner, uint dbId, CardSubType cardSubType)
     {
+        CardState cardState = CardState.CARDHOUSE_CARDSTATE_INVALID;
+        DeckType deckType = DeckType.CARDHOUSE_DECK_UNASSIGNED;
+        if (cardSubType == CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH)
+        {
+            cardState = CardState.CARDHOUSE_CARDSTATE_FREE;
+            deckType = DeckType.CARDHOUSE_DECK_STICKERBOOK;
+        }
         var cardData = new CardData()
         {
             mAttributes = new List<byte>(),
-            mCardStateId = 0,
+            mCardStateId = cardState,
             mCardId = 0,
             mCardDbId = dbId,
             mFormationId = 0,
@@ -136,7 +143,7 @@ public class HutCardFactory
             mListTrainingCards = new List<int>(),
             mUsesRemaining = 0
         };
-        return await CreateOrUpdateCard(cardData, owner, DeckType.CARDHOUSE_DECK_UNASSIGNED);
+        return await CreateOrUpdateCard(cardData, owner, deckType);
 
     }
 
