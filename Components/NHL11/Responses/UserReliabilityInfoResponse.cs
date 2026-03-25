@@ -9,15 +9,15 @@ public struct UserReliabilityInfoResponse
     public byte mPreviousMatchUnfinished;
     
     [TdfMember("MFI")] 
-    public uint mMatchesFinished;
+    public int mMatchesFinished;
     
     [TdfMember("MST")] 
-    public uint mMatchesStarted;
+    public int mMatchesStarted;
     
     [TdfMember("REL")] 
-    public uint mReliability;
+    public int mReliability;
     
     [TdfMember("UID")] 
-    public ulong mUserId;
+    public long mUserId;
 
 }

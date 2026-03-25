@@ -8,6 +8,6 @@ public struct GetConfigResponse
 {
     
     [TdfMember("GCFL")] 
-    public List<uint> mConfigList;
+    public List<int> mConfigList;
     
 }

@@ -52,26 +52,26 @@ internal class GameManager : GameManagerBase.Server
                     mDisconnectReason = UserSessionDisconnectReason.DisconnectReason.DUPLICATE_LOGIN
                 });
 
-            ServerManager.RemoveServerPlayer(serverPlayer.UserIdentification.mExternalId);
+            ServerManager.RemoveServerPlayerByUserId(serverPlayer.UserIdentification.mAccountId);
         }
 
         if (ServerManager.GetQueuedPlayers().Count <= 1) return;
-        
+
         var grouped = ServerManager.GetQueuedPlayers().Values.GroupBy(u => u.StartMatchmakingRequest.mCriteriaData.mGenericRulePrefsList.Find(prefs => prefs.mRuleName.Equals("OSDK_gameMode")).mDesiredValues[0]);
-        
+
         foreach (var group in grouped)
         {
             var users = group.ToList();
-        
+
             while (users.Count >= 2)
             {
                 var queuedPlayerA = users[0];
                 var queuedPlayerB = users[1];
-        
+
                 users.RemoveRange(0, 2);
-                ServerManager.RemoveQueuedPlayer(queuedPlayerA.ServerPlayer.UserIdentification.mExternalId);
-                ServerManager.RemoveQueuedPlayer(queuedPlayerB.ServerPlayer.UserIdentification.mExternalId);
-        
+                ServerManager.RemoveQueuedPlayerByUserId(queuedPlayerA.ServerPlayer.UserIdentification.mAccountId);
+                ServerManager.RemoveQueuedPlayerByUserId(queuedPlayerB.ServerPlayer.UserIdentification.mAccountId);
+
                 SendToMatchMakingGame(queuedPlayerA, queuedPlayerB, queuedPlayerA.StartMatchmakingRequest);
             }
         }
@@ -80,25 +80,25 @@ internal class GameManager : GameManagerBase.Server
     private static void SendToMatchMakingGame(QueuedPlayer host, QueuedPlayer notHost, StartMatchmakingRequest startMatchmakingRequest)
     {
         var zamboniGame = new ServerGame(host.ServerPlayer, startMatchmakingRequest);
-    
+
         zamboniGame.AddGameParticipant(host.ServerPlayer, host.MatchmakingSessionId);
         zamboniGame.AddGameParticipant(notHost.ServerPlayer, notHost.MatchmakingSessionId);
     }
 
     public override Task<StartMatchmakingResponse> StartMatchmakingAsync(StartMatchmakingRequest request, BlazeRpcContext context)
     {
-
         GenericRulePrefs genericRulePrefs = request.mCriteriaData.mGenericRulePrefsList.Find(prefs => prefs.mRuleName.Equals("OSDK_gameMode"));
         string targetGameMode = genericRulePrefs.mDesiredValues[0];
         if (!targetGameMode.Equals("6"))
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
-        var serverPlayer = ServerManager.GetServerPlayer(context.BlazeConnection);
-    
+
+        var serverPlayer = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID);
+
         var queuedPlayer = new QueuedPlayer(serverPlayer, request);
-        ServerManager.AddQueuedPlayer(serverPlayer.UserIdentification.mExternalId,queuedPlayer);
-    
+        ServerManager.AddQueuedPlayer(serverPlayer.UserIdentification.mAccountId, queuedPlayer);
+
         return Task.FromResult(new StartMatchmakingResponse
         {
             mSessionId = queuedPlayer.MatchmakingSessionId
@@ -107,7 +107,7 @@ internal class GameManager : GameManagerBase.Server
 
     public override Task<JoinGameResponse> ResetDedicatedServerAsync(CreateGameRequest request, BlazeRpcContext context)
     {
-        var host = ServerManager.GetServerPlayer(context.BlazeConnection);
+        var host = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!;
 
         var serverGame = new ServerGame(host, request);
 
@@ -136,7 +136,7 @@ internal class GameManager : GameManagerBase.Server
     public override Task<JoinGameResponse> JoinGameAsync(JoinGameRequest request, BlazeRpcContext context)
     {
         var serverGame = ServerManager.GetServerGame(request.mGameId);
-        var serverPlayer = ServerManager.GetServerPlayer(context.BlazeConnection);
+        var serverPlayer = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID);
 
         if (!serverGame.HasSpaceForPlayer()) throw new Exception();
 
@@ -261,9 +261,9 @@ internal class GameManager : GameManagerBase.Server
 
     public override Task<NullStruct> CancelMatchmakingAsync(CancelMatchmakingRequest request, BlazeRpcContext context)
     {
-        var serverPlayer = ServerManager.GetServerPlayer(context.BlazeConnection);
+        var serverPlayer = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID);
         var queuedPlayer = ServerManager.GetQueuedPlayer(serverPlayer);
-        if (queuedPlayer != null) ServerManager.RemoveQueuedPlayer(queuedPlayer.ServerPlayer.UserIdentification.mExternalId);
+        if (queuedPlayer != null) ServerManager.RemoveQueuedPlayerByUserId(queuedPlayer.ServerPlayer.UserIdentification.mAccountId);
         return Task.FromResult(new NullStruct());
     }
 
@@ -311,7 +311,7 @@ internal class GameManager : GameManagerBase.Server
     public override Task<NullStruct> SetPlayerAttributesAsync(SetPlayerAttributesRequest request, BlazeRpcContext context)
     {
         var serverGame = ServerManager.GetServerGame(request.mGameId);
-        var serverPlayer = ServerManager.GetServerPlayer((uint)request.mPlayerId);
+        var serverPlayer = ServerManager.GetServerPlayerByUserId(request.mPlayerId);
         var replicatedGamePlayer = serverGame.ReplicatedGamePlayers.Find(player => player.mPlayerId == request.mPlayerId);
         replicatedGamePlayer.mPlayerAttribs = request.mPlayerAttributes;
 
@@ -381,7 +381,7 @@ internal class GameManager : GameManagerBase.Server
                 }
                 case PlayerNetConnectionStatus.DISCONNECTED:
                 {
-                    var serverPlayer = ServerManager.GetServerPlayer((uint)playerConnectionStatus.mTargetPlayer);
+                    var serverPlayer = ServerManager.GetServerPlayerByUserId(playerConnectionStatus.mTargetPlayer);
                     if (serverPlayer != null)
                         serverGame.RemoveGameParticipant(serverPlayer, PlayerRemovedReason.PLAYER_CONN_LOST);
                     break;
@@ -397,7 +397,7 @@ internal class GameManager : GameManagerBase.Server
     public override Task<NullStruct> RemovePlayerAsync(RemovePlayerRequest request, BlazeRpcContext context)
     {
         var serverGame = ServerManager.GetServerGame(request.mGameId);
-        var serverPlayer = ServerManager.GetServerPlayer((uint)request.mPlayerId);
+        var serverPlayer = ServerManager.GetServerPlayerByUserId(request.mPlayerId);
 
         if (serverGame == null || serverPlayer == null) return Task.FromResult(new NullStruct());
 
@@ -466,7 +466,7 @@ internal class GameManager : GameManagerBase.Server
 
     public override Task<CreateGameResponse> CreateGameAsync(CreateGameRequest request, BlazeRpcContext context)
     {
-        var host = ServerManager.GetServerPlayer(context.BlazeConnection);
+        var host = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID);
 
         var serverGame = new ServerGame(host, request);
 

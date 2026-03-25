@@ -46,7 +46,7 @@ internal class LeagueComponent : LeagueComponentBase.Server
         {
             mMemberInfo = new List<MemberInfo>
             {
-                LeagueManager.Members[ServerManager.GetServerPlayer(context.Connection).UserIdentification.mExternalId]
+                LeagueManager.Members[ServerManager.GetServerPlayerByConnectionId(context.Connection.ID).UserIdentification.mExternalId]
             }
         });
     }
@@ -68,7 +68,7 @@ internal class LeagueComponent : LeagueComponentBase.Server
     public override Task<CreateLeagueResponse> CreateLeagueAsync(CreateLeagueRequest request, BlazeRpcContext context)
     {
         uint id = LeagueManager.LeagueIdCounter++;
-        ServerPlayer serverPlayer = ServerManager.GetServerPlayer(context.BlazeConnection);
+        ServerPlayer serverPlayer = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID);
         LeagueManager.Members.Add(serverPlayer.UserIdentification.mExternalId, new MemberInfo
         {
             mGamesRemaining = 0,

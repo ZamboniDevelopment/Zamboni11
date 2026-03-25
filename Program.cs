@@ -123,7 +123,7 @@ internal class Program
 
 
         //2250 NHL SPECIFIC COMPONENT
-        core.AddComponent<OsdkDynamicMessagingComponent>(); 
+        core.AddComponent<OsdkDynamicMessagingComponent>();
 
         //2249 NHL SPECIFIC COMPONENT
         core.AddComponent<OSDKSettingsComponent>();
@@ -137,7 +137,7 @@ internal class Program
         //"OSDKSeasonalPlay" (EASHL)
         //Work in progress
         core.AddComponent<EAHockeyLeagueComponent>();
-        
+
         //2262
         core.AddComponent<OsdkTicker2Component>();
         await core.Start(-1).ConfigureAwait(false);
@@ -165,7 +165,11 @@ internal class Program
                     Logger.Info("GameServerPort port: " + ZamboniConfig.GameServerPort);
                     Logger.Info("Redirector port: " + RedirectorPort);
                     Logger.Info("Online Players: " + ServerManager.GetServerPlayers().Count);
-                    foreach (var serverPlayer in ServerManager.GetServerPlayers().Values) Logger.Info(serverPlayer.UserIdentification.mName);
+                    foreach (var serverPlayer in ServerManager.GetServerPlayers().Values)
+                        Logger.Info(
+                            serverPlayer.UserIdentification.mName + " "
+                                                                  + serverPlayer.UserIdentification.mAccountId + " "
+                                                                  + serverPlayer.BlazeServerConnection.ProtoFireConnection.ID);
                     Logger.Info("Queued Total Players: " + ServerManager.GetQueuedPlayers().Count);
                     foreach (var queuedPlayer in ServerManager.GetQueuedPlayers().Values) Logger.Info(queuedPlayer.ServerPlayer.UserIdentification.mName);
                     Logger.Info("Server Games: " + ServerManager.GetServerGames().Count);

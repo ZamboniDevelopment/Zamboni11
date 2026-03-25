@@ -21,7 +21,7 @@ public class ServerGame
 
         return retList;
     }
-
+    
     public ServerGame(ServerPlayer host, StartMatchmakingRequest request)
     {
         var gameId = Program.Database.GetNextGameId();
@@ -90,7 +90,7 @@ public class ServerGame
             {
             }
         };
-        ServerManager.AddServerGame(gameId,this);
+        ServerManager.AddServerGame(gameId, this);
     }
 
     public ServerGame(ServerPlayer host, CreateGameRequest request)
@@ -166,7 +166,7 @@ public class ServerGame
             {
             }
         };
-        ServerManager.AddServerGame(gameId,this);
+        ServerManager.AddServerGame(gameId, this);
     }
 
     public List<ServerPlayer> ServerPlayers { get; } = new();

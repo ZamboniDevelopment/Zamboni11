@@ -8,36 +8,25 @@ namespace Zamboni11.Components.Blaze;
 
 internal class UserSessionsComponent : UserSessionsBase.Server
 {
-    public override Task<NullStruct> UpdateNetworkInfoAsync(NetworkInfo request, BlazeRpcContext context)
+    public override async Task<NullStruct> UpdateNetworkInfoAsync(NetworkInfo request, BlazeRpcContext context)
     {
-        //For some reason we get UpdateNetworkInfoAsync before Ps3LoginAsync unlike in 10. That's why big patch delay
-        _ = Task.Run(async () =>
+        var serverPlayer = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID);
+
+        if (serverPlayer == null) return new NullStruct();
+        
+        var serverPlayerExtendedData = serverPlayer.ExtendedData;
+        serverPlayerExtendedData.mAddress = request.mAddress;
+        serverPlayerExtendedData.mQosData = request.mQosData;
+        serverPlayerExtendedData.mBestPingSiteAlias = "qos";
+        serverPlayer.ExtendedData = serverPlayerExtendedData;
+
+        await NotifyUserSessionExtendedDataUpdateAsync(context.BlazeConnection, new UserSessionExtendedDataUpdate
         {
-            await Task.Delay(5000);
-
-            var serverPlayer = ServerManager.GetServerPlayer(context.BlazeConnection);
-            if (serverPlayer == null) return;
-
-            var serverPlayerExtendedData = serverPlayer.ExtendedData;
-            serverPlayerExtendedData.mAddress = request.mAddress;
-            serverPlayerExtendedData.mQosData = request.mQosData;
-            serverPlayerExtendedData.mBestPingSiteAlias = "qos";
-            serverPlayer.ExtendedData = serverPlayerExtendedData;
-
-            await NotifyUserSessionExtendedDataUpdateAsync(context.BlazeConnection, new UserSessionExtendedDataUpdate
-            {
-                mExtendedData = serverPlayerExtendedData,
-                mUserId = serverPlayer.UserIdentification.mBlazeId
-            });
-
-            await NotifyUserUpdatedAsync(context.BlazeConnection, new UserStatus
-            {
-                mBlazeId = serverPlayer.UserIdentification.mBlazeId,
-                mStatusFlags = UserDataFlags.Online
-            });
+            mExtendedData = serverPlayerExtendedData,
+            mUserId = serverPlayer.UserIdentification.mBlazeId
         });
 
-        return Task.FromResult(new NullStruct());
+        return new NullStruct();
     }
 
     public override Task<NullStruct> UpdateExtendedDataAttributeAsync(NullStruct request, BlazeRpcContext context)
@@ -53,7 +42,7 @@ internal class UserSessionsComponent : UserSessionsBase.Server
 
     public override Task<UserData> LookupUserAsync(UserIdentification request, BlazeRpcContext context)
     {
-        var target = ServerManager.GetServerPlayer(request.mName);
+        var target = ServerManager.GetServerPlayerByName(request.mName);
         if (target == null) return Task.FromResult(new UserData());
         return Task.FromResult(new UserData
         {
@@ -71,7 +60,7 @@ internal class UserSessionsComponent : UserSessionsBase.Server
         if (request.mLookupType.Equals(LookupUsersRequest.LookupType.PERSONA_NAME))
             foreach (var variable in request.mUserIdentificationList)
             {
-                var serverPlayer = ServerManager.GetServerPlayer(variable.mName);
+                var serverPlayer = ServerManager.GetServerPlayerByName(variable.mName);
                 if (serverPlayer != null)
                     response.mUserDataList.Add(new UserData
                     {

@@ -10,11 +10,11 @@ public struct ISRemoveWatchRequest
     public byte mRemoveExpired;
 
     [TdfMember("TID")] 
-    public ulong mTradeId;
+    public long mTradeId;
     
     [TdfMember("TIDL")] 
-    public List<ulong> mTradeIdList;
+    public List<long> mTradeIdList;
     
     [TdfMember("UID")] 
-    public ulong mUserId;
+    public long mUserId;
 }

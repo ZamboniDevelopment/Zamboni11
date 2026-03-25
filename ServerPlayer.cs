@@ -3,7 +3,6 @@ using Blaze3SDK.Blaze;
 using Blaze3SDK.Blaze.Authentication;
 using Blaze3SDK.Blaze.GameManager;
 using BlazeCommon;
-using NLog;
 
 namespace Zamboni11;
 
@@ -16,7 +15,7 @@ public class ServerPlayer
         UserIdentification = userIdentification;
         ExtendedData = extendedData;
         SessionInfo = sessionInfo;
-        ServerManager.AddServerPlayer(userIdentification.mExternalId, this);
+        _ = ServerManager.AddServerPlayer(userIdentification.mAccountId, this);
     }
 
     public BlazeServerConnection BlazeServerConnection { get; }

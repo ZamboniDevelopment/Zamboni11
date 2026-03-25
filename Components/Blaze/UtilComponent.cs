@@ -95,7 +95,7 @@ internal class UtilComponent : UtilComponentBase.Server
     public override Task<PingResponse> PingAsync(NullStruct request, BlazeRpcContext context)
     {
         var time = Util.TimeNow();
-        var serverPlayer = ServerManager.GetServerPlayer(context.BlazeConnection);
+        var serverPlayer = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID);
         if (serverPlayer == null)
             Logger.Debug("Trying to ping an unknown player!");
         else

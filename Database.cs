@@ -45,6 +45,7 @@ public class Database
         
         CreateTradeInfoTable();
         CreateOfferInfoTable();
+        CreateWatchingTable();
         
         CreateHutGamerInfoTable();
         CreateHutSquadInfoTable();
@@ -63,8 +64,8 @@ public class Database
         const string createTableQuery = @"
                 CREATE TABLE IF NOT EXISTS hut_general_info (
                     user_id BIGINT PRIMARY KEY,
-                    pucks INTEGER DEFAULT 1000,
-                    stats SMALLINT[] DEFAULT '{}'
+                    pucks INTEGER DEFAULT 100,
+                    stats INTEGER[] DEFAULT '{}'
                 );";
 
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
@@ -212,6 +213,21 @@ public class Database
                     credits INTEGER,
                     card_ids BIGINT[] DEFAULT '{}',
                     created_at_seconds BIGINT
+                );";
+
+        using var cmd = new NpgsqlCommand(createTableQuery, conn);
+        cmd.ExecuteNonQuery();
+    }
+    
+    private void CreateWatchingTable()
+    {
+        using var conn = new NpgsqlConnection(ConnectionString);
+        conn.Open();
+
+        const string createTableQuery = @"
+                CREATE TABLE IF NOT EXISTS hut_watching (
+                    user_id BIGINT,
+                    trade_id BIGINT
                 );";
 
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
@@ -637,10 +653,10 @@ public class Database
         cmd.ExecuteNonQuery();
     }
 
-    public void InsertReport(GameReport report, long reporterUserId)
+    public async Task InsertReport(GameReport report, long reporterUserId)
     {
-        using var conn = new NpgsqlConnection(ConnectionString);
-        conn.Open();
+        await using var conn = new NpgsqlConnection(ConnectionString);
+        await conn.OpenAsync();
 
         const string insertGameQuery = @"
             INSERT INTO games (
@@ -650,12 +666,12 @@ public class Database
             )
             ON CONFLICT (game_id) DO NOTHING;";
 
-        using var cmd = new NpgsqlCommand(insertGameQuery, conn);
+        await using var cmd = new NpgsqlCommand(insertGameQuery, conn);
         cmd.Parameters.AddWithValue("game_id", (long)report.mGameReportingId);
         cmd.Parameters.AddWithValue("fnsh", report.mFinished);
         cmd.Parameters.AddWithValue("gtyp", (long)report.mGameTypeId);
         cmd.Parameters.AddWithValue("prcs", report.mProcess);
-        cmd.ExecuteNonQuery();
+        await cmd.ExecuteNonQueryAsync();
 
         var gameAttributeMap = report.mAttributeMap;
         foreach (var key in gameAttributeMap.Keys)
@@ -667,14 +683,14 @@ public class Database
                 ON CONFLICT (game_id) DO UPDATE
                     SET {column} = EXCLUDED.{column};";
 
-            using var cmd1 = new NpgsqlCommand(insertGameAttributeQuery, conn);
+            await using var cmd1 = new NpgsqlCommand(insertGameAttributeQuery, conn);
             cmd1.Parameters.AddWithValue("game_id", (long)report.mGameReportingId);
 
             if (int.TryParse(gameAttributeMap[key], out var intValue))
                 cmd1.Parameters.AddWithValue("value", intValue);
             else
                 cmd1.Parameters.AddWithValue("value", gameAttributeMap[key]);
-            cmd1.ExecuteNonQuery();
+            await cmd1.ExecuteNonQueryAsync();
         }
 
         var tableName = "reports";
@@ -705,10 +721,10 @@ public class Database
                 )
                 ON CONFLICT (game_id, user_id) DO NOTHING;";
 
-            using var cmd1 = new NpgsqlCommand(insertPlayerQuery, conn);
+            await using var cmd1 = new NpgsqlCommand(insertPlayerQuery, conn);
             cmd1.Parameters.AddWithValue("game_id", (long)report.mGameReportingId);
             cmd1.Parameters.AddWithValue("user_id", userId);
-            cmd1.ExecuteNonQuery();
+            await cmd1.ExecuteNonQueryAsync();
         }
 
         var playerAttributeMap = mPlayerReportMap[reporterUserId].mAttributeMap;
@@ -721,7 +737,7 @@ public class Database
                     ON CONFLICT (game_id, user_id) DO UPDATE
                         SET {column} = EXCLUDED.{column};";
 
-            using var cmd1 = new NpgsqlCommand(insertPlayerAttributeQuery, conn);
+            await using var cmd1 = new NpgsqlCommand(insertPlayerAttributeQuery, conn);
             cmd1.Parameters.AddWithValue("game_id", (long)report.mGameReportingId);
             cmd1.Parameters.AddWithValue("user_id", reporterUserId);
 
@@ -729,7 +745,7 @@ public class Database
                 cmd1.Parameters.AddWithValue("value", intValue);
             else
                 cmd1.Parameters.AddWithValue("value", playerAttributeMap[key]);
-            cmd1.ExecuteNonQuery();
+            await cmd1.ExecuteNonQueryAsync();
         }
     }
 

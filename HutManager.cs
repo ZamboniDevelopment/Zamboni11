@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BlazeCommon;
+using NLog;
 using Npgsql;
 using Zamboni11.Components.NHL11;
 using Zamboni11.Components.NHL11.Requests;
@@ -14,6 +15,8 @@ namespace Zamboni11;
 
 public class HutManager
 {
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
     public static async Task<GamerInfo?> GetGamerInfo(long userId)
     {
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
@@ -122,7 +125,7 @@ public class HutManager
             return new GeneralInfo
             {
                 mCredits = reader.GetInt32(reader.GetOrdinal("pucks")),
-                mStats = reader.GetFieldValue<byte[]>(reader.GetOrdinal("stats")).ToList(),
+                mStats = reader.GetFieldValue<int[]>(reader.GetOrdinal("stats")).ToList(),
             };
         }
 
@@ -149,12 +152,12 @@ public class HutManager
 
         cmd.Parameters.AddWithValue("user_id", userId);
         cmd.Parameters.AddWithValue("pucks", generalInfo.mCredits);
-        cmd.Parameters.AddWithValue("stats", generalInfo.mStats.Select(b => (short)b).ToArray());
+        cmd.Parameters.AddWithValue("stats", generalInfo.mStats.ToArray());
 
         await cmd.ExecuteNonQueryAsync();
-        
+
         await IncrementVersionInfo(userId, VersionType.General);
-        
+
         return generalInfo;
     }
 
@@ -331,7 +334,7 @@ public class HutManager
         {
             var card = HutHelper.ReadCardData(reader);
             DeckType deckType = (DeckType)reader.GetInt32(reader.GetOrdinal("deck_type"));
-        
+
             return (card, deckType);
         }
 

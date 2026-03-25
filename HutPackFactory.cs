@@ -37,7 +37,7 @@ public class HutPackFactory
                 cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW));
                 cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW));
                 cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW));
-                cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW));
+                cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW)); //TODO dbid 1932 errors out
                 cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW));
                 cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C));
                 cardDataList.Add(await HutCardFactory.CreateRandomPlayerCard(userId, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C));

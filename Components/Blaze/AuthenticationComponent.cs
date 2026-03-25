@@ -13,7 +13,7 @@ namespace Zamboni11.Components.Blaze;
 
 internal class AuthenticationComponent : AuthenticationComponentBase.Server
 {
-    public override Task<ConsoleLoginResponse> Ps3LoginAsync(PS3LoginRequest request, BlazeRpcContext context)
+    public override async Task<ConsoleLoginResponse> Ps3LoginAsync(PS3LoginRequest request, BlazeRpcContext context)
     {
         if (!NpTicket.TryParse(request.mPS3Ticket, out NpTicket? ticket))
         {
@@ -53,7 +53,7 @@ internal class AuthenticationComponent : AuthenticationComponentBase.Server
                 mNatType = NatType.NAT_TYPE_MODERATE,
                 mUpstreamBitsPerSecond = 10
             },
-            mUserInfoAttribute = 0
+            mUserInfoAttribute = ticket.SubjectId
         };
 
         var userIdentification = new UserIdentification
@@ -86,35 +86,8 @@ internal class AuthenticationComponent : AuthenticationComponentBase.Server
         };
 
         new ServerPlayer(context.BlazeConnection, userIdentification, extendedData, sessionInfo);
-
-        Task.Run(async () =>
-        {
-            await Task.Delay(500);
-
-            await UserSessionsBase.Server.NotifyUserAddedAsync(context.BlazeConnection, new NotifyUserAdded
-            {
-                mExtendedData = extendedData,
-                mUserInfo = userIdentification
-            });
-
-            await Task.Delay(600);
-
-            await UserSessionsBase.Server.NotifyUserSessionExtendedDataUpdateAsync(context.BlazeConnection, new UserSessionExtendedDataUpdate
-            {
-                mExtendedData = extendedData,
-                mUserId = userIdentification.mAccountId
-            });
-
-            await Task.Delay(800);
-
-            await UserSessionsBase.Server.NotifyUserUpdatedAsync(context.BlazeConnection, new UserStatus
-            {
-                mBlazeId = userIdentification.mBlazeId,
-                mStatusFlags = UserDataFlags.Online
-            });
-        });
-        // TODO NHL11 working
-        return Task.FromResult(new ConsoleLoginResponse
+        
+        return new ConsoleLoginResponse
         {
             mCanAgeUp = false,
             mIsOfLegalContactAge = false,
@@ -125,7 +98,7 @@ internal class AuthenticationComponent : AuthenticationComponentBase.Server
             // mTermsOfServiceUri = "a",
             // mTosHost = "b",
             // mTosUri = "c"
-        });
+        };
     }
 
     public override Task<NullStruct> LogoutAsync(NullStruct request, BlazeRpcContext context)

@@ -16,7 +16,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 {
     public override async Task<LoginResponse> LoginRequestAsync(LoginRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         var gamerInfo = await HutManager.GetGamerInfo(userId);
         if (gamerInfo == null) return new LoginResponse();
         return new LoginResponse
@@ -31,17 +31,17 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     }
 
 
-    public override Task<NumericResponse> LogoutRequestAsync(LogoutRequest request, BlazeRpcContext context)
+    public override async Task<NumericResponse> LogoutRequestAsync(LogoutRequest request, BlazeRpcContext context)
     {
-        return Task.FromResult(new NumericResponse
+        return new NumericResponse
         {
             mNumber = 0,
-        });
+        };
     }
 
     public override async Task<MoveCardResponse> MoveCardAsync(MoveCardRequest request, BlazeRpcContext context)
     {
-        long userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         CardData cardData = (await HutManager.GetCard(request.mCardId, userId)).Card;
         var versionInfo = await HutManager.GetVersionInfo(userId);
         switch (request.mDeckType)
@@ -65,7 +65,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<GamerGetInfoResponse> GetGamerInfoRequestAsync(GamerGetInfoRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         var gamerInfo = await HutManager.GetGamerInfo(userId);
         if (gamerInfo == null) throw new BlazeRpcException(Blaze3RpcError.CARDHOUSE_ERR_NO_PLAYER_INFO);
         return new GamerGetInfoResponse
@@ -77,7 +77,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<NumericResponse> SetGamerInfoRequestAsync(GamerSetInfoRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         await HutManager.SetGamerInfo(request.mGamerInfo, userId);
         return new NumericResponse
         {
@@ -87,14 +87,23 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<DeckInfoResponse> GetDeckInfoAsync(DeckInfoRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
 
         var generalInfo = await HutManager.GetGeneralInfo(userId);
         if (generalInfo == null)
             generalInfo = await HutManager.SetGeneralInfo(new GeneralInfo
             {
                 mCredits = 1000,
-                mStats = new List<byte>()
+                mStats = new List<int>()
+                {
+                    //Todo figure if other placeholders have meaning
+                    1,2,3,4,5,6,7,8,
+                    0, //WINS
+                    0, //LOSES
+                    0, //OTL
+                    12,13,14,15,16,17,18,19,20,
+                    21,22,23,24,25,26,27,28,29,30
+                }
             }, userId);
 
         var squadInfo = await HutManager.GetSquadInfo(userId);
@@ -130,20 +139,81 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         };
     }
 
-    public override Task<GetConfigResponse> GetConfigRequestAsync(ProvidedUID request, BlazeRpcContext context)
+    public override async Task<GetConfigResponse> GetConfigRequestAsync(NumericRequest request, BlazeRpcContext context)
     {
-        return Task.FromResult(new GetConfigResponse
+        return new GetConfigResponse
         {
-            mConfigList = new List<uint>
+            mConfigList = new List<int>
             {
-                10, 20, 30, 40, 50, 60, 70, 80, 90, 100 //tf is this?
+                //Todo figure if other placeholders have meaning
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                21, 22, 23, 24, 25, 26, 27, 
+                100, //Game End: Completion award
+                29, 
+                50, //Game End Positive: Pucks per Goal
+                31, 
+                5, //Game End Positive: Pucks per Shots on goal
+                33, 
+                5, //Game End Positive: Pucks per Hits
+                35, 
+                5, //Game End Positive: Pucks per Faceoffs Won
+                37, 
+                20, //Game End Positive: Pucks per Time on attack MINUTES
+                39, 
+                20, //Game End Positive: Pucks per Powerplay % something
+                41, 
+                5, //Game End Positive: Pucks per successful pass
+                43, 
+                -50, //Game End Negative: Puck deduction per opponent goals
+                45, 
+                -25, //Game End Negative: Puck deduction per penalty minute
+                47, 
+                -25, //Game End Negative: Puck deduction per icing
+                49, 
+                -10, //Game End Negative: Puck deduction per offside
+                51,
+                50, //Bid increment
+                53,
+                54, 55, 56, 57, 58, 59, 60,
+                61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+                71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
+                81, 82, 83, 84, 85, 86, 87, 88, 89, 90,
+                91, 92, 93, 94, 95, 96, 97, 98, 99, 100,
+                101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
+                111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
+                121, 122, 123, 124, 125, 126, 127, 128, 129, 130,
+                131, 132, 133, 134, 135, 136, 137, 138, 139, 140,
+                141, 142, 143, 144, 145, 146, 147, 148, 149, 150,
+                151, 152, 153, 154, 155, 156, 157, 158, 159, 160,
+                161, 162, 163, 164, 165, 166, 167, 168, 169, 170,
+                171, 172, 173, 174, 175, 176, 177, 178, 179, 180,
+                181, 182, 183, 184, 185, 186, 187, 188, 189, 190,
+                191, 192, 193, 194, 195, 196, 197, 198, 199, 200,
+                201, 202, 203, 204, 205, 206, 207, 208, 209, 210,
+                211, 212, 213, 214, 215, 216, 217, 218, 219, 220,
+                221, 222, 223, 224, 225, 226, 227, 228, 229, 230,
+                231, 232, 233, 234, 235, 236, 237, 238, 239, 240,
+                241, 242, 243, 244, 245, 246, 247, 248, 249, 250,
+                251, 252, 253, 254, 255, 256, 257, 258, 259, 260,
+                261, 262, 263, 264, 265, 266, 267, 268, 269, 270,
+                271, 272, 273, 274, 275, 276, 277, 278, 279, 280,
+                281, 282, 283, 284, 285, 286, 287, 288, 289, 290,
+                291, 292, 293, 294, 295, 296, 297, 298, 299, 300,
+                301, 302, 303, 304, 305, 306, 307, 308, 309, 310,
+                311, 312, 313, 314, 315, 316, 317, 318, 319, 320,
+                321, 322, 323, 324, 325, 326, 327, 328, 329, 330,
+                331, 332, 333, 334, 335, 336, 337, 338, 339, 340,
+                341, 342, 343, 344, 345, 346, 347, 348, 349, 350,
+                351, 352, 353, 354, 355, 356, 357, 358, 359, 360,
+                361, 362, 363, 364, 365, 366, 367, 368, 369, 370,
             }
-        });
+        };
     }
 
-    public override Task<StoreGetPackTypesResponse> StoreGetPackTypesAsync(StoreGetPackTypesRequest request, BlazeRpcContext context)
+    public override async Task<StoreGetPackTypesResponse> StoreGetPackTypesAsync(StoreGetPackTypesRequest request, BlazeRpcContext context)
     {
-        return Task.FromResult(new StoreGetPackTypesResponse
+        return new StoreGetPackTypesResponse
         {
             mFreePack = 0,
             mPremiumPacksHidden = 0,
@@ -163,44 +233,32 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
                 }
             },
             mServerTime = 0
-        });
+        };
     }
 
-    public override Task<StorePackQuantitiesResponse> StorePackQuantitiesAsync(StorePackQuantitiesRequest request, BlazeRpcContext context)
+    public override async Task<StorePackQuantitiesResponse> StorePackQuantitiesAsync(StorePackQuantitiesRequest request, BlazeRpcContext context)
     {
-        return Task.FromResult(new StorePackQuantitiesResponse
+        return new StorePackQuantitiesResponse
         {
             mPackQuantitiesList = new List<int>
             {
                 10, 20
             }
-        });
+        };
     }
 
     public override async Task<DiscardCardResponse> DiscardCardAsync(DiscardCardRequest request, BlazeRpcContext context)
     {
-        long userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         var cardData = await HutManager.GetCard(request.mCardId, userId);
         await HutManager.HardDelete(userId, cardData.Card.mCardId);
-        var generalInfo = await HutManager.GetGeneralInfo(userId);
-        await HutManager.SetGeneralInfo(new GeneralInfo
-        {
-            mCredits = request.mCredits + generalInfo.Value.mCredits,
-            mStats = generalInfo.Value.mStats
-        }, userId);
+        await HutHelper.Deposit(userId, request.mCredits);
 
         switch (cardData.DeckType)
         {
-            case DeckType.CARDHOUSE_DECK_ESCROW:
-            {
-                await HutManager.IncrementVersionInfo(userId, HutManager.VersionType.Escrow);
-                break;
-            }
-            case DeckType.CARDHOUSE_DECK_UNASSIGNED:
-            {
-                await HutManager.IncrementVersionInfo(userId, HutManager.VersionType.Unassigned);
-                break;
-            }
+            case DeckType.CARDHOUSE_DECK_ESCROW: await HutManager.IncrementVersionInfo(userId, HutManager.VersionType.Escrow); break;
+            case DeckType.CARDHOUSE_DECK_UNASSIGNED: await HutManager.IncrementVersionInfo(userId, HutManager.VersionType.Unassigned); break;
+            default: throw new NotImplementedException();
         }
 
         var versionInfo = await HutManager.GetVersionInfo(userId);
@@ -212,9 +270,9 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         };
     }
 
-    public override Task<StaffBonusResponse> GetStaffBonusAsync(ProvidedUID request, BlazeRpcContext context)
+    public override async Task<StaffBonusResponse> GetStaffBonusAsync(NumericRequest request, BlazeRpcContext context)
     {
-        return Task.FromResult(new StaffBonusResponse
+        return new StaffBonusResponse
         {
             mStaffBonusInfo = new StaffBonusInfo
             {
@@ -241,12 +299,12 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
                 mPhysioShoulderBonus = 0,
                 mManagerTalkBonus = 0
             }
-        });
+        };
     }
 
     public override async Task<AssignCardsResponse> AssignCardsAsync(AssignCardsRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         foreach (var assignCardCard in request.mList)
         {
             CardData cardData = (await HutManager.GetCard(assignCardCard.mCardId)).Card;
@@ -263,21 +321,21 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     }
 
 
-    public override async Task<UserReliabilityInfoResponse> GetUserReliabilityInfoAsync(ProvidedUID request, BlazeRpcContext context)
+    public override async Task<UserReliabilityInfoResponse> GetUserReliabilityInfoAsync(NumericRequest request, BlazeRpcContext context)
     {
         return new UserReliabilityInfoResponse
         {
             mPreviousMatchUnfinished = 0,
             mMatchesFinished = 10,
             mMatchesStarted = 10,
-            mReliability = 0,
+            mReliability = 100,
             mUserId = 0
         };
     }
 
-    public override async Task<NumericResponse> ResetUserRequestAsync(ProvidedUID request, BlazeRpcContext context)
+    public override async Task<NumericResponse> ResetUserRequestAsync(NumericRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
 
         await HutManager.HardDelete(userId);
         return new NumericResponse
@@ -286,9 +344,9 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         };
     }
 
-    public override async Task<SquadListResponse> GetSquadListAsync(ProvidedUID request, BlazeRpcContext context)
+    public override async Task<SquadListResponse> GetSquadListAsync(NumericRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         var squadInfo = await HutManager.GetSquadInfo(userId);
         if (squadInfo == null) return new SquadListResponse();
 
@@ -325,7 +383,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<SquadSaveResponse> SquadSaveAsync(SquadSaveRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         await HutManager.SetSquadInfo(request, userId);
         return new SquadSaveResponse
         {
@@ -337,7 +395,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<StickerBookStats2Response> StickerBookStats2Async(StickerBookStats2Request request, BlazeRpcContext context)
     {
-        long userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
 
         List<StickerBookStatResult> stats = new();
 
@@ -481,7 +539,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<StickerBookSearchResponse> StickerBookSearchAsync(StickerBookSearchRequest request, BlazeRpcContext context)
     {
-        long userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
 
         List<CardData> cardDatas = await HutManager.GetCardList(userId, request);
 
@@ -493,7 +551,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<StickerBookCardResponse> StickerBookCardAsync(StickerBookCardRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mExternalId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         var card = (await HutManager.GetCard(request.mCardId, (long)userId));
         await HutCardFactory.CreateOrUpdateCard(card.Card, (long)userId, DeckType.CARDHOUSE_DECK_STICKERBOOK);
         switch (card.DeckType)
@@ -514,38 +572,38 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<ISSearchResponse> ISSearchAsync(ISSearchRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mExternalId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         return await HutTradeManager.SearchTradesAsync(request, (long)userId);
     }
 
-    public override Task<ISWatchListResponse> ISWatchListAsync(ISWatchListRequest request, BlazeRpcContext context)
+    public override async Task<ISWatchListResponse> ISWatchListAsync(ISWatchListRequest request, BlazeRpcContext context)
     {
-        throw new NotImplementedException();
-        // var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mExternalId;
-        // List<ISTradeInfo> retlist = new();
-        // if (HutTradeManager.Watching.ContainsKey(userId))
-        // {
-        //     foreach (var VARIABLE in HutTradeManager.Watching[userId].ToArray())
-        //     {
-        //         retlist.Add(HutTradeManager.Auctions[VARIABLE]);
-        //     }
-        // }
-        //
-        // return Task.FromResult(new ISWatchListResponse
-        // {
-        //     mTradeResults = retlist,
-        //     mTotalCount = retlist.Count
-        // });
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
+        var tradeInfos = await HutTradeManager.GetWatchedTrades(userId);
+        return new ISWatchListResponse
+        {
+            mTradeResults = tradeInfos,
+            mTotalCount = tradeInfos.Count
+        };
     }
 
-    public override Task<ISWatchTradeResponse> ISWatchTradeAsync(ISWatchTradeRequest request, BlazeRpcContext context)
+    public override async Task<ISWatchTradeResponse> ISWatchTradeAsync(ISWatchTradeRequest request, BlazeRpcContext context)
     {
-        throw new NotImplementedException();
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
+        await HutTradeManager.InsertWatching(request.mTradeId, userId);
+        return new ISWatchTradeResponse();
+    }
+
+    public override async Task<ISRemoveWatchResponse> ISRemoveWatchAsync(ISRemoveWatchRequest request, BlazeRpcContext context)
+    {
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
+        await HutTradeManager.RemoveWatching(request, userId);
+        return new ISRemoveWatchResponse();
     }
 
     public override async Task<ISStartResponse> ISStartAsync(ISStartRequest request, BlazeRpcContext context)
     {
-        ServerPlayer serverPlayer = ServerManager.GetServerPlayer(context.BlazeConnection);
+        ServerPlayer serverPlayer = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!;
         var tradeId = await HutTradeManager.InsertTrade(request, serverPlayer.UserIdentification.mAccountId, serverPlayer.UserIdentification.mName);
 
         return new ISStartResponse
@@ -556,33 +614,34 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<ISOfferTradeResponse> ISOfferTradeAsync(ISOfferTradeRequest request, BlazeRpcContext context)
     {
-        ServerPlayer serverPlayer = ServerManager.GetServerPlayer(context.BlazeConnection);
-        var offerId = await HutTradeManager.InsertOffer(request, serverPlayer.UserIdentification.mAccountId);
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
+        var result = await HutTradeManager.InsertOffer(request, userId);
+
+        if (result.Exception != null)
+        {
+            throw new BlazeRpcException(result.Exception.ErrorCode);
+        }
 
         return new ISOfferTradeResponse
         {
-            mOfferId = offerId
+            mOfferId = result.OfferId
         };
     }
 
 
     public override async Task<ISViewTradeResponse> ISViewTradeAsync(ISViewTradeRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mExternalId;
-        return await HutTradeManager.ViewTradeAsync(request, (long)userId);
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
+        return await HutTradeManager.ViewTradeAsync(request, userId);
     }
 
-    public override Task<ISRemoveWatchResponse> ISRemoveWatchAsync(ISRemoveWatchRequest request, BlazeRpcContext context)
-    {
-        throw new BlazeRpcException(Blaze3RpcError.CARDHOUSE_ERR_UNKNOWN);
-    }
 
-    public override Task<ISAdminOfferResponse> ISAdminOfferAsync(ISAdminOfferRequest request, BlazeRpcContext context)
+    public override async Task<ISAdminOfferResponse> ISAdminOfferAsync(ISAdminOfferRequest request, BlazeRpcContext context)
     {
         throw new NotImplementedException();
     }
 
-    public override Task<ISGetOffersResponse> ISGetOffersAsync(ISGetOffersRequest request, BlazeRpcContext context)
+    public override async Task<ISGetOffersResponse> ISGetOffersAsync(ISGetOffersRequest request, BlazeRpcContext context)
     {
         throw new NotImplementedException();
 
@@ -605,16 +664,16 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         // });
     }
 
-    public override Task<ActivateCardResponse> ActivateCardAsync(ActivateCardRequest request, BlazeRpcContext context)
+    public override async Task<ActivateCardResponse> ActivateCardAsync(ActivateCardRequest request, BlazeRpcContext context)
     {
         //TODO No checks for now
-        return Task.FromResult(new ActivateCardResponse
+        return new ActivateCardResponse
         {
             mCardId = request.mCardId
-        });
+        };
     }
 
-    public override Task<ApplyCardResponse> ApplyCardAsync(ApplyCardRequest request, BlazeRpcContext context)
+    public override async Task<ApplyCardResponse> ApplyCardAsync(ApplyCardRequest request, BlazeRpcContext context)
     {
         //TODO No checks for now
         //TODO Doesnt work
@@ -636,36 +695,36 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         // });
     }
 
-    public override Task<ApplySalaryCapResponse> ApplySalaryCapAsync(ApplySalaryCapRequest request, BlazeRpcContext context)
+    public override async Task<ApplySalaryCapResponse> ApplySalaryCapAsync(ApplySalaryCapRequest request, BlazeRpcContext context)
     {
-        return Task.FromResult(new ApplySalaryCapResponse
+        return new ApplySalaryCapResponse
         {
             mPlayerCardId = request.mPlayerCardId,
             mSalaryCap = request.mSalaryCap,
             mUserId = request.mUserId
-        });
+        };
     }
 
 
-    public override Task<MatchRegisterStartResponse> MatchRegisterStartAsync(MatchRegisterStartRequest request, BlazeRpcContext context)
+    public override async Task<MatchRegisterStartResponse> MatchRegisterStartAsync(MatchRegisterStartRequest request, BlazeRpcContext context)
     {
-        return Task.FromResult(new MatchRegisterStartResponse
+        return new MatchRegisterStartResponse
         {
             mId = 0
-        });
+        };
     }
 
-    public override Task<NumericResponse> MatchRegisterFinishAsync(MatchRegisterFinishRequest request, BlazeRpcContext context)
+    public override async Task<NumericResponse> MatchRegisterFinishAsync(MatchRegisterFinishRequest request, BlazeRpcContext context)
     {
-        return Task.FromResult(new NumericResponse
+        return new NumericResponse
         {
-        });
+        };
     }
 
     public override async Task<ChangePlayersResponse> ChangePlayersAsync(ChangePlayersRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
-
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
+        
         foreach (var loopVar in request.mCardDataList)
         {
             CardData cardData = (await HutManager.GetCard(loopVar.mCardId)).Card;
@@ -683,16 +742,33 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<PlayGameResponse> PlayGameAsync(PlayGameRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
-        var versionInfo = await HutManager.GetVersionInfo(userId);
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
 
+
+        switch (request.mMatchResult)
+        {
+            case MatchResult.CARDHOUSE_MATCHRESULT_INVALID: break;
+            case MatchResult.CARDHOUSE_MATCHRESULT_WON: await HutHelper.IncrementGeneralInfo(userId, HutHelper.Outcome.WIN); break;
+            case MatchResult.CARDHOUSE_MATCHRESULT_LOST: await HutHelper.IncrementGeneralInfo(userId, HutHelper.Outcome.LOSS); break;
+            case MatchResult.CARDHOUSE_MATCHRESULT_DRAW: await HutHelper.IncrementGeneralInfo(userId, HutHelper.Outcome.OTL);break;
+            default: throw new NotImplementedException();
+        }
+        
+        if (request.mState == PlayGameState.CARDHOUSE_PGSTATE_ENDING)
+        {
+            await HutHelper.Deposit(userId, request.mCredits);
+        }
+
+        var generalInfo = await HutManager.GetGeneralInfo(userId);
+        var versionInfo = await HutManager.GetVersionInfo(userId);
+        
         return new PlayGameResponse
         {
-            mBonusAwarded = 10,
-            mCredits = 10,
-            mGoldenTickets = 10,
-            mPrestige = 10,
-            mTrophyCardCreated = 10,
+            mBonusAwarded = 1,
+            mCredits = generalInfo.Value.mCredits,
+            mGoldenTickets = request.mGoldenTickets,
+            mPrestige = request.mPrestige,
+            mTrophyCardCreated = 0,
             mVersionInfo = versionInfo.Value
         };
     }
@@ -700,7 +776,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<SquadLoadActiveResponse> SquadLoadActiveAsync(SquadLoadActiveRequest request, BlazeRpcContext context)
     {
-        var userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         var squadInfo = await HutManager.GetSquadInfo(userId);
         if (squadInfo == null) throw new Exception();
 
@@ -720,7 +796,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
     public override async Task<CreatePackResponse> CreatePackAsync(CreatePackRequest request, BlazeRpcContext context)
     {
-        long userId = ServerManager.GetServerPlayer(context.BlazeConnection).UserIdentification.mAccountId;
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
         var versionInfo = await HutManager.GetVersionInfo(userId);
 
         List<CardData> cardDataList = await HutPackFactory.CreatePack(userId, request.mPackType);

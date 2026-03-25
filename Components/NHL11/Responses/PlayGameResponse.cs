@@ -11,13 +11,13 @@ public struct PlayGameResponse
     public byte mBonusAwarded;
     
     [TdfMember("CRED")] 
-    public uint mCredits;
+    public int mCredits;
     
     [TdfMember("GTIC")] 
-    public uint mGoldenTickets;
+    public int mGoldenTickets;
     
     [TdfMember("PRES")] 
-    public uint mPrestige;
+    public int mPrestige;
     
     [TdfMember("TRPH")] 
     public byte mTrophyCardCreated;

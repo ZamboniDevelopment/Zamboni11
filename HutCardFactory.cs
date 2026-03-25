@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NLog;
 using Npgsql;
 using Zamboni11.Components.NHL11.Structs;
 
@@ -9,6 +10,8 @@ namespace Zamboni11;
 
 public class HutCardFactory
 {
+    
+    private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
     
     private static readonly Dictionary<CardSubType, Range> TrainingCardDbIdRanges = new();
     private static readonly Dictionary<CardSubType, List<uint>> PlayerCardDbIdsByCardSubType = new();
@@ -118,6 +121,7 @@ public class HutCardFactory
             cardState = CardState.CARDHOUSE_CARDSTATE_FREE;
             deckType = DeckType.CARDHOUSE_DECK_STICKERBOOK;
         }
+
         var cardData = new CardData()
         {
             mAttributes = new List<byte>(),
@@ -144,7 +148,6 @@ public class HutCardFactory
             mUsesRemaining = 0
         };
         return await CreateOrUpdateCard(cardData, owner, deckType);
-
     }
 
     public static async Task<CardData> CreateRandomPlayerCard(long owner, CardSubType position)
@@ -162,8 +165,6 @@ public class HutCardFactory
         return cardData;
     }
 
-
-
     public static async Task<CardData> CreateOrUpdateCard(CardData cardData, long ownerUserId, DeckType? deckType = null)
     {
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
@@ -171,7 +172,7 @@ public class HutCardFactory
 
         string cardIdValue = cardData.mCardId == 0 ? "DEFAULT" : "@card_id";
         bool updateDeck = deckType.HasValue;
-        
+
         string sql = $@"
         INSERT INTO hut_cards (
             card_id, user_id, attributes, state_id, db_id, formation_id, 

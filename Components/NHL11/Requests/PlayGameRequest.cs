@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Tdf;
+using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11.Components.NHL11.Requests;
 
@@ -11,25 +12,25 @@ public struct PlayGameRequest
     public List<long> mGameCards;
     
     [TdfMember("CRED")] 
-    public uint mCredits;
+    public int mCredits;
     
     [TdfMember("GTIC")] 
-    public uint mGoldenTickets;
+    public int mGoldenTickets;
     
     [TdfMember("PGMR")] 
-    public byte mMatchResult;
+    public MatchResult mMatchResult;
     
     [TdfMember("PRES")] 
-    public uint mPrestige;
+    public int mPrestige;
     
     [TdfMember("STAT")] 
-    public uint mState;
+    public PlayGameState mState;
     
     [TdfMember("TID")] 
-    public uint mTournamentId;
+    public int mTournamentId;
     
     [TdfMember("TTYP")] 
-    public byte mIsOnlineTournament;
+    public TournamentType mTournamentType;
     
     [TdfMember("UID")] 
     public ulong mUserId;
