@@ -146,7 +146,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             mConfigList = new List<int>
             {
                 //Todo figure if other placeholders have meaning
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                11, 21, 22, 33, 44, 55, 66, 77, 88, 99, 10,
                 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
                 21, 22, 23, 24, 25, 26, 27, 
                 100, //Game End: Completion award
@@ -161,7 +161,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
                 37, 
                 20, //Game End Positive: Pucks per Time on attack MINUTES
                 39, 
-                20, //Game End Positive: Pucks per Powerplay % something
+                1, //Game End Positive: Pucks per Powerplay % something?
                 41, 
                 5, //Game End Positive: Pucks per successful pass
                 43, 
@@ -175,7 +175,13 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
                 51,
                 50, //Bid increment
                 53,
-                54, 55, 56, 57, 58, 59, 60,
+                54, 
+                55, 
+                56, 
+                10, //Difficulty Rookie Multiplier
+                10, //Difficulty Pro Multiplier
+                10, //Difficulty All-Star Multiplier
+                11, //Difficulty Super-Star Multiplier
                 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
                 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
                 81, 82, 83, 84, 85, 86, 87, 88, 89, 90,
@@ -672,6 +678,61 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             mCardId = request.mCardId
         };
     }
+    
+    public override async Task<TournamentListResponse> TournamentListRequestAsync(NullStruct request, BlazeRpcContext context)
+    {
+        return new TournamentListResponse
+        {
+            mServerTime = Util.TimeNow(),
+            mTournaments = new List<TournamentInfo>
+            {
+                new TournamentInfo
+                {
+                    mAiGroup = 0,
+                    mBlazeTournamentId = 1,
+                    mDifficulty = 0,
+                    mElg1Data = 0,
+                    mElg1Type = 0,
+                    mElg12Data = 0,
+                    mElg2Type = 0,
+                    mEndTime = Util.TimeNow()+10000,
+                    // mMatchLenght = -1,
+                    mPrize = 1000,
+                    mReward1 = 1000,
+                    mReward2 = 1100,
+                    mReward3 = 1200,
+                    mReward4 = 1300,
+                    mSalaryCap = 3000,
+                    mStartTime = Util.TimeNow(),
+                    mTrophyCardDbId = 8200000,
+                    mTournamentId = 10,
+                    mType = 1, //0=SP 1=SP/MP 2=SPF/SP/MP 3=MPF/SP/MP
+                    mUnlock = 0
+                }
+            }
+        };
+    }
+
+    public override async Task<TournamentSaveDataResponse> TournamentSaveDataRequestAsync(TournamentSaveDataRequest request, BlazeRpcContext context)
+    {
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
+
+        await HutTournamentManager.SaveTournament(request, userId);
+        return new TournamentSaveDataResponse();
+    }
+    
+    public override async Task<TournamentLoadDataResponse> TournamentLoadDataRequestAsync(TournamentLoadDataRequest request, BlazeRpcContext context)
+    {
+        var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
+
+        byte[] tournamentData = await HutTournamentManager.LoadTournament(request, userId);
+        if (tournamentData.Length <= 0) throw new BlazeRpcException(Blaze3RpcError.CARDHOUSE_ERR_NO_TOURNAMENT_DATA);
+        
+        return new TournamentLoadDataResponse
+        {
+            mData = tournamentData
+        };
+    }
 
     public override async Task<ApplyCardResponse> ApplyCardAsync(ApplyCardRequest request, BlazeRpcContext context)
     {
@@ -744,13 +805,14 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     {
         var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
 
-
         switch (request.mMatchResult)
         {
             case MatchResult.CARDHOUSE_MATCHRESULT_INVALID: break;
             case MatchResult.CARDHOUSE_MATCHRESULT_WON: await HutHelper.IncrementGeneralInfo(userId, HutHelper.Outcome.WIN); break;
             case MatchResult.CARDHOUSE_MATCHRESULT_LOST: await HutHelper.IncrementGeneralInfo(userId, HutHelper.Outcome.LOSS); break;
-            case MatchResult.CARDHOUSE_MATCHRESULT_DRAW: await HutHelper.IncrementGeneralInfo(userId, HutHelper.Outcome.OTL);break;
+            case MatchResult.CARDHOUSE_MATCHRESULT_DRAW: await HutHelper.IncrementGeneralInfo(userId, HutHelper.Outcome.OTL); break;
+            case MatchResult.CARDHOUSE_MATCHRESULT_WON_CUP: await HutHelper.IncrementGeneralInfo(userId, HutHelper.Outcome.WIN); break;
+            case MatchResult.CARDHOUSE_MATCHRESULT_LOST_CUP: await HutHelper.IncrementGeneralInfo(userId, HutHelper.Outcome.LOSS); break;
             default: throw new NotImplementedException();
         }
         
@@ -768,7 +830,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
             mCredits = generalInfo.Value.mCredits,
             mGoldenTickets = request.mGoldenTickets,
             mPrestige = request.mPrestige,
-            mTrophyCardCreated = 0,
+            mTrophyCardCreated = (byte)(request.mMatchResult == MatchResult.CARDHOUSE_MATCHRESULT_WON_CUP ? 1 : 0),
             mVersionInfo = versionInfo.Value
         };
     }

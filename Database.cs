@@ -53,6 +53,9 @@ public class Database
         CreateHutGeneralInfoTable();
         
         CreateHutCardsTable();
+        
+        CreateHutTournamentsTable();
+        CreateHutTournamentAssociationTable();
     }
     
     
@@ -170,6 +173,37 @@ public class Database
                     list_training_cards INTEGER[] DEFAULT '{}',
                     uses_remaining SMALLINT,
                     deck_type INTEGER DEFAULT 1
+                );";
+
+        using var cmd = new NpgsqlCommand(createTableQuery, conn);
+        cmd.ExecuteNonQuery();
+    }
+    
+    private void CreateHutTournamentsTable()
+    {
+        using var conn = new NpgsqlConnection(ConnectionString);
+        conn.Open();
+
+        const string createTableQuery = @"
+                CREATE TABLE IF NOT EXISTS hut_tournaments (
+                    tournament_id SERIAL PRIMARY KEY,
+                    tournament_type INTEGER,
+                    tournament_data BYTEA
+                );";
+
+        using var cmd = new NpgsqlCommand(createTableQuery, conn);
+        cmd.ExecuteNonQuery();
+    }
+    
+    private void CreateHutTournamentAssociationTable()
+    {
+        using var conn = new NpgsqlConnection(ConnectionString);
+        conn.Open();
+
+        const string createTableQuery = @"
+                CREATE TABLE IF NOT EXISTS hut_tournament_associations (
+                    user_id BIGINT,
+                    tournament_id INTEGER
                 );";
 
         using var cmd = new NpgsqlCommand(createTableQuery, conn);

@@ -480,6 +480,10 @@ public class HutManager
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER_ALL: sql.Append(" AND sub_type BETWEEN 0 AND 4"); break;
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER: sql.Append(" AND sub_type BETWEEN 0 AND 4"); break;
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_DEVELOPMENT: sql.Append(" AND sub_type BETWEEN 51 AND 62"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_OFFLINE_TROPHY: sql.Append(" AND sub_type = 145"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_ONLINE_TROPHY: sql.Append(" AND sub_type = 146"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_LIVE_TROPHY: sql.Append(" AND sub_type = 147"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYOFF_TROPHY: sql.Append(" AND sub_type = 148"); break;
             default: throw new NotImplementedException();
         }
 

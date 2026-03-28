@@ -48,6 +48,9 @@ public static class CardHouseComponentBase
         ISRemoveWatch = 806,
         storeGetPackTypes = 808,
         storePackQuantities = 810,
+        tournamentList = 901,
+        tournamentSaveData = 903,
+        tournamentLoadData = 904,
         matchRegisterStart = 1000,
         matchRegisterFinish = 1001,
         getUserReliabilityInfo = 1002
@@ -99,6 +102,9 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.ISRemoveWatch => typeof(ISRemoveWatchRequest),
             CardHouseComponentCommand.storeGetPackTypes => typeof(StoreGetPackTypesRequest),
             CardHouseComponentCommand.storePackQuantities => typeof(StorePackQuantitiesRequest),
+            CardHouseComponentCommand.tournamentList => typeof(NullStruct),
+            CardHouseComponentCommand.tournamentSaveData => typeof(TournamentSaveDataRequest),
+            CardHouseComponentCommand.tournamentLoadData => typeof(TournamentLoadDataRequest),
             CardHouseComponentCommand.matchRegisterStart => typeof(MatchRegisterStartRequest),
             CardHouseComponentCommand.matchRegisterFinish => typeof(MatchRegisterFinishRequest),
             CardHouseComponentCommand.getUserReliabilityInfo => typeof(NumericRequest),
@@ -144,6 +150,9 @@ public static class CardHouseComponentBase
             CardHouseComponentCommand.ISAdminOffer => typeof(ISAdminOfferResponse),
             CardHouseComponentCommand.storeGetPackTypes => typeof(StoreGetPackTypesResponse),
             CardHouseComponentCommand.storePackQuantities => typeof(StorePackQuantitiesResponse),
+            CardHouseComponentCommand.tournamentList => typeof(TournamentListResponse),
+            CardHouseComponentCommand.tournamentSaveData => typeof(TournamentSaveDataResponse),
+            CardHouseComponentCommand.tournamentLoadData => typeof(TournamentLoadDataResponse),
             CardHouseComponentCommand.matchRegisterStart => typeof(MatchRegisterStartResponse),
             CardHouseComponentCommand.matchRegisterFinish => typeof(NumericResponse),
             CardHouseComponentCommand.getUserReliabilityInfo => typeof(UserReliabilityInfoResponse),
@@ -403,7 +412,24 @@ public static class CardHouseComponentBase
         {
             throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
         }
-
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.tournamentList)]
+        public virtual Task<TournamentListResponse> TournamentListRequestAsync(NullStruct request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.tournamentSaveData)]
+        public virtual Task<TournamentSaveDataResponse> TournamentSaveDataRequestAsync(TournamentSaveDataRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
+        
+        [BlazeCommand((ushort)CardHouseComponentCommand.tournamentLoadData)]
+        public virtual Task<TournamentLoadDataResponse> TournamentLoadDataRequestAsync(TournamentLoadDataRequest request, BlazeRpcContext context)
+        {
+            throw new BlazeRpcException(Blaze3RpcError.ERR_COMMAND_NOT_FOUND);
+        }
 
         public override Type GetCommandRequestType(CardHouseComponentCommand componentCommand)
         {
@@ -818,6 +844,36 @@ public static class CardHouseComponentBase
         public Task<ISRemoveWatchResponse> ISRemoveWatchAsync(ISRemoveWatchRequest request)
         {
             return Connection.SendRequestAsync<ISRemoveWatchRequest, ISRemoveWatchResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.ISRemoveWatch, request);
+        }
+        
+        public TournamentListResponse TournamentListRequest(NullStruct request)
+        {
+            return Connection.SendRequest<NullStruct, TournamentListResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.tournamentList, request);
+        }
+
+        public Task<TournamentListResponse> TournamentListRequestAsync(NullStruct request)
+        {
+            return Connection.SendRequestAsync<NullStruct, TournamentListResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.tournamentList, request);
+        }
+        
+        public TournamentSaveDataResponse TournamentSaveDataRequest(TournamentSaveDataRequest request)
+        {
+            return Connection.SendRequest<TournamentSaveDataRequest, TournamentSaveDataResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.tournamentSaveData, request);
+        }
+
+        public Task<TournamentSaveDataResponse> TournamentSaveDataRequestAsync(TournamentSaveDataRequest request)
+        {
+            return Connection.SendRequestAsync<TournamentSaveDataRequest, TournamentSaveDataResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.tournamentSaveData, request);
+        }
+        
+        public TournamentLoadDataResponse TournamentLoadDataRequest(TournamentLoadDataRequest request)
+        {
+            return Connection.SendRequest<TournamentLoadDataRequest, TournamentLoadDataResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.tournamentLoadData, request);
+        }
+
+        public Task<TournamentLoadDataResponse> TournamentLoadDataRequestAsync(TournamentLoadDataRequest request)
+        {
+            return Connection.SendRequestAsync<TournamentLoadDataRequest, TournamentLoadDataResponse, NullStruct>(this, (ushort)CardHouseComponentCommand.tournamentLoadData, request);
         }
 
         public override Type GetCommandRequestType(CardHouseComponentCommand componentCommand)
