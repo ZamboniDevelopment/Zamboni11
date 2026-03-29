@@ -340,6 +340,35 @@ public class HutManager
 
         return (new CardData(), DeckType.CARDHOUSE_DECK_GENERAL);
     }
+    
+    public static async Task<(CardData Card, DeckType DeckType)> GetCard(uint cardDbId, long userId = 0)
+    {
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        var sql = new StringBuilder(@"
+            SELECT *, deck_type 
+            FROM hut_cards
+            WHERE card_id = @card_id");
+
+        if (userId != 0) sql.Append(" AND user_id = @user_id");
+
+        await using var cmd = new NpgsqlCommand(sql.ToString(), conn);
+        cmd.Parameters.AddWithValue("db_id", (int)cardDbId);
+        if (userId != 0) cmd.Parameters.AddWithValue("user_id", userId);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            var card = HutHelper.ReadCardData(reader);
+            DeckType deckType = (DeckType)reader.GetInt32(reader.GetOrdinal("deck_type"));
+
+            return (card, deckType);
+        }
+
+        return (new CardData(), DeckType.CARDHOUSE_DECK_GENERAL);
+    }
 
     public static async Task SetSquadInfo(SquadSaveRequest request, long userId)
     {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NLog;
 using Npgsql;
+using Zamboni11.Components.NHL11;
 using Zamboni11.Components.NHL11.Structs;
 
 namespace Zamboni11;
@@ -116,7 +117,7 @@ public class HutCardFactory
     {
         CardState cardState = CardState.CARDHOUSE_CARDSTATE_INVALID;
         DeckType deckType = DeckType.CARDHOUSE_DECK_UNASSIGNED;
-        if (cardSubType == CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH)
+        if (cardSubType == CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH || CardHouseComponent.TrophyTypes.Contains(cardSubType))
         {
             cardState = CardState.CARDHOUSE_CARDSTATE_FREE;
             deckType = DeckType.CARDHOUSE_DECK_STICKERBOOK;

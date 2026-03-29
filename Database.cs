@@ -55,7 +55,7 @@ public class Database
         CreateHutCardsTable();
         
         CreateHutTournamentsTable();
-        CreateHutTournamentAssociationTable();
+        // CreateHutTournamentAssociationTable();
     }
     
     
@@ -186,7 +186,7 @@ public class Database
 
         const string createTableQuery = @"
                 CREATE TABLE IF NOT EXISTS hut_tournaments (
-                    tournament_id SERIAL PRIMARY KEY,
+                    user_id BIGINT PRIMARY KEY,
                     tournament_type INTEGER,
                     tournament_data BYTEA
                 );";
@@ -195,20 +195,20 @@ public class Database
         cmd.ExecuteNonQuery();
     }
     
-    private void CreateHutTournamentAssociationTable()
-    {
-        using var conn = new NpgsqlConnection(ConnectionString);
-        conn.Open();
-
-        const string createTableQuery = @"
-                CREATE TABLE IF NOT EXISTS hut_tournament_associations (
-                    user_id BIGINT,
-                    tournament_id INTEGER
-                );";
-
-        using var cmd = new NpgsqlCommand(createTableQuery, conn);
-        cmd.ExecuteNonQuery();
-    }
+    // private void CreateHutTournamentAssociationTable()
+    // {
+    //     using var conn = new NpgsqlConnection(ConnectionString);
+    //     conn.Open();
+    //
+    //     const string createTableQuery = @"
+    //             CREATE TABLE IF NOT EXISTS hut_tournament_associations (
+    //                 user_id BIGINT,
+    //                 tournament_id INTEGER
+    //             );";
+    //
+    //     using var cmd = new NpgsqlCommand(createTableQuery, conn);
+    //     cmd.ExecuteNonQuery();
+    // }
     
     private void CreateTradeInfoTable()
     {
