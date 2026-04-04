@@ -1,0 +1,114 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict yU2xrVeSMqXrA5iOfGgDmfkbkaSFDPYpKFOu3l6bpqHzD2MbR9hJIHQUXZhcIf9
+
+-- Dumped from database version 18.1
+-- Dumped by pg_dump version 18.1
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: fcc_trainingcards; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.fcc_trainingcards (
+    carddbid integer,
+    cardsubtype integer,
+    weightrare integer,
+    cardassetid integer,
+    description character varying,
+    amount integer,
+    rating integer,
+    attributeslot integer,
+    indexedconsumableid integer
+);
+
+
+ALTER TABLE public.fcc_trainingcards OWNER TO postgres;
+
+--
+-- Data for Name: fcc_trainingcards; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.fcc_trainingcards (carddbid, cardsubtype, weightrare, cardassetid, description, amount, rating, attributeslot, indexedconsumableid) FROM stdin;
+5003001	51	0	0	HIGH_ABBR3	3	75	0	1
+5003002	51	0	0	HIGH_ABBR3	4	75	0	2
+5003003	51	0	0	HIGH_ABBR3	5	75	0	3
+5003004	51	15	0	HIGH_ABBR3	7	75	0	4
+5003005	51	15	0	HIGH_ABBR3	9	75	0	5
+5003006	52	0	0	LOW_ABBR3	3	75	1	6
+5003007	52	0	0	LOW_ABBR3	4	75	1	7
+5003008	52	0	0	LOW_ABBR3	5	75	1	8
+5003009	52	15	0	LOW_ABBR3	7	75	1	9
+5003010	52	15	0	LOW_ABBR3	9	75	1	10
+5003011	53	0	0	QUICKNESS_ABBR3	3	75	2	11
+5003012	53	0	0	QUICKNESS_ABBR3	4	75	2	12
+5003013	53	0	0	QUICKNESS_ABBR3	5	75	2	13
+5003014	53	15	0	QUICKNESS_ABBR3	7	75	2	14
+5003015	53	15	0	QUICKNESS_ABBR3	9	75	2	15
+5003016	54	0	0	POSITIONING_ABBR3	3	75	3	16
+5003017	54	0	0	POSITIONING_ABBR3	4	75	3	17
+5003018	54	0	0	POSITIONING_ABBR3	5	75	3	18
+5003019	54	15	0	POSITIONING_ABBR3	7	75	3	19
+5003020	54	15	0	POSITIONING_ABBR3	9	75	3	20
+5003021	55	0	0	REBOUNDCONTROL_ABBR3	3	75	4	21
+5003022	55	0	0	REBOUNDCONTROL_ABBR3	4	75	4	22
+5003023	55	0	0	REBOUNDCONTROL_ABBR3	5	75	4	23
+5003024	55	15	0	REBOUNDCONTROL_ABBR3	7	75	4	24
+5003025	55	15	0	REBOUNDCONTROL_ABBR3	9	75	4	25
+5003026	56	15	0	ALL	2	75	-1	26
+5003027	56	10	0	ALL	3	75	-1	27
+5003028	56	5	0	ALL	5	75	-1	28
+5003029	57	0	2	SKATING_ABBR3	3	75	0	1
+5003030	57	0	2	SKATING_ABBR3	4	75	0	2
+5003031	57	0	2	SKATING_ABBR3	5	75	0	3
+5003032	57	100	2	SKATING_ABBR3	7	75	0	4
+5003033	57	100	2	SKATING_ABBR3	9	75	0	5
+5003034	58	0	2	SHOOTING_ABBR3	3	75	1	6
+5003035	58	0	2	SHOOTING_ABBR3	4	75	1	7
+5003036	58	0	2	SHOOTING_ABBR3	5	75	1	8
+5003037	58	100	2	SHOOTING_ABBR3	7	75	1	9
+5003038	58	100	2	SHOOTING_ABBR3	9	75	1	10
+5003039	59	0	2	HANDS_ABBR3	3	75	2	11
+5003040	59	0	2	HANDS_ABBR3	4	75	2	12
+5003041	59	0	2	HANDS_ABBR3	5	75	2	13
+5003042	59	100	2	HANDS_ABBR3	7	75	2	14
+5003043	59	100	2	HANDS_ABBR3	9	75	2	15
+5003044	60	0	2	CHECKING_ABBR3	3	75	3	16
+5003045	60	0	2	CHECKING_ABBR3	4	75	3	17
+5003046	60	0	2	CHECKING_ABBR3	5	75	3	18
+5003047	60	100	2	CHECKING_ABBR3	7	75	3	19
+5003048	60	100	2	CHECKING_ABBR3	9	75	3	20
+5003049	61	0	2	DEFENSE_ABBR3	3	75	4	21
+5003050	61	0	2	DEFENSE_ABBR3	4	75	4	22
+5003051	61	0	2	DEFENSE_ABBR3	5	75	4	23
+5003052	61	100	2	DEFENSE_ABBR3	7	75	4	24
+5003053	61	100	2	DEFENSE_ABBR3	9	75	4	25
+5003054	62	100	2	ALL	2	75	-1	26
+5003055	62	50	2	ALL	3	75	-1	27
+5003056	62	20	2	ALL	5	75	-1	28
+\.
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict yU2xrVeSMqXrA5iOfGgDmfkbkaSFDPYpKFOu3l6bpqHzD2MbR9hJIHQUXZhcIf9
+

@@ -36,29 +36,29 @@ public class Database
         }
 
         CreateGameIdSequence();
-        
+
         CreateGamesTable();
         CreateReportTable();
         CreateOtpReportTable();
         CreateSoReportTable();
         CreateHutReportTable();
-        
+
         CreateTradeInfoTable();
         CreateOfferInfoTable();
         CreateWatchingTable();
-        
+
         CreateHutGamerInfoTable();
         CreateHutSquadInfoTable();
         CreateHutVersionInfoTable();
         CreateHutGeneralInfoTable();
-        
+
         CreateHutCardsTable();
-        
+
         CreateHutTournamentsTable();
         // CreateHutTournamentAssociationTable();
     }
-    
-    
+
+
     private void CreateHutGeneralInfoTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
@@ -74,7 +74,7 @@ public class Database
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();
     }
-    
+
     private void CreateHutVersionInfoTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
@@ -91,7 +91,7 @@ public class Database
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();
     }
-    
+
     private void CreateHutGamerInfoTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
@@ -119,7 +119,7 @@ public class Database
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();
     }
-    
+
     private void CreateHutSquadInfoTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
@@ -141,7 +141,7 @@ public class Database
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();
     }
-    
+
     private void CreateHutCardsTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
@@ -178,7 +178,7 @@ public class Database
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();
     }
-    
+
     private void CreateHutTournamentsTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
@@ -186,15 +186,19 @@ public class Database
 
         const string createTableQuery = @"
                 CREATE TABLE IF NOT EXISTS hut_tournaments (
-                    user_id BIGINT PRIMARY KEY,
+                    user_id BIGINT,
                     tournament_type INTEGER,
-                    tournament_data BYTEA
+                    tournament_id INTEGER,
+                    blaze_tournament_id  INTEGER,
+                    active BOOLEAN,
+                    tournament_data BYTEA,
+                    PRIMARY KEY (user_id, tournament_type)
                 );";
 
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();
     }
-    
+
     // private void CreateHutTournamentAssociationTable()
     // {
     //     using var conn = new NpgsqlConnection(ConnectionString);
@@ -209,7 +213,7 @@ public class Database
     //     using var cmd = new NpgsqlCommand(createTableQuery, conn);
     //     cmd.ExecuteNonQuery();
     // }
-    
+
     private void CreateTradeInfoTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
@@ -232,7 +236,7 @@ public class Database
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();
     }
-    
+
     private void CreateOfferInfoTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
@@ -252,7 +256,7 @@ public class Database
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();
     }
-    
+
     private void CreateWatchingTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
@@ -823,6 +827,7 @@ public class Database
 
         if (await reader.ReadAsync())
         {
+            short rating = reader.GetInt16(reader.GetOrdinal("rating"));
             return new CardData
             {
                 mAttributes = new List<byte>
@@ -837,20 +842,20 @@ public class Database
                     reader.GetByte(reader.GetOrdinal("attribute8")),
                 },
                 mCardStateId = CardState.CARDHOUSE_CARDSTATE_FREE,
-                // mCardId = HutCardFactory.CardIdCounter++,
                 mCardDbId = cardDbId,
                 mFormationId = reader.GetByte(reader.GetOrdinal("formationid")),
                 // mFREE = 40, //
                 mCareerRemaining = 50, //
                 mInjuryGames = reader.GetByte(reader.GetOrdinal("injuryduration")),
                 mInjuryType = reader.GetByte(reader.GetOrdinal("injury")),
-                mMaxTrainingCardsCanApply = 10, //
+                mMaxTrainingCardsCanApply = HutHelper.DetermineTrainingCardsCanApply(rating),
+                // mMaxTrainingCardsCanApply = 2,
                 // mNumberOfOwners = 86, //
                 mPreferredPositionId = reader.GetByte(reader.GetOrdinal("preferredposition")),
-                mDiscardPrice = 85, //
+                mDiscardPrice = 100, //
                 mRareFlag = reader.GetByte(reader.GetOrdinal("rare")),
-                mRating = reader.GetByte(reader.GetOrdinal("rating")),
-                mSalaryCap = 84, //
+                mRating = (byte)rating,
+                mSalaryCap = HutHelper.DetermineSalary(rating), //
                 mListStats = new List<int>
                 {
                     reader.GetByte(reader.GetOrdinal("stat1")), //Games Played
@@ -862,16 +867,72 @@ public class Database
                 mCardSubTypeId = (CardSubType)reader.GetInt16(reader.GetOrdinal("fieldpos")),
                 mDateIssued = Util.TimeNow(),
                 mTeamId = (uint)reader.GetInt32(reader.GetOrdinal("teamid")),
-                mListTrainingCards = new List<int>
+                mListTrainingCards = new List<int>()
                 {
-                    //TODO Figure this out
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                    // 0,0,0,0,0,0,0,0,0,0,
+                    // 0,0
                 },
                 mUsesRemaining = 20
             };
         }
 
         return new CardData();
+    }
+    
+    public static async Task<HutTrainingCard> GetTrainingCardByDbIdAsync(uint cardDbId)
+    {
+        const string sql = "SELECT * FROM fcc_trainingcards WHERE carddbid = @cardDbId";
+
+        await using var conn = new NpgsqlConnection(ConnectionString);
+        await conn.OpenAsync();
+
+        await using var command = new NpgsqlCommand(sql, conn);
+        command.Parameters.AddWithValue("cardDbId", (int)cardDbId);
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return new HutTrainingCard
+            {
+                CardDbId = (uint)reader.GetInt32(0),
+                CardSubtype = reader.GetInt32(1),
+                WeightRare = reader.GetInt32(2),
+                CardAssetId = reader.GetInt32(3),
+                Description = reader.GetString(4),
+                Amount = reader.GetInt32(5),
+                Rating = reader.GetInt32(6),
+                AttributeSlot = reader.GetInt32(7),
+                IndexedConsumableId = reader.GetInt32(8)
+            };
+        }
+
+        return null;
+    }
+    
+    public static async Task<HutContractCard> GetContractCardByDbIdAsync(uint cardDbId)
+    {
+        const string sql = "SELECT * FROM fcc_contractcards WHERE carddbid = @cardDbId";
+
+        await using var conn = new NpgsqlConnection(ConnectionString);
+        await conn.OpenAsync();
+
+        await using var command = new NpgsqlCommand(sql, conn);
+        command.Parameters.AddWithValue("cardDbId", (int)cardDbId);
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+        {
+            return new HutContractCard
+            {
+                CardDbId = (uint)reader.GetInt32(0),
+                WeightRare = reader.GetInt32(1),
+                Value = reader.GetInt32(2),
+            };
+        }
+
+        return null;
     }
 
     public uint GetNextGameId()

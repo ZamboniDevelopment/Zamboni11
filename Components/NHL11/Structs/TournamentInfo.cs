@@ -14,17 +14,17 @@ public struct TournamentInfo
     [TdfMember("DIFF")] 
     public int mDifficulty;
     
+    [TdfMember("EL1T")] 
+    public ElgType mElg1Type;
+    
     [TdfMember("EL1D")] 
     public int mElg1Data;
 
-    [TdfMember("EL1T")] 
-    public int mElg1Type;
+    [TdfMember("EL2T")] 
+    public ElgType mElg2Type;
     
     [TdfMember("EL2D")] 
     public int mElg12Data;
-
-    [TdfMember("EL2T")] 
-    public int mElg2Type;
     
     [TdfMember("END")] 
     public uint mEndTime;
@@ -63,6 +63,6 @@ public struct TournamentInfo
     public int mType;
 
     [TdfMember("UNLK")] 
-    public int mUnlock;
+    public int mTrophiesRequiredToEnter;
     
 }

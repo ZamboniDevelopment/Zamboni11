@@ -10,6 +10,6 @@ public struct TournamentSaveDataResponse
 {
     
     [TdfMember("NUT")] 
-    public uint mNUT;
+    public int mNUT;
     
 }

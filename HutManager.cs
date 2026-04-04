@@ -161,6 +161,7 @@ public class HutManager
         return generalInfo;
     }
 
+    private static int chngDebugCounter = 0;
     public static async Task<SquadInfo?> GetSquadInfo(long userId)
     {
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
@@ -184,7 +185,7 @@ public class HutManager
             return new SquadInfo
             {
                 mChemistry = (uint)reader.GetInt32(reader.GetOrdinal("chemistry")),
-                // mCHNG = ,
+                mCHNG = (uint)chngDebugCounter++,
                 mFormationId = (uint)reader.GetInt32(reader.GetOrdinal("formation_id")),
                 mLines = reader.GetFieldValue<int[]>(reader.GetOrdinal("lines")).ToList(),
                 mManager = (await GetCard(reader.GetInt64(reader.GetOrdinal("manager")))).Card,
@@ -340,7 +341,7 @@ public class HutManager
 
         return (new CardData(), DeckType.CARDHOUSE_DECK_GENERAL);
     }
-    
+
     public static async Task<(CardData Card, DeckType DeckType)> GetCard(uint cardDbId, long userId = 0)
     {
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
@@ -495,8 +496,8 @@ public class HutManager
         switch (request.mCollectionSearchCardType)
         {
             //Here we might have to filter based if its in players active roster (SquadInfo)
-            //but seems it's not needed because client has up to date info on his Squad all the time,
-            //and client doesnt mind sending him again his whole squad
+            //but seems it's not needed because client has up-to-date info on his Squad all the time,
+            //and client doesn't mind sending him again his whole sticker book
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_ALL: break;
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_HEADCOACH: sql.Append(" AND sub_type = 6"); break;
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_BADGE: sql.Append(" AND sub_type = 12"); break;
@@ -508,7 +509,7 @@ public class HutManager
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER_GK: sql.Append(" AND sub_type = 4"); break;
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER_ALL: sql.Append(" AND sub_type BETWEEN 0 AND 4"); break;
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_PLAYER: sql.Append(" AND sub_type BETWEEN 0 AND 4"); break;
-            case CollectionSearchType.COLLECTION_SEARCH_TYPE_DEVELOPMENT: sql.Append(" AND sub_type BETWEEN 51 AND 62"); break;
+            case CollectionSearchType.COLLECTION_SEARCH_TYPE_DEVELOPMENT: sql.Append(" AND (sub_type BETWEEN 51 AND 62 OR sub_type = 201)"); break;
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_OFFLINE_TROPHY: sql.Append(" AND sub_type = 145"); break;
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_ONLINE_TROPHY: sql.Append(" AND sub_type = 146"); break;
             case CollectionSearchType.COLLECTION_SEARCH_TYPE_LIVE_TROPHY: sql.Append(" AND sub_type = 147"); break;
@@ -557,13 +558,25 @@ public class HutManager
 
             foreach (var table in tables)
             {
-                if (cardId.HasValue && table == "hut_offer_info")
+                if (cardId.HasValue)
                 {
-                    var query = $"UPDATE {table} SET card_ids = array_remove(card_ids, @cardId) WHERE user_id = @userId"; //Todo where trade is not expired
-                    await using var cmd = new NpgsqlCommand(query, connection, transaction);
-                    cmd.Parameters.AddWithValue("userId", userId);
-                    cmd.Parameters.AddWithValue("cardId", cardId.Value);
-                    await cmd.ExecuteNonQueryAsync();
+                    if (table == "hut_offer_info")
+                    {
+                        var query = $"UPDATE {table} SET card_ids = array_remove(card_ids, @cardId) WHERE user_id = @userId"; //Todo where trade is not expired
+                        await using var cmd = new NpgsqlCommand(query, connection, transaction);
+                        cmd.Parameters.AddWithValue("userId", userId);
+                        cmd.Parameters.AddWithValue("cardId", cardId.Value);
+                        await cmd.ExecuteNonQueryAsync();
+                        continue;
+                    }
+                    else if (table == "hut_cards")
+                    {
+                        var query = $"DELETE FROM {table} WHERE card_id = @cardId AND user_id = @userId";
+                        await using var cmd = new NpgsqlCommand(query, connection, transaction);
+                        cmd.Parameters.AddWithValue("userId", userId);
+                        cmd.Parameters.AddWithValue("cardId", cardId.Value);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
                 }
                 else
                 {

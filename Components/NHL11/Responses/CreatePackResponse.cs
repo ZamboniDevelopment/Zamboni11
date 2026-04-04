@@ -17,13 +17,13 @@ public struct CreatePackResponse
     //TODO \/
     
     [TdfMember("NUM")] 
-    public uint mNumCards;
+    public int mNumCards;
     
     [TdfMember("PCNT")] 
     public long mNumPackPurchased;
     
     [TdfMember("PKTY")] 
-    public uint mRandPackType;
+    public int mRandPackType;
     
     //TODO /\
     //TODO THESE THREE MIGHT BE NAMED WRONG

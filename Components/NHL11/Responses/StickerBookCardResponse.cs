@@ -7,7 +7,7 @@ namespace Zamboni11.Components.NHL11.Responses;
 public struct StickerBookCardResponse
 {
     [TdfMember("CRED")] 
-    public uint mTotalCredits;
+    public int mTotalCredits;
     
     [TdfMember("VER")] 
     public VersionInfo mVersionInfo;

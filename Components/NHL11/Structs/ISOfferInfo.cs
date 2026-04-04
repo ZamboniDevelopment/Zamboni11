@@ -13,7 +13,7 @@ public struct ISOfferInfo
     public List<CardData> mCardDataList;
     
     [TdfMember("CRED")] 
-    public uint mCredits;
+    public int mCredits;
 
     [TdfMember("OID")] 
     public long mOfferId;
@@ -25,6 +25,6 @@ public struct ISOfferInfo
     public long mTradeId;
     
     [TdfMember("UID")] 
-    public ulong mUserId;
+    public long mUserId;
 
 }

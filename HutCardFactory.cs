@@ -117,7 +117,11 @@ public class HutCardFactory
     {
         CardState cardState = CardState.CARDHOUSE_CARDSTATE_INVALID;
         DeckType deckType = DeckType.CARDHOUSE_DECK_UNASSIGNED;
-        if (cardSubType == CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH || CardHouseComponent.TrophyTypes.Contains(cardSubType))
+        if (cardSubType == CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH 
+            || CardHouseComponent.TrophyTypes.Contains(cardSubType) 
+            || cardSubType == (CardSubType)10
+            || cardSubType == (CardSubType)11
+            || cardSubType == (CardSubType)12)
         {
             cardState = CardState.CARDHOUSE_CARDSTATE_FREE;
             deckType = DeckType.CARDHOUSE_DECK_STICKERBOOK;
@@ -137,13 +141,13 @@ public class HutCardFactory
             mMaxTrainingCardsCanApply = 0,
             mNumberOfOwners = 0,
             mPreferredPositionId = (byte)cardSubType,
-            mDiscardPrice = 0,
+            mDiscardPrice = 100,
             mRareFlag = 0,
             mRating = 0,
             mSalaryCap = 0,
             mListStats = new List<int>(),
             mCardSubTypeId = cardSubType,
-            mDateIssued = 0,
+            mDateIssued = Util.TimeNow(),
             mTeamId = (uint)await TeamIdFromDbId(dbId),
             mListTrainingCards = new List<int>(),
             mUsesRemaining = 0
@@ -228,9 +232,9 @@ public class HutCardFactory
         cmd.Parameters.AddWithValue("formation_id", (int)cardData.mFormationId);
         cmd.Parameters.AddWithValue("free", (int)cardData.mFREE);
         cmd.Parameters.AddWithValue("career_remaining", (int)cardData.mCareerRemaining);
-        cmd.Parameters.AddWithValue("injury_games", (int)cardData.mInjuryGames);
-        cmd.Parameters.AddWithValue("injury_type", (int)cardData.mInjuryType);
-        cmd.Parameters.AddWithValue("morale", (int)cardData.mMaxTrainingCardsCanApply);
+        cmd.Parameters.AddWithValue("injury_games", (short)cardData.mInjuryGames);
+        cmd.Parameters.AddWithValue("injury_type", (short)cardData.mInjuryType);
+        cmd.Parameters.AddWithValue("morale", (short)cardData.mMaxTrainingCardsCanApply);
         cmd.Parameters.AddWithValue("preferred_position_id", (int)cardData.mPreferredPositionId);
         cmd.Parameters.AddWithValue("discard_price", (int)cardData.mDiscardPrice);
         cmd.Parameters.AddWithValue("rare_flag", (int)cardData.mRareFlag);

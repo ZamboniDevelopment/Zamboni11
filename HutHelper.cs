@@ -11,7 +11,7 @@ namespace Zamboni11;
 public class HutHelper
 {
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-    
+
     public static CardData ReadCardData(NpgsqlDataReader reader)
     {
         var cardData = new CardData
@@ -64,8 +64,27 @@ public class HutHelper
             // mSellerEstDate = Util.TimeNow(),
             // mInbox = 1,
             mIsWatched = await HutTradeManager.IsWatching(readerUserId, reader.GetInt64(reader.GetOrdinal("trade_id"))) ? (byte)1 : (byte)0,
-            // mOfferPendingCount = 1,
+            mOfferPendingCount = (int)await HutTradeManager.ActiveOffersCount(reader.GetInt64(reader.GetOrdinal("trade_id"))),
             // mGlow = 1,
+        };
+    }
+    
+    public static async Task<ISOfferInfo> ReadOffer(NpgsqlDataReader reader)
+    {
+        var cardDataList = new List<CardData>();
+        foreach (var cardId in reader.GetFieldValue<long[]>(reader.GetOrdinal("card_ids")).ToList())
+        {
+            var cardData = await HutManager.GetCard(cardId);
+            cardDataList.Add(cardData.Card);
+        }
+        return new ISOfferInfo
+        {
+            mCardList = reader.GetFieldValue<long[]>(reader.GetOrdinal("card_ids")).ToList(),
+            mCardDataList = cardDataList,
+            mCredits = reader.GetInt32(reader.GetOrdinal("credits")),
+            mOfferId = reader.GetInt64(reader.GetOrdinal("offer_id")),
+            mOfferState = (OfferState)reader.GetInt32(reader.GetOrdinal("offer_state")),
+            mTradeId = reader.GetInt64(reader.GetOrdinal("trade_id")),
         };
     }
 
@@ -88,7 +107,7 @@ public class HutHelper
     {
         if (amount <= 0)
         {
-            Logger.Debug("Trying to deposit a negative amount! Balancing mistake in game end rewards?"); 
+            Logger.Debug("Trying to deposit a negative amount! Balancing mistake in game end rewards?");
             return false;
         }
 
@@ -129,4 +148,47 @@ public class HutHelper
         await HutManager.SetGeneralInfo(updated, userId);
         await HutManager.IncrementVersionInfo(userId, HutManager.VersionType.General);
     }
+
+    public static short DetermineSalary(int overall)
+    {
+        const int minOverAll = 62;
+        const int maxOverAll = 99;
+
+        const int baseSalary = 400;
+        const int pricePerPoint = 25;
+        const double highBias = 1.6;
+
+        int ovr = Math.Clamp(overall, minOverAll, maxOverAll);
+        int pointsAboveMin = ovr - minOverAll;
+
+        double salary = baseSalary + (pointsAboveMin * pricePerPoint) + Math.Pow(pointsAboveMin, highBias);
+
+        salary *= 0.1;
+
+        return (short)Math.Round(salary);
+    }
+
+    public static byte DetermineTrainingCardsCanApply(int overall)
+    {
+        int minOverAll = 62;
+        int maxOverAll = 82;
+        double maxSlots = 12.0;
+        double minSlots = 2.0;
+
+        int currentOvr = Math.Clamp(overall, minOverAll, maxOverAll);
+
+        double totalOvrRange = maxOverAll - minOverAll;
+        double totalSlotRange = maxSlots - minSlots;
+        double slotsLostPerPoint = totalSlotRange / totalOvrRange;
+
+        double result = maxSlots - (currentOvr - minOverAll) * slotsLostPerPoint;
+
+        return (byte)Math.Round(result);
+    }
+
+    public static List<long> ToLongList(List<CardData> cardDatas)
+    {
+        return cardDatas.Select(card => card.mCardId).ToList();
+    }
+
 }
