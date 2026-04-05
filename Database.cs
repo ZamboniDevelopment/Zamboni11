@@ -263,10 +263,11 @@ public class Database
         conn.Open();
 
         const string createTableQuery = @"
-                CREATE TABLE IF NOT EXISTS hut_watching (
-                    user_id BIGINT,
-                    trade_id BIGINT
-                );";
+            CREATE TABLE IF NOT EXISTS hut_watching (
+                user_id BIGINT,
+                trade_id BIGINT,
+                PRIMARY KEY (user_id, trade_id)
+            );";
 
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();

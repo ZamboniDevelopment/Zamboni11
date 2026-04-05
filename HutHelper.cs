@@ -46,6 +46,8 @@ public class HutHelper
     {
         YourBid yourBid = await HutTradeManager.DetermineMyBidState(reader.GetInt64(reader.GetOrdinal("trade_id")), readerUserId);
         CardData cardData = (await HutManager.GetCard(reader.GetInt64(reader.GetOrdinal("card_id")))).Card;
+        TradeState tradeState = (TradeState)reader.GetInt32(reader.GetOrdinal("trade_state"));
+        int secondsLeft = tradeState == TradeState.CARDHOUSE_TRADESTATE_CLOSED || tradeState == TradeState.CARDHOUSE_TRADESTATE_EXPIRED ? 0 : reader.GetInt32(reader.GetOrdinal("expire_time"));
         return new ISTradeInfo
         {
             mBlazeUserId = reader.GetInt64(reader.GetOrdinal("user_id")),
@@ -60,12 +62,12 @@ public class HutHelper
             mBuyOutPrice = reader.GetInt32(reader.GetOrdinal("buy_out_price")),
             mSellerName = reader.GetString(reader.GetOrdinal("seller_name")),
             mTradeState = (TradeState)reader.GetInt32(reader.GetOrdinal("trade_state")),
-            mSecondsLeft = reader.GetInt32(reader.GetOrdinal("expire_time")),
+            mSecondsLeft = secondsLeft,
             // mSellerEstDate = Util.TimeNow(),
-            // mInbox = 1,
+            mInbox = tradeState == TradeState.CARDHOUSE_TRADESTATE_CLOSED || tradeState == TradeState.CARDHOUSE_TRADESTATE_EXPIRED && yourBid == YourBid.CARDHOUSE_YOURBID_HIGHEST ? (byte)1 : (byte)0,
+            mGlow = tradeState == TradeState.CARDHOUSE_TRADESTATE_CLOSED || tradeState == TradeState.CARDHOUSE_TRADESTATE_EXPIRED && yourBid == YourBid.CARDHOUSE_YOURBID_HIGHEST ? (byte)1 : (byte)0,
             mIsWatched = await HutTradeManager.IsWatching(readerUserId, reader.GetInt64(reader.GetOrdinal("trade_id"))) ? (byte)1 : (byte)0,
             mOfferPendingCount = (int)await HutTradeManager.ActiveOffersCount(reader.GetInt64(reader.GetOrdinal("trade_id"))),
-            // mGlow = 1,
         };
     }
     

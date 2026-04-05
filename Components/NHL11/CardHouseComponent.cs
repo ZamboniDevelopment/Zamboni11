@@ -42,7 +42,10 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
         
         if (request.mSwapCardId != 0) throw new NotImplementedException();
         
-        CardData cardData = (await HutManager.GetCard(request.mCardId, userId)).Card;
+        var card = await HutManager.GetCard(request.mCardId, userId);
+
+        CardData cardData = card.Card;
+        DeckType from = card.DeckType;
         switch (request.mDeckType)
         {
             case DeckType.CARDHOUSE_DECK_ESCROW:
@@ -53,8 +56,21 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
                 await HutCardFactory.CreateOrUpdateCard(cardData, userId, DeckType.CARDHOUSE_DECK_UNASSIGNED);
                 await HutManager.IncrementVersionInfo(userId, HutManager.VersionType.Unassigned);
                 break;
-            default:
-                throw new NotImplementedException();
+            case DeckType.CARDHOUSE_DECK_STICKERBOOK: break;
+            default: throw new NotImplementedException();
+        }
+
+        switch (from)
+        {
+            case DeckType.CARDHOUSE_DECK_ESCROW:
+                await HutManager.IncrementVersionInfo(userId, HutManager.VersionType.Escrow);
+                break;
+            case DeckType.CARDHOUSE_DECK_UNASSIGNED:
+                await HutManager.IncrementVersionInfo(userId, HutManager.VersionType.Unassigned);
+                break;
+            case DeckType.CARDHOUSE_DECK_STICKERBOOK: break;
+            case DeckType.CARDHOUSE_DECK_INBOX: break;
+            default: throw new NotImplementedException();
         }
 
         var versionInfo = await HutManager.GetVersionInfo(userId);
@@ -707,22 +723,32 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
     public override async Task<ISViewTradeResponse> ISViewTradeAsync(ISViewTradeRequest request, BlazeRpcContext context)
     {
         var userId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
-        return await HutTradeManager.ViewTradeAsync(request, userId);
+        var result = await HutTradeManager.ViewTradeAsync(request, userId);
+        
+        if (result.Exception != null)
+        {
+            throw new BlazeRpcException(result.Exception.ErrorCode);
+        }
+
+        return result.Response;
     }
     
     public override async Task<ISAdminOfferResponse> ISAdminOfferAsync(ISAdminOfferRequest request, BlazeRpcContext context)
     {
         var tradeId = await HutTradeManager.GetTradeId(request.mOfferId);
+        BlazeRpcException? exception;
         switch (request.mOfferState)
         {
             case OfferState.CARDHOUSE_OFFERSTATE_ACCEPTED:
-                await HutTradeManager.AdminAcceptOffer(tradeId, request.mOfferId);
+                exception = await HutTradeManager.AdminAcceptOffer(tradeId, request.mOfferId);
                 break;
             case OfferState.CARDHOUSE_OFFERSTATE_REJECTED:
-                await HutTradeManager.AdminRejectOffer(request.mOfferId);
+                exception = await HutTradeManager.AdminRejectOffer(request.mOfferId);
                 break;
             default: throw new NotImplementedException();
         }
+
+        if (exception != null) throw exception;
         return new ISAdminOfferResponse();
     }
 
