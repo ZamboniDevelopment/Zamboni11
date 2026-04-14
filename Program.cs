@@ -14,6 +14,7 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using Zamboni11.Components.Blaze;
 using Zamboni11.Components.NHL11;
+using ZamboniUltimateTeam;
 
 namespace Zamboni11;
 
@@ -131,6 +132,7 @@ internal class Program
         //2148 NHL SPECIFIC COMPONENT
         //"CardHouseComponent" (hut)
         //Work in progress
+        UltimateTeam.Initialize(Database.ConnectionString, new ServerProviderBridge());
         core.AddComponent<CardHouseComponent>();
 
         //2257 NHL SPECIFIC COMPONENT
