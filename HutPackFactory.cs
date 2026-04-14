@@ -29,29 +29,29 @@ public class HutPackFactory
 
                 var starterOverallRange = new Range(0, 85);
 
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, starterOverallRange, 0, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, starterOverallRange, 60, true));
-                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, starterOverallRange, 80, true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK, starterOverallRange, true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK, starterOverallRange,  true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange,  true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange,  true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange,  true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, new Range(78,82) , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, new Range(80,84) , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, starterOverallRange , true));
+                cardDataList.Add(await HutCardFactory.RollPlayerCard(userId, cardDataList, CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, starterOverallRange , true));
 
                 return cardDataList;
             }
