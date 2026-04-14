@@ -11,9 +11,8 @@ namespace Zamboni11;
 
 public class HutCardFactory
 {
-    
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-    
+
     private static readonly Dictionary<CardSubType, Range> TrainingCardDbIdRanges = new();
     private static readonly Dictionary<CardSubType, List<uint>> PlayerCardDbIdsByCardSubType = new();
     public static readonly Dictionary<int, Range> LeagueTeamsMapping = new();
@@ -58,7 +57,6 @@ public class HutCardFactory
         return await CreateNonPlayerCard(owner, (uint)new Random().Next(2000000, 2000025 + 1), CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH);
     }
 
-
     public static async Task<CardData> CreateRandomContractCard(long owner)
     {
         return await CreateNonPlayerCard(owner, (uint)new Random().Next(5001001, 5001011 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CONTRACT_PLAYER);
@@ -81,12 +79,62 @@ public class HutCardFactory
         return await CreateNonPlayerCard(owner, (uint)new Random().Next(6200000, 6200005 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_STADIUM);
     }
 
-    public static async Task<CardData> CreateRandomJerseyCard(long owner, bool isHome, bool isRare)
+    public static async Task<CardData> CreateRandomJerseyCard(long owner, bool? isHome = null, bool? isRare = null)
     {
-        if (isRare) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6500001 - 1, 6500196 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
-        if (isHome) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6300001 - 1, 6300212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
-        if (!isHome) return await CreateNonPlayerCard(owner, (uint)new Random().Next(6400001 - 1, 6400212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
-        return await CreateNonPlayerCard(owner, (uint)new Random().Next(6300001 - 1, 6300212 - 1 + 1), CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT);
+        var cardDbIds = await Database.GetKitCards(isHome, isRare);
+        var kit = cardDbIds[new Random().Next(cardDbIds.Count)];
+        return await CreateNonPlayerCard(owner, kit.CardDbId, CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT, (byte)(kit.IsHome ? 1 : 0));
+    }
+
+    public static async Task<CardData> RollPlayerCard(long owner, List<CardData> alreadyRolled, CardSubType cardSubType, Range overall, byte rareChangePercentage, bool guaranteeUnique)
+    {
+        if (cardSubType > CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK) throw new Exception("Position must be 0-4");
+
+        var isRare = new Random().Next(100) < rareChangePercentage ? (byte)1 : (byte)0;
+        int[] excludeIds = alreadyRolled.Select(c => (int)c.mCardDbId).ToArray();
+        
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        var possibilities = new List<uint>();
+
+        string sql = @"
+            SELECT carddbid 
+            FROM fcc_playercards p
+            WHERE preferredposition = @cardSubType 
+            AND rating >= @overallStart AND rating <= @overallEnd 
+            AND rare = @rare
+            AND carddbid != ANY(@excludeIds)
+            AND (@guaranteeUnique = FALSE OR NOT EXISTS (
+                SELECT 1 FROM hut_cards h 
+                WHERE h.user_id = @owner AND h.db_id = p.carddbid AND deck_type != 6
+            ))";
+        
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("cardSubType", (int)cardSubType);
+        cmd.Parameters.AddWithValue("overallStart", overall.Start.Value);
+        cmd.Parameters.AddWithValue("overallEnd", overall.End.Value);
+        cmd.Parameters.AddWithValue("rare", isRare);
+        cmd.Parameters.AddWithValue("excludeIds", excludeIds);
+        cmd.Parameters.AddWithValue("owner", owner);
+        cmd.Parameters.AddWithValue("guaranteeUnique", guaranteeUnique);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            possibilities.Add((uint)reader.GetInt32(0));
+        }
+
+        if (possibilities.Count == 0)
+        {
+            if (isRare == 0)
+            {
+                throw new Exception();
+            }
+            await RollPlayerCard(owner, alreadyRolled, cardSubType, overall, 0, guaranteeUnique);
+        }
+        
+        return await CreatePlayerCard(owner, possibilities[new Random().Next(possibilities.Count)]);
     }
 
     public static async Task<int> TeamIdFromDbId(uint dbId)
@@ -97,7 +145,7 @@ public class HutCardFactory
         const string sql = @"
         SELECT teamid FROM fcc_badges WHERE carddbid = @carddbid
         UNION ALL
-        SELECT teamid FROM fcc_kits WHERE carddbid = @carddbid
+        SELECT teamid FROM fcc_kitcards WHERE carddbid = @carddbid
         LIMIT 1;";
 
         await using var cmd = new NpgsqlCommand(sql, conn);
@@ -113,17 +161,12 @@ public class HutCardFactory
         return 0;
     }
 
-    public static async Task<CardData> CreateNonPlayerCard(long owner, uint dbId, CardSubType cardSubType)
+    public static async Task<CardData> CreateNonPlayerCard(long owner, uint dbId, CardSubType cardSubType, byte formationId = 0)
     {
-        CardState cardState = CardState.CARDHOUSE_CARDSTATE_INVALID;
+        CardState cardState = CardState.CARDHOUSE_CARDSTATE_FREE;
         DeckType deckType = DeckType.CARDHOUSE_DECK_UNASSIGNED;
-        if (cardSubType == CardSubType.CARDHOUSE_CARD_TYPE_STAFF_HEADCOACH 
-            || CardHouseComponent.TrophyTypes.Contains(cardSubType) 
-            || cardSubType == (CardSubType)10
-            || cardSubType == (CardSubType)11
-            || cardSubType == (CardSubType)12)
+        if (CardHouseComponent.TrophyTypes.Contains(cardSubType))
         {
-            cardState = CardState.CARDHOUSE_CARDSTATE_FREE;
             deckType = DeckType.CARDHOUSE_DECK_STICKERBOOK;
         }
 
@@ -133,7 +176,7 @@ public class HutCardFactory
             mCardStateId = cardState,
             mCardId = 0,
             mCardDbId = dbId,
-            mFormationId = 0,
+            mFormationId = formationId,
             mFREE = 0,
             mCareerRemaining = 0,
             mInjuryGames = 0,
@@ -166,7 +209,8 @@ public class HutCardFactory
     public static async Task<CardData> CreatePlayerCard(long owner, uint dbId)
     {
         var staticCardData = await Program.Database.GetPlayerCardDataByDbId(dbId);
-        var cardData = await CreateOrUpdateCard(staticCardData, owner, DeckType.CARDHOUSE_DECK_UNASSIGNED);
+        if (!staticCardData.HasValue) throw new Exception();
+        var cardData = await CreateOrUpdateCard(staticCardData.Value, owner, DeckType.CARDHOUSE_DECK_UNASSIGNED);
         return cardData;
     }
 

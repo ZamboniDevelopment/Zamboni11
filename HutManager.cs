@@ -162,6 +162,7 @@ public class HutManager
     }
 
     private static int chngDebugCounter = 0;
+
     public static async Task<SquadInfo?> GetSquadInfo(long userId)
     {
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
@@ -453,7 +454,7 @@ public class HutManager
         return counts;
     }
 
-    public static async Task<int> GetCardCountAsync(long userId, DeckType deckType, params CardSubType[] subTypes)
+    public static async Task<int> GetCardCountAsync(long userId, DeckType deckType, byte? formationId = null, params CardSubType[] subTypes)
     {
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
         await conn.OpenAsync();
@@ -461,6 +462,8 @@ public class HutManager
         string sql = "SELECT COUNT(*) FROM hut_cards WHERE user_id = @user_id";
 
         sql += " AND deck_type = @deck_type";
+        
+        if (formationId.HasValue) sql += " AND formation_id = @formationId";
 
         if (subTypes.Length > 0)
         {
@@ -470,7 +473,8 @@ public class HutManager
         await using var cmd = new NpgsqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("user_id", userId);
         cmd.Parameters.AddWithValue("deck_type", (int)deckType);
-
+        if (formationId.HasValue) cmd.Parameters.AddWithValue("formationId", (short)formationId.Value);
+        
         if (subTypes.Length > 0)
         {
             cmd.Parameters.AddWithValue("sub_types", subTypes.Select(s => (short)s).ToArray());
@@ -479,6 +483,42 @@ public class HutManager
         var result = await cmd.ExecuteScalarAsync();
         return Convert.ToInt32(result);
     }
+
+    public static async Task<List<CardIdPair>> FindDuplicates(long userId, List<CardData> newCards)
+    {
+        int[] dbIdsToCheck = newCards.Select(c => (int)c.mCardDbId).ToArray();
+        var duplicates = new List<CardIdPair>();
+
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        string sql = @"
+        SELECT card_id, db_id 
+        FROM hut_cards 
+        WHERE user_id = @user_id 
+        AND db_id = ANY(@db_ids)
+        AND deck_type = 7";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("user_id", userId);
+        cmd.Parameters.AddWithValue("db_ids", dbIdsToCheck);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            long existingCardId = reader.GetInt64(0); 
+            int foundDbId = reader.GetInt32(1);
+            duplicates.Add(new CardIdPair
+            {
+                mCardId = newCards.FirstOrDefault(c => c.mCardDbId == foundDbId).mCardId,
+                mDuplicateCardId = existingCardId
+            });
+        }
+
+        return duplicates;
+    }
+
 
     public static async Task<List<CardData>> GetCardList(long userId, StickerBookSearchRequest request)
     {

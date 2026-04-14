@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Blaze3SDK.Blaze.GameReportingLegacy;
 using NLog;
@@ -814,7 +815,7 @@ public class Database
         return ids;
     }
 
-    public async Task<CardData> GetPlayerCardDataByDbId(uint cardDbId)
+    public async Task<CardData?> GetPlayerCardDataByDbId(uint cardDbId)
     {
         const string sql = "SELECT * FROM fcc_playercards WHERE carddbid = @dbid LIMIT 1";
 
@@ -877,7 +878,7 @@ public class Database
             };
         }
 
-        return new CardData();
+        return null;
     }
     
     public static async Task<HutTrainingCard> GetTrainingCardByDbIdAsync(uint cardDbId)
@@ -934,6 +935,43 @@ public class Database
         }
 
         return null;
+    }
+    
+    public static async Task<List<HutKitCard>> GetKitCards(bool? isHome, bool? isRare)
+    {
+        
+        await using var conn = new NpgsqlConnection(ConnectionString);
+        await conn.OpenAsync();
+        
+        var sql = new StringBuilder(@"
+            SELECT carddbid, alternative, teamid, ishome
+            FROM fcc_kitcards
+            WHERE 1=1");
+
+        if (isHome.HasValue) sql.Append(" AND ishome=@ishome");
+        if (isRare.HasValue) sql.Append(" AND alternative=@israre");
+        
+        await using var command = new NpgsqlCommand(sql.ToString(), conn);
+        
+        if (isHome.HasValue) command.Parameters.AddWithValue("ishome", isHome.Value);
+        if (isRare.HasValue) command.Parameters.AddWithValue("israre", isRare.Value);
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        var returningList = new List<HutKitCard>();
+        
+        while (await reader.ReadAsync())
+        {
+            returningList.Add(new HutKitCard
+            {
+                CardDbId = (uint)reader.GetInt64(0),
+                Alternative = reader.GetBoolean(1),
+                TeamId = reader.GetInt32(2),
+                IsHome = reader.GetBoolean(3),
+            });
+        }
+
+        return returningList;
     }
 
     public uint GetNextGameId()
