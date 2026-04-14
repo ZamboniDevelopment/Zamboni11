@@ -71,6 +71,46 @@ public class HutHelper
         };
     }
     
+    public static async Task<List<int>> GetAllLeagueIds()
+    {
+        var leagueIds = new List<int>();
+
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = "SELECT DISTINCT leagueid FROM fcc_leagues ORDER BY leagueid ASC";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            leagueIds.Add(reader.GetInt32(0));
+        }
+
+        return leagueIds;
+    }
+    
+    public static async Task<List<int>> GetAllTrainingCardIds()
+    {
+        var trainingCardIds = new List<int>();
+
+        await using var conn = new NpgsqlConnection(Database.ConnectionString);
+        await conn.OpenAsync();
+
+        const string sql = "SELECT DISTINCT carddbid FROM fcc_trainingcards";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            trainingCardIds.Add(reader.GetInt32(0));
+        }
+
+        return trainingCardIds;
+    }
+    
     public static async Task<ISOfferInfo> ReadOffer(NpgsqlDataReader reader)
     {
         var cardDataList = new List<CardData>();

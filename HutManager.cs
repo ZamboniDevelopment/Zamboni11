@@ -420,25 +420,24 @@ public class HutManager
         await conn.OpenAsync();
 
         string sql = @"
-            SELECT team_id, COUNT(*) 
-            FROM hut_cards 
-            WHERE user_id = @user_id 
-            AND team_id >= @startId AND team_id <= @endId 
-            AND deck_type = @deck_type";
+            SELECT h.team_id, COUNT(*) 
+            FROM hut_cards h
+            INNER JOIN fcc_leagues l ON h.team_id = l.teamid
+            WHERE h.user_id = @user_id 
+            AND l.leagueid = @league_id 
+            AND h.deck_type = @deck_type";
 
         if (subTypes.Length > 0)
         {
-            sql += " AND sub_type = ANY(@sub_types)";
+            sql += " AND h.sub_type = ANY(@sub_types)";
         }
 
-        sql += " GROUP BY team_id";
+        sql += " GROUP BY h.team_id";
 
         await using var cmd = new NpgsqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("user_id", userId);
-        cmd.Parameters.AddWithValue("startId", HutCardFactory.LeagueTeamsMapping[leagueId].Start.Value);
-        cmd.Parameters.AddWithValue("endId", HutCardFactory.LeagueTeamsMapping[leagueId].End.Value);
+        cmd.Parameters.AddWithValue("league_id", leagueId);
         cmd.Parameters.AddWithValue("deck_type", (int)deckType);
-
 
         if (subTypes.Length > 0)
         {
@@ -462,7 +461,7 @@ public class HutManager
         string sql = "SELECT COUNT(*) FROM hut_cards WHERE user_id = @user_id";
 
         sql += " AND deck_type = @deck_type";
-        
+
         if (formationId.HasValue) sql += " AND formation_id = @formationId";
 
         if (subTypes.Length > 0)
@@ -474,7 +473,7 @@ public class HutManager
         cmd.Parameters.AddWithValue("user_id", userId);
         cmd.Parameters.AddWithValue("deck_type", (int)deckType);
         if (formationId.HasValue) cmd.Parameters.AddWithValue("formationId", (short)formationId.Value);
-        
+
         if (subTypes.Length > 0)
         {
             cmd.Parameters.AddWithValue("sub_types", subTypes.Select(s => (short)s).ToArray());
@@ -507,7 +506,7 @@ public class HutManager
 
         while (await reader.ReadAsync())
         {
-            long existingCardId = reader.GetInt64(0); 
+            long existingCardId = reader.GetInt64(0);
             int foundDbId = reader.GetInt32(1);
             duplicates.Add(new CardIdPair
             {
@@ -526,13 +525,14 @@ public class HutManager
         await conn.OpenAsync();
 
         var sql = new StringBuilder(@"
-        SELECT * 
-              FROM hut_cards
-        WHERE user_id = @user_id");
+            SELECT h.* FROM hut_cards h
+            INNER JOIN fcc_leagues l ON h.team_id = l.teamid
+            WHERE h.user_id = @user_id 
+            AND h.deck_type = @deck_type");
 
         var deckType = DeckType.CARDHOUSE_DECK_STICKERBOOK;
 
-        sql.Append(" AND deck_type = @deck_type");
+        sql.Append(" AND h.deck_type = @deck_type");
         switch (request.mCollectionSearchCardType)
         {
             //Here we might have to filter based if its in players active roster (SquadInfo)
@@ -557,20 +557,15 @@ public class HutManager
             default: throw new NotImplementedException();
         }
 
-        if (request.mLeagueId >= 0)
-        {
-            var range = HutCardFactory.LeagueTeamsMapping[request.mLeagueId];
-            sql.Append(" AND team_id BETWEEN " + range.Start.Value + " AND " + range.End.Value + "");
-        }
-
-        if (request.mTeamId >= 0)
-        {
-            sql.Append(" AND team_id = " + request.mTeamId);
-        }
+        if (request.mLeagueId >= 0) sql.Append(" AND l.leagueid = @league_id");
+        if (request.mTeamId >= 0) sql.Append(" AND h.team_id = @team_id");
 
         await using var cmd = new NpgsqlCommand(sql.ToString(), conn);
         cmd.Parameters.AddWithValue("user_id", userId);
         cmd.Parameters.AddWithValue("deck_type", (int)deckType);
+
+        if (request.mLeagueId >= 0) cmd.Parameters.AddWithValue("league_id", request.mLeagueId);
+        if (request.mTeamId >= 0) cmd.Parameters.AddWithValue("team_id", request.mTeamId);
 
         await using var reader = await cmd.ExecuteReaderAsync();
 

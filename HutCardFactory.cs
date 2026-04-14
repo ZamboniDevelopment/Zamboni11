@@ -12,47 +12,8 @@ namespace Zamboni11;
 public class HutCardFactory
 {
     private static readonly Random Random = new();
-    
+
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-    private static readonly Dictionary<CardSubType, Range> TrainingCardDbIdRanges = new();
-    private static readonly Dictionary<CardSubType, List<uint>> PlayerCardDbIdsByCardSubType = new();
-    public static readonly Dictionary<int, Range> LeagueTeamsMapping = new();
-
-    static HutCardFactory()
-    {
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_GK_ATTRIBUTE_HIGH, new Range(5003001, 5003005));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_GK_ATTRIBUTE_LOW, new Range(5003006, 5003010));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_GK_ATTRIBUTE_QUICKNESS, new Range(5003011, 5003015));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_GK_ATTRIBUTE_POSITIONING, new Range(5003016, 5003020));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_GK_ATTRIBUTE_REBOUNDCONTROL, new Range(5003021, 5003025));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_GK_ALL, new Range(5003026, 5003028));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_PLAYER_ATTRIBUTE_SKATING, new Range(5003029, 5003033));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_PLAYER_ATTRIBUTE_SHOOTING, new Range(5003034, 5003038));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_PLAYER_ATTRIBUTE_HANDS, new Range(5003039, 5003043));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_PLAYER_ATTRIBUTE_CHECKING, new Range(5003044, 5003048));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_PLAYER_ATTRIBUTE_DEFENSE, new Range(5003049, 5003053));
-        TrainingCardDbIdRanges.Add(CardSubType.CARDHOUSE_CARD_TYPE_TRAINING_PLAYER_ALL, new Range(5003054, 5003056));
-
-        PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_C));
-        PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_LW));
-        PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_RW));
-        PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_D));
-        PlayerCardDbIdsByCardSubType.Add(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK, Program.Database.GetListDbIds(CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK));
-
-        LeagueTeamsMapping.Add(0, new Range(0, 31)); //NHL
-        LeagueTeamsMapping.Add(1, new Range(32, 61)); //AHL
-        LeagueTeamsMapping.Add(2, new Range(62, 73)); //Elitserien
-        LeagueTeamsMapping.Add(3, new Range(74, 87)); //Sm-Liiga
-        LeagueTeamsMapping.Add(4, new Range(88, 102)); //DEL
-        LeagueTeamsMapping.Add(5, new Range(103, 116)); //O2 Extraliga
-        LeagueTeamsMapping.Add(6, new Range(117, 128)); //National League
-        LeagueTeamsMapping.Add(7, new Range(129, 149)); //National
-        LeagueTeamsMapping.Add(8, new Range(150, 169)); //OHL
-        LeagueTeamsMapping.Add(9, new Range(170, 187)); //QMJHL
-        LeagueTeamsMapping.Add(10, new Range(188, 209)); //WHL
-        LeagueTeamsMapping.Add(11, new Range(210, 211)); //Prospects
-    }
 
     public static async Task<CardData> CreateRandomHeadCoachCard(long owner)
     {
@@ -66,9 +27,10 @@ public class HutCardFactory
 
     public static async Task<CardData> CreateRandomTrainingCard(long owner)
     {
-        var random = Random.Next(TrainingCardDbIdRanges.Count);
-        var cardType = TrainingCardDbIdRanges.ElementAt(random).Key;
-        return await CreateNonPlayerCard(owner, (uint)Random.Next(TrainingCardDbIdRanges[cardType].Start.Value, TrainingCardDbIdRanges[cardType].End.Value + 1), cardType);
+        var list = await HutHelper.GetAllTrainingCardIds();
+        var cardDbId = list[Random.Next(list.Count)];
+        var trainingCard = await Database.GetTrainingCardByDbIdAsync((uint)cardDbId);
+        return await CreateNonPlayerCard(owner, (uint)cardDbId, (CardSubType)trainingCard.CardSubtype);
     }
 
     public static async Task<CardData> CreateRandomLogoCard(long owner)
@@ -87,13 +49,11 @@ public class HutCardFactory
         var kit = cardDbIds[Random.Next(cardDbIds.Count)];
         return await CreateNonPlayerCard(owner, kit.CardDbId, CardSubType.CARDHOUSE_CARD_TYPE_CUSTOM_KIT, (byte)(kit.IsHome ? 1 : 0));
     }
-
-    public static async Task<CardData> RollPlayerCard(long owner, List<CardData> alreadyRolled, CardSubType cardSubType, Range overall, bool guaranteeUnique)
+    
+    public static async Task<CardData> RollPlayerCard(long owner, List<CardData> alreadyRolled, Range overall, bool guaranteeUnique, params CardSubType[] subTypes)
     {
-        if (cardSubType > CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK) throw new Exception("Position must be 0-4");
-
         int[] excludeIds = alreadyRolled.Select(c => (int)c.mCardDbId).ToArray();
-        
+
         await using var conn = new NpgsqlConnection(Database.ConnectionString);
         await conn.OpenAsync();
 
@@ -102,16 +62,16 @@ public class HutCardFactory
         string sql = @"
             SELECT carddbid 
             FROM fcc_playercards p
-            WHERE preferredposition = @cardSubType 
+            WHERE preferredposition = ANY(@subTypes) 
             AND rating >= @overallStart AND rating <= @overallEnd 
             AND NOT (carddbid = ANY(@excludeIds))
             AND (@guaranteeUnique = FALSE OR NOT EXISTS (
                 SELECT 1 FROM hut_cards h 
                 WHERE h.user_id = @owner AND h.db_id = p.carddbid AND deck_type != 6
             ))";
-        
+
         await using var cmd = new NpgsqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("cardSubType", (int)cardSubType);
+        cmd.Parameters.AddWithValue("subTypes", subTypes.Select(type => (int)type).ToArray());
         cmd.Parameters.AddWithValue("overallStart", overall.Start.Value);
         cmd.Parameters.AddWithValue("overallEnd", overall.End.Value);
         cmd.Parameters.AddWithValue("excludeIds", excludeIds);
@@ -126,9 +86,11 @@ public class HutCardFactory
 
         if (possibilities.Count == 0)
         {
-            return await RollPlayerCard(owner, alreadyRolled, cardSubType, new Range(overall.Start.Value-1, overall.End.Value-1), guaranteeUnique);
+            if (overall.End.Value <= 1) return await RollPlayerCard(owner, alreadyRolled, new Range(0, 100), false, subTypes);
+
+            return await RollPlayerCard(owner, alreadyRolled, new Range(overall.Start.Value - 1, overall.End.Value - 1), guaranteeUnique, subTypes);
         }
-        
+
         return await CreatePlayerCard(owner, possibilities[Random.Next(possibilities.Count)]);
     }
 
@@ -191,14 +153,6 @@ public class HutCardFactory
             mUsesRemaining = 0
         };
         return await CreateOrUpdateCard(cardData, owner, deckType);
-    }
-
-    public static async Task<CardData> CreateRandomPlayerCard(long owner, CardSubType position)
-    {
-        if (position > CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK) throw new Exception("Position must be 0-4");
-        List<uint> dbIds = PlayerCardDbIdsByCardSubType[position];
-        uint cardDbId = dbIds[Random.Next(dbIds.Count)];
-        return await CreatePlayerCard(owner, cardDbId);
     }
 
     public static async Task<CardData> CreatePlayerCard(long owner, uint dbId)

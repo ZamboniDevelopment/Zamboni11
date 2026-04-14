@@ -511,7 +511,7 @@ internal class CardHouseComponent : CardHouseComponentBase.Server
 
         if (request.mContextId == RequestContext.CARDHOUSE_STICKERBOOK_STATS_REQUEST_CONTEXT_YEAR)
         {
-            foreach (var leagueId in HutCardFactory.LeagueTeamsMapping.Keys)
+            foreach (var leagueId in await HutHelper.GetAllLeagueIds())
             {
                 var correction = 0;
                 if (leagueId is 0 or 1 or 2) correction = 2; //why? that's what I am wondering too

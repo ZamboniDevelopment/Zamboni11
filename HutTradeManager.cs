@@ -33,6 +33,7 @@ public class HutTradeManager
                    GREATEST(0, (t.created_at_seconds + t.duration_seconds) - EXTRACT(EPOCH FROM NOW()))::INT AS expire_time
             FROM hut_trade_info t
             INNER JOIN hut_cards c ON t.card_id = c.card_id
+            INNER JOIN fcc_leagues l ON c.team_id = l.teamid
             WHERE 1=1");
 
         switch (request.mCardType)
@@ -49,15 +50,9 @@ public class HutTradeManager
 
         if (request.mCategory >= 0 || request.mFormation >= 0 || request.mLevel >= 0 || request.mNation >= 0 || request.mFieldZone >= 0) throw new NotImplementedException();
 
-        if (request.mLeagueId >= 0)
-        {
-            Range range = HutCardFactory.LeagueTeamsMapping[request.mLeagueId];
-            sql.Append($" AND c.team_id BETWEEN {range.Start.Value} AND {range.End.Value}");
-        }
-
+        if (request.mLeagueId >= 0) sql.Append(" AND l.leagueid = @league_id");
         if (request.mPosition >= 0) sql.Append(" AND c.sub_type = " + request.mPosition);
         if (request.mTeamId >= 0) sql.Append(" AND c.team_id = " + request.mTeamId);
-
 
         sql.Append(request.mNonActive == 0 ? " AND t.trade_state = 1" : " AND t.trade_state >= 1");
 
@@ -75,6 +70,7 @@ public class HutTradeManager
         if (request.mMinCredits > 0) cmd.Parameters.AddWithValue("minCredits", request.mMinCredits);
         if (request.mMaxCredits > 0) cmd.Parameters.AddWithValue("maxCredits", request.mMaxCredits);
         if (request.mMinBuyPrice > 0) cmd.Parameters.AddWithValue("minBuy", request.mMinBuyPrice);
+        if (request.mLeagueId >= 0) cmd.Parameters.AddWithValue("league_id", request.mLeagueId);
 
         await using var reader = await cmd.ExecuteReaderAsync();
 

@@ -56,7 +56,6 @@ public class Database
         CreateHutCardsTable();
 
         CreateHutTournamentsTable();
-        // CreateHutTournamentAssociationTable();
     }
 
 
@@ -199,21 +198,6 @@ public class Database
         using var cmd = new NpgsqlCommand(createTableQuery, conn);
         cmd.ExecuteNonQuery();
     }
-
-    // private void CreateHutTournamentAssociationTable()
-    // {
-    //     using var conn = new NpgsqlConnection(ConnectionString);
-    //     conn.Open();
-    //
-    //     const string createTableQuery = @"
-    //             CREATE TABLE IF NOT EXISTS hut_tournament_associations (
-    //                 user_id BIGINT,
-    //                 tournament_id INTEGER
-    //             );";
-    //
-    //     using var cmd = new NpgsqlCommand(createTableQuery, conn);
-    //     cmd.ExecuteNonQuery();
-    // }
 
     private void CreateTradeInfoTable()
     {
@@ -789,32 +773,6 @@ public class Database
         }
     }
 
-    public List<uint> GetListDbIds(CardSubType cardSubType)
-    {
-        var ids = new List<uint>();
-        if (cardSubType > CardSubType.CARDHOUSE_CARD_TYPE_PLAYER_GK) return ids;
-
-        using var conn = new NpgsqlConnection(ConnectionString);
-        conn.OpenAsync();
-
-        string sql = "SELECT carddbid FROM fcc_playercards WHERE preferredposition = @pos";
-
-        using (var cmd = new NpgsqlCommand(sql, conn))
-        {
-            cmd.Parameters.AddWithValue("pos", (short)cardSubType);
-
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    ids.Add((uint)reader.GetInt32(0));
-                }
-            }
-        }
-
-        return ids;
-    }
-
     public async Task<CardData?> GetPlayerCardDataByDbId(uint cardDbId)
     {
         const string sql = "SELECT * FROM fcc_playercards WHERE carddbid = @dbid LIMIT 1";
@@ -847,33 +805,20 @@ public class Database
                 mCardDbId = cardDbId,
                 mFormationId = reader.GetByte(reader.GetOrdinal("formationid")),
                 // mFREE = 40, //
-                mCareerRemaining = 50, //
+                mCareerRemaining = 50,
                 mInjuryGames = reader.GetByte(reader.GetOrdinal("injuryduration")),
                 mInjuryType = reader.GetByte(reader.GetOrdinal("injury")),
                 mMaxTrainingCardsCanApply = HutHelper.DetermineTrainingCardsCanApply(rating),
-                // mMaxTrainingCardsCanApply = 2,
-                // mNumberOfOwners = 86, //
                 mPreferredPositionId = reader.GetByte(reader.GetOrdinal("preferredposition")),
-                mDiscardPrice = 100, //
+                mDiscardPrice = 100,
                 mRareFlag = reader.GetByte(reader.GetOrdinal("rare")),
                 mRating = (byte)rating,
-                mSalaryCap = HutHelper.DetermineSalary(rating), //
-                mListStats = new List<int>
-                {
-                    reader.GetByte(reader.GetOrdinal("stat1")), //Games Played
-                    reader.GetByte(reader.GetOrdinal("stat2")), //Goals 
-                    reader.GetByte(reader.GetOrdinal("stat3")), //Assists 
-                    reader.GetByte(reader.GetOrdinal("stat4")), //Plus/Minus
-                    reader.GetByte(reader.GetOrdinal("stat5")), //Penalty Minutes
-                },
+                mSalaryCap = HutHelper.DetermineSalary(rating),
+                mListStats = new List<int>(),
                 mCardSubTypeId = (CardSubType)reader.GetInt16(reader.GetOrdinal("fieldpos")),
                 mDateIssued = Util.TimeNow(),
                 mTeamId = (uint)reader.GetInt32(reader.GetOrdinal("teamid")),
-                mListTrainingCards = new List<int>()
-                {
-                    // 0,0,0,0,0,0,0,0,0,0,
-                    // 0,0
-                },
+                mListTrainingCards = new List<int>(),
                 mUsesRemaining = 20
             };
         }
@@ -909,7 +854,7 @@ public class Database
             };
         }
 
-        return null;
+        throw new Exception();
     }
     
     public static async Task<HutContractCard> GetContractCardByDbIdAsync(uint cardDbId)
@@ -934,7 +879,7 @@ public class Database
             };
         }
 
-        return null;
+        throw new Exception();
     }
     
     public static async Task<List<HutKitCard>> GetKitCards(bool? isHome, bool? isRare)
