@@ -13,7 +13,7 @@ using Tdf;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using Zamboni11.Components.Blaze;
-using Zamboni11.Components.NHL11;
+using ZamboniCommonComponents;
 using ZamboniUltimateTeam;
 
 namespace Zamboni11;

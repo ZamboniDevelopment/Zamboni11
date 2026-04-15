@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceNetNp", "..\PSN\SceNetNp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZamboniUltimateTeam", "..\ZamboniUltimateTeam\ZamboniUltimateTeam.csproj", "{41ACD58A-8AD5-4B4F-9898-C85E6846C00D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZamboniCommonComponents", "..\ZamboniCommonComponents\ZamboniCommonComponents.csproj", "{296510C2-416C-4537-8DED-E048D7E5FCED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{41ACD58A-8AD5-4B4F-9898-C85E6846C00D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41ACD58A-8AD5-4B4F-9898-C85E6846C00D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41ACD58A-8AD5-4B4F-9898-C85E6846C00D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{296510C2-416C-4537-8DED-E048D7E5FCED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{296510C2-416C-4537-8DED-E048D7E5FCED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{296510C2-416C-4537-8DED-E048D7E5FCED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{296510C2-416C-4537-8DED-E048D7E5FCED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

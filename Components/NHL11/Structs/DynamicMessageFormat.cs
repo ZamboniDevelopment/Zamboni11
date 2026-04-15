@@ -1,9 +1,0 @@
-namespace Zamboni11.Components.NHL11.Structs;
-
-public enum DynamicMessageFormat : int
-{
-    DYNAMICMESSAGE_FORMAT_PLAINTEXT = 0,
-    DYNAMICMESSAGE_FORMAT_TEXTIMAGE = 1,
-    DYNAMICMESSAGE_FORMAT_TEXTBANNER = 2,
-    DYNAMICMESSAGE_FORMAT_IMAGE = 3
-}
