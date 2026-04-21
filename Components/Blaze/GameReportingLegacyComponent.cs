@@ -10,7 +10,7 @@ internal class GameReportingLegacyComponent : GameReportingLegacyComponentBase.S
     public override async Task<NullStruct> SubmitGameReportAsync(GameReport request, BlazeRpcContext context)
     {
         var reporterUserId = ServerManager.GetServerPlayerByConnectionId(context.Connection.ID)!.UserIdentification.mAccountId;
-        if (Program.Database.isEnabled) await Program.Database.InsertReport(request, reporterUserId);
+        if (Program.Database.isEnabled) await Program.Database.InsertLegacyReport(request, reporterUserId);
         return new NullStruct();
     }
 }

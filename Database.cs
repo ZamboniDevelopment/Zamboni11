@@ -35,11 +35,11 @@ public class Database
 
         CreateGameIdSequence();
 
-        CreateGamesTable();
-        CreateReportTable();
-        CreateOtpReportTable();
-        CreateSoReportTable();
-        CreateHutReportTable();
+        CreateLegacyGamesTable();
+        CreateLegacyReportTable();
+        CreateLegacyOtpReportTable();
+        CreateLegacySoReportTable();
+        CreateLegacyHutReportTable();
     }
 
     private void CreateGameIdSequence()
@@ -57,7 +57,7 @@ public class Database
         cmd.ExecuteNonQuery();
     }
 
-    private void CreateGamesTable()
+    private void CreateLegacyGamesTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
         conn.Open();
@@ -83,7 +83,7 @@ public class Database
         cmd.ExecuteNonQuery();
     }
 
-    private void CreateReportTable()
+    private void CreateLegacyReportTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
         conn.Open();
@@ -174,7 +174,7 @@ public class Database
         cmd.ExecuteNonQuery();
     }
 
-    private void CreateSoReportTable()
+    private void CreateLegacySoReportTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
         conn.Open();
@@ -248,7 +248,7 @@ public class Database
         cmd.ExecuteNonQuery();
     }
 
-    private void CreateOtpReportTable()
+    private void CreateLegacyOtpReportTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
         conn.Open();
@@ -366,7 +366,7 @@ public class Database
         cmd.ExecuteNonQuery();
     }
 
-    private void CreateHutReportTable()
+    private void CreateLegacyHutReportTable()
     {
         using var conn = new NpgsqlConnection(ConnectionString);
         conn.Open();
@@ -461,7 +461,7 @@ public class Database
         cmd.ExecuteNonQuery();
     }
 
-    public async Task InsertReport(GameReport report, long reporterUserId)
+    public async Task InsertLegacyReport(GameReport report, long reporterUserId)
     {
         await using var conn = new NpgsqlConnection(ConnectionString);
         await conn.OpenAsync();
